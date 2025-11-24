@@ -4,7 +4,7 @@
 #include <memory>
 #include "IModule.h"
 
-class Session {
+class ModuleSystem {
 public:
     void addModule(std::shared_ptr<IModule> module) {
         modules.push_back(module);

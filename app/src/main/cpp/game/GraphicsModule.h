@@ -21,18 +21,18 @@ public:
         appContext = context;
     }
 
-    void onStart() override   {
+    void onStart() override {
         initGraphics();
         initSquare();
     }
 
-    void onRender() override  {
+    void onRender() override {
         renderRedScreen();
         renderSquare();
         flip();
     }
 
-    void onShutdown() override{
+    void onShutdown() override {
 
     }
 

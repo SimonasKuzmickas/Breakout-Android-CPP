@@ -5,7 +5,7 @@
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 
-#include "game/Session.h"
+#include "game/ModuleSystem.h"
 #include "game/GraphicsModule.h"
 #include "game/GameWorld.h"
 
@@ -13,11 +13,11 @@ void gameLoop(AppContext* appContext) {
     const double deltaTime = 1.0 / 60.0;
     auto lastTick = std::chrono::steady_clock::now();
 
-    Session session;
-    session.addModule(std::make_shared<GraphicsModule>(appContext));
-    session.addModule(std::make_shared<GameWorld>(appContext));
+    ModuleSystem moduleSystem;
+    moduleSystem.addModule(std::make_shared<GraphicsModule>(appContext));
+    moduleSystem.addModule(std::make_shared<GameWorld>(appContext));
 
-    session.start();
+    moduleSystem.start();
 
     while (appContext->running) {
         auto now = std::chrono::steady_clock::now();
@@ -25,14 +25,14 @@ void gameLoop(AppContext* appContext) {
 
         if (now >= next) {
             lastTick = now;
-            session.update();
-            session.render();
+            moduleSystem.update();
+            moduleSystem.render();
         }
 
         std::this_thread::sleep_until(next);
     }
 
-    session.shutdown();
+    moduleSystem.shutdown();
 }
 
 extern "C"
