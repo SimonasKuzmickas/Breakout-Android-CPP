@@ -28,10 +28,19 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
         native-lib.cpp)
 
+find_library(log-lib log)
+find_library(android-lib android)
+find_library(gles-lib GLESv2)
+find_library(egl-lib EGL)
+
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
 # build script, prebuilt third-party libraries, or Android system libraries.
 target_link_libraries(${CMAKE_PROJECT_NAME}
-        # List libraries link to the target library
         android
-        log)
+        log
+        ${log-lib}
+        ${android-lib}
+        ${gles-lib}
+        ${egl-lib}
+)
