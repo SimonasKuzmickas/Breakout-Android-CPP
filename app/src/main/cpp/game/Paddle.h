@@ -5,37 +5,45 @@
 
 class Paddle : public ISceneComponent, public ISceneRender, public ISceneUpdate {
 public:
+    enum class Direction : int { Left = -1, None = 0, Right = 1 };
+
+    Paddle()
+            : bounds(DEFAULT_BOUNDS),
+              direction(Direction::None),
+              speed(DEFAULT_SPEED) {}
 
     void onAwake() override {
         graphics = blackboard->getComponent<Graphics>();
-        position = Rect(40, 1, 20, 5);
-        speed = 0.75f;
     }
 
     void onRender() override {
-       graphics->drawRectangle(position.x, position.y, position.w, position.h, 255, 0, 1, 1);
+        graphics->drawRectangle(bounds.x, bounds.y, bounds.w, bounds.h,
+                                255, 0, 1, 1);
     }
 
     void onUpdate() override {
-        position.x += direction * speed;
+        bounds.x += static_cast<float>(direction) * speed;
 
-        float maxX = 100.0f - position.w;
-        position.x = std::clamp(position.x, 0.0f, maxX);
+        // clamping to screen borders
+        const float maxX = WORLD_WIDTH - bounds.w;
+        bounds.x = std::clamp(bounds.x, 0.0f, maxX);
     }
 
     void onDestroy() override {
 
     }
-    
-    // TODO: direction should be enum
-    void move(int dir)
-    {
-        direction = (float)std::clamp(dir, -1, 1);
+
+    void move(Direction dir) {
+        direction = dir;
     }
 
 private:
-    Rect position;
-    float direction;
+    static constexpr float WORLD_WIDTH = 100.0f;
+    static constexpr float DEFAULT_SPEED = 0.75f;
+    inline static const Rect DEFAULT_BOUNDS{40, 1, 20, 5};
+
+    Rect bounds;
+    Direction direction;
     float speed;
     std::shared_ptr<Graphics> graphics;
 };

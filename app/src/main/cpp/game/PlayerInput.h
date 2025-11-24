@@ -35,15 +35,21 @@ public:
     }
 
     void onUpdate() override {
-        if (!isMoving)
-        {
-            paddle->move(0);
+        if (!isMoving) {
+            paddle->move(Paddle::Direction::None);
             return;
         }
 
         float center = worldBounds.w / 2.0f;
-        float offset = position.x - center; // negative = left, positive = right
-        paddle->move((int)offset);
+        float offset = position.x - center;
+
+        if (offset < 0.0f) {
+            paddle->move(Paddle::Direction::Left);
+        } else if (offset > 0.0f) {
+            paddle->move(Paddle::Direction::Right);
+        } else {
+            paddle->move(Paddle::Direction::None);
+        };
     }
 
     void onTouch(int pointerId, float x, float y, int action) {
