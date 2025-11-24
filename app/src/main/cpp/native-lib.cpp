@@ -5,7 +5,7 @@
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 
-#include "game/modules/ModuleSystem.h"
+#include "game/scene/Scene.h"
 #include "game/Graphics.h"
 #include "game/GameWorld.h"
 #include "game/Paddle.h"
@@ -15,12 +15,12 @@ void gameLoop(AppContext* appContext) {
     const double deltaTime = 1.0 / 60.0;
     auto lastTick = std::chrono::steady_clock::now();
 
-    ModuleSystem moduleSystem;
-    moduleSystem.addModule(std::make_shared<Graphics>(appContext));
-    moduleSystem.addModule(std::make_shared<GameWorld>(appContext));
-    moduleSystem.addModule(std::make_shared<Paddle>());
-    moduleSystem.addModule(std::make_shared<PlayerController>());
-    moduleSystem.start();
+    Scene scene;
+    scene.addComponent(std::make_shared<Graphics>(appContext));
+    scene.addComponent(std::make_shared<GameWorld>(appContext));
+    scene.addComponent(std::make_shared<Paddle>());
+    scene.addComponent(std::make_shared<PlayerController>());
+    scene.start();
 
     while (appContext->running) {
         auto now = std::chrono::steady_clock::now();
@@ -28,14 +28,14 @@ void gameLoop(AppContext* appContext) {
 
         if (now >= next) {
             lastTick = now;
-            moduleSystem.update();
-            moduleSystem.render();
+            scene.update();
+            scene.render();
         }
 
         std::this_thread::sleep_until(next);
     }
 
-    moduleSystem.shutdown();
+    scene.destroy();
 }
 
 extern "C"

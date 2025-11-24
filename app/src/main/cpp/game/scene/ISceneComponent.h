@@ -2,13 +2,13 @@
 #pragma once
 #include "Blackboard.h"
 
-class IModule {
+class ISceneComponent {
 public:
-    virtual ~IModule() = default;
+    virtual ~ISceneComponent() = default;
 
-    virtual void onStart() = 0;
+    virtual void onAwake() = 0;
 
-    virtual void onShutdown() = 0;
+    virtual void onDestroy() = 0;
 
     void setBlackboard(Blackboard* board) {
          blackboard = board;
@@ -18,14 +18,14 @@ protected:
     Blackboard *blackboard = nullptr;
 };
 
-class IModuleUpdate {
+class ISceneUpdate {
 public:
-    virtual ~IModuleUpdate() = default;
+    virtual ~ISceneUpdate() = default;
     virtual void onUpdate() = 0;
 };
 
-class IModuleRender {
+class ISceneRender {
 public:
-    virtual ~IModuleRender() = default;
+    virtual ~ISceneRender() = default;
     virtual void onRender() = 0;
 };

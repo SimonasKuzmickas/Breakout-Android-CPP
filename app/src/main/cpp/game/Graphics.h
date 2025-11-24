@@ -1,5 +1,5 @@
 #pragma once
-#include "modules/IModule.h"
+#include "scene/ISceneComponent.h"
 
 struct GraphicsContext {
     EGLContext context = EGL_NO_CONTEXT;
@@ -15,13 +15,13 @@ struct AppContext {
     std::atomic<bool> running{false};
 };
 
-class Graphics : public IModule, public IModuleRender {
+class Graphics : public ISceneComponent, public ISceneRender {
 public:
     Graphics(AppContext* context) {
         appContext = context;
     }
 
-    void onStart() override {
+    void onAwake() override {
         initGraphics();
         initSquare();
     }
@@ -34,7 +34,7 @@ public:
         flip();
     }
 
-    void onShutdown() override {
+    void onDestroy() override {
 
     }
 

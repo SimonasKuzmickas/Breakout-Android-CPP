@@ -1,26 +1,26 @@
 #pragma once
-#include "modules/IModule.h"
+#include "scene/ISceneComponent.h"
 #include "Math.h"
 #include <android/log.h>
 
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
 
-class GameWorld : public IModule {
+class GameWorld : public ISceneComponent {
 public:
     explicit GameWorld(AppContext* context)
     {
         int width = ANativeWindow_getWidth(context->window);
         int height = ANativeWindow_getHeight(context->window);
 
-        worldBounds = Rect(0, 0, (int)width, (int)height);
+        worldBounds = Rect(0, 0, (float)width, (float)height);
     }
 
-    void onStart() override {
+    void onAwake() override {
 
     }
 
-    void onShutdown() override {
+    void onDestroy() override {
 
     }
 

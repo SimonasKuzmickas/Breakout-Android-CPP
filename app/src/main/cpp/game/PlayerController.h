@@ -1,15 +1,15 @@
 #pragma once
-#include "modules/IModule.h"
+#include "scene/ISceneComponent.h"
 #include "Math.h"
 
-class PlayerController : public IModule {
+class PlayerController : public ISceneComponent {
 public:
 
-    void onStart() override {
+    void onAwake() override {
 
     }
 
-    void onShutdown() override {
+    void onDestroy() override {
 
     }
 

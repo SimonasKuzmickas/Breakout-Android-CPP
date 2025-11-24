@@ -1,14 +1,14 @@
 #pragma once
-#include "modules/IModule.h"
+#include "scene/ISceneComponent.h"
 #include "Math.h"
 
-class Paddle : public IModule, public IModuleRender {
+class Paddle : public ISceneComponent, public ISceneRender {
 public:
 
-    void onStart() override {
-        graphics = blackboard->getModule<Graphics>();
+    void onAwake() override {
+        graphics = blackboard->getComponent<Graphics>();
 
-        auto gameWorld = blackboard->getModule<GameWorld>();
+        auto gameWorld = blackboard->getComponent<GameWorld>();
         worldBounds = gameWorld->getWorldBounds();
         position = Rect(40, 1, 20, 5);
     }
@@ -17,7 +17,7 @@ public:
        graphics->drawRectangle(position.x, position.y, position.w, position.h, 255, 0, 1, 1);
     }
 
-    void onShutdown() override {
+    void onDestroy() override {
 
     }
 
