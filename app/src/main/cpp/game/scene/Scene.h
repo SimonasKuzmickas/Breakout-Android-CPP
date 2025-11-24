@@ -3,6 +3,8 @@
 #include <vector>
 #include <memory>
 #include "ISceneComponent.h"
+#include "ISceneUpdate.h"
+#include "ISceneRender.h"
 
 class Scene {
 public:

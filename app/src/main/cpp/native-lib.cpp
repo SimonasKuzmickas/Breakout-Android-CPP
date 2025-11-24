@@ -11,6 +11,11 @@
 #include "game/Paddle.h"
 #include "game/PlayerController.h"
 
+//#include <android/log.h>
+//
+//#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
+//#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
+
 void gameLoop(AppContext* appContext) {
     const double deltaTime = 1.0 / 60.0;
     auto lastTick = std::chrono::steady_clock::now();

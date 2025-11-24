@@ -17,15 +17,3 @@ public:
 protected:
     Blackboard *blackboard = nullptr;
 };
-
-class ISceneUpdate {
-public:
-    virtual ~ISceneUpdate() = default;
-    virtual void onUpdate() = 0;
-};
-
-class ISceneRender {
-public:
-    virtual ~ISceneRender() = default;
-    virtual void onRender() = 0;
-};

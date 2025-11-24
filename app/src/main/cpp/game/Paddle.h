@@ -7,9 +7,6 @@ public:
 
     void onAwake() override {
         graphics = blackboard->getComponent<Graphics>();
-
-        auto gameWorld = blackboard->getComponent<GameWorld>();
-        worldBounds = gameWorld->getWorldBounds();
         position = Rect(40, 1, 20, 5);
     }
 
@@ -22,12 +19,6 @@ public:
     }
 
 private:
-    Rect worldBounds;
     Rect position;
     std::shared_ptr<Graphics> graphics;
 };
-
-//#include <android/log.h>
-//
-//#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
-//#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
