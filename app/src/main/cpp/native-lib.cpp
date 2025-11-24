@@ -1,12 +1,13 @@
 #include <jni.h>
 #include <thread>
-
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
+
 #include "Session.h"
 #include "GraphicsModule.h"
+#include "GameWorld.h"
 
 void gameLoop(AppContext* appContext) {
     const double deltaTime = 1.0 / 60.0;
@@ -14,6 +15,8 @@ void gameLoop(AppContext* appContext) {
 
     Session session;
     session.addModule(std::make_shared<GraphicsModule>(appContext));
+    session.addModule(std::make_shared<GameWorld>(appContext));
+
     session.start();
 
     while (appContext->running) {
