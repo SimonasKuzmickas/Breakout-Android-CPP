@@ -1,5 +1,5 @@
 #pragma once
-#include "IModule.h"
+#include "modules/IModule.h"
 #include "Math.h"
 #include <android/log.h>
 
@@ -10,7 +10,8 @@ class Paddle : public IModule {
 public:
     explicit Paddle()
     {
-        
+      //  GameWorld gameWorld = blackboard->getModule<GameWorld>();
+        //LOGI("hell yeah!: %d", gameWorld.getWorldBounds().width());
 
     }
 
@@ -23,5 +24,5 @@ public:
     }
 
 private:
-    Rect worldBounds;
+ //   Rect worldBounds;
 };

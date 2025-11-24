@@ -5,9 +5,10 @@
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 
-#include "game/ModuleSystem.h"
+#include "game/modules/ModuleSystem.h"
 #include "game/GraphicsModule.h"
 #include "game/GameWorld.h"
+#include "game/Paddle.h"
 
 void gameLoop(AppContext* appContext) {
     const double deltaTime = 1.0 / 60.0;
@@ -16,7 +17,7 @@ void gameLoop(AppContext* appContext) {
     ModuleSystem moduleSystem;
     moduleSystem.addModule(std::make_shared<GraphicsModule>(appContext));
     moduleSystem.addModule(std::make_shared<GameWorld>(appContext));
-
+    moduleSystem.addModule(std::make_shared<Paddle>());
     moduleSystem.start();
 
     while (appContext->running) {

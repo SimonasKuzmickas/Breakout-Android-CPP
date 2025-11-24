@@ -1,5 +1,5 @@
 #pragma once
-#include "IModule.h"
+#include "modules/IModule.h"
 #include "Math.h"
 #include <android/log.h>
 
@@ -24,6 +24,10 @@ public:
 
     void onShutdown() override{
 
+    }
+
+    Rect getWorldBounds() {
+        return worldBounds;
     }
 
 private:

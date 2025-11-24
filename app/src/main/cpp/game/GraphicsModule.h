@@ -1,5 +1,5 @@
 #pragma once
-#include "IModule.h"
+#include "modules/IModule.h"
 
 struct GraphicsContext {
     EGLContext context = EGL_NO_CONTEXT;
