@@ -27,7 +27,7 @@ project("breakout")
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
         native-lib.cpp
-        graphics.cpp)
+        Graphics.cpp)
 
 find_library(log-lib log)
 find_library(android-lib android)
