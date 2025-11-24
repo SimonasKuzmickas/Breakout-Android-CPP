@@ -75,6 +75,54 @@ bool initGraphics(ANativeWindow* window)
     return true;
 }
 
+GLuint program, vbo, posAttrib, colUniform;
+
+void initSquare() {
+    // Vertex data: two triangles for a square
+    GLfloat vertices[] = {
+            -0.5f,-0.5f,  0.5f,-0.5f,  0.5f,0.5f,
+            -0.5f,-0.5f,  0.5f,0.5f,  -0.5f,0.5f
+    };
+
+    glGenBuffers(1,&vbo);
+    glBindBuffer(GL_ARRAY_BUFFER,vbo);
+    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices),vertices,GL_STATIC_DRAW);
+
+    const char* vsSrc="attribute vec2 aPos;void main(){gl_Position=vec4(aPos,0.0,1.0);}";
+    const char* fsSrc="precision mediump float;uniform vec4 uColor;void main(){gl_FragColor=uColor;}";
+
+    GLuint vs=glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vs,1,&vsSrc,nullptr); glCompileShader(vs);
+    GLuint fs=glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fs,1,&fsSrc,nullptr); glCompileShader(fs);
+
+    program=glCreateProgram();
+    glAttachShader(program,vs); glAttachShader(program,fs); glLinkProgram(program);
+
+    posAttrib=glGetAttribLocation(program,"aPos");
+    colUniform=glGetUniformLocation(program,"uColor");
+}
+
+void renderSquare() {
+    if (g_display==EGL_NO_DISPLAY) return;
+    eglMakeCurrent(g_display,g_surface,g_surface,g_context);
+
+//glClear(GL_COLOR_BUFFER_BIT);
+    glUseProgram(program);
+
+    glUniform4f(colUniform,0.0f,1.0f,0.0f,1.0f); // green
+
+    glBindBuffer(GL_ARRAY_BUFFER,vbo);
+    glEnableVertexAttribArray(posAttrib);
+    glVertexAttribPointer(posAttrib,2,GL_FLOAT,GL_FALSE,0,0);
+
+    glDrawArrays(GL_TRIANGLES,0,6);
+
+    glDisableVertexAttribArray(posAttrib);
+
+}
+
+
 
 void renderRedScreen() {
 
@@ -82,11 +130,17 @@ void renderRedScreen() {
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    eglSwapBuffers(g_display, g_surface);
+   // eglSwapBuffers(g_display, g_surface);
+}
+
+void flip() {
+
+    eglSwapBuffers(g_display,g_surface);
 }
 
 void gameLoop() {
     initGraphics(g_window);
+    initSquare();
     const double dt = 1.0 / 60.0;
     auto last = std::chrono::steady_clock::now();
 
@@ -100,7 +154,8 @@ void gameLoop() {
         }
 
         renderRedScreen();
-
+        renderSquare();
+        flip();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
