@@ -15,17 +15,17 @@ public:
         graphics = blackboard->getComponent<Graphics>();
     }
 
-    void onRender() override {
-        graphics->drawRectangle(bounds.x, bounds.y, bounds.w, bounds.h,
-                                255, 0, 1, 1);
-    }
-
     void onUpdate() override {
         bounds.x += static_cast<float>(direction) * speed;
 
         // clamping to screen borders
         const float maxX = WORLD_WIDTH - bounds.w;
         bounds.x = std::clamp(bounds.x, 0.0f, maxX);
+    }
+
+    void onRender() override {
+        graphics->drawRectangle(bounds.x, bounds.y, bounds.w, bounds.h,
+                                255, 0, 1, 1);
     }
 
     void onDestroy() override {

@@ -16,6 +16,13 @@ struct Vector2 {
 
     Vector2(float xVal, float yVal) : x(xVal), y(yVal) {}
 
+    Vector2& operator+=(const Vector2& other) {
+        x += other.x;
+        y += other.y;
+        return *this;
+    }
+
+    // Optional: plain addition
     Vector2 operator+(const Vector2& other) const {
         return Vector2(x + other.x, y + other.y);
     }

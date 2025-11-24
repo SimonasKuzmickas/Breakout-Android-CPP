@@ -10,6 +10,7 @@
 #include "game/GameWorld.h"
 #include "game/Paddle.h"
 #include "game/PlayerInput.h"
+#include "game/BallSystem.h"
 
 #include <android/log.h>
 
@@ -24,6 +25,7 @@ void gameLoop(AppContext* appContext) {
     scene.addComponent(std::make_shared<Graphics>(appContext));
     scene.addComponent(std::make_shared<GameWorld>(appContext));
     scene.addComponent(std::make_shared<Paddle>());
+    scene.addComponent(std::make_shared<BallSystem>());
     scene.addComponent(std::make_shared<PlayerInput>());
     scene.start();
 
