@@ -35,16 +35,15 @@ public:
     }
 
     void onUpdate() override {
-        LOGI("playerInput: isMoving = %s", isMoving ? "true" : "false");
-        if(isMoving)
+        if (!isMoving)
         {
-            if(position.x > worldBounds.w / 2)
-            {
-                paddle->move(1);
-            } else {
-                paddle->move(-1);
-            }
+            paddle->move(0);
+            return;
         }
+
+        float center = worldBounds.w / 2.0f;
+        float offset = position.x - center; // negative = left, positive = right
+        paddle->move((int)offset);
     }
 
     void onTouch(int pointerId, float x, float y, int action) {
