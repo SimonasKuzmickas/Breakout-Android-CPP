@@ -35,24 +35,20 @@ public:
 
     void drawRectangle(float x, float y, float w, float h,
                        float r, float g, float b, float a) {
-        float screenW = graphicsContext->width;
-        float screenH = graphicsContext->height;
+        // Fixed virtual resolution
+        const float VIRTUAL_WIDTH = 1920.0f;
+        const float VIRTUAL_HEIGHT = 1080.0f;
 
-        float xPixels = (x / 100.0f) * screenW;
-        float yPixels = (y / 100.0f) * screenH;
-        float wPixels = (w / 100.0f) * screenW;
-        float hPixels = (h / 100.0f) * screenH;
-
-        float x0 = (2.0f * xPixels / screenW) - 1.0f;
-        float y0 = (2.0f * yPixels / screenH) - 1.0f;
-        float x1 = (2.0f * (xPixels + wPixels) / screenW) - 1.0f;
-        float y1 = (2.0f * (yPixels + hPixels) / screenH) - 1.0f;
-
+        // Convert from Full HD world coordinates (origin bottom-left)
+        float x0 = (2.0f * x / VIRTUAL_WIDTH) - 1.0f;
+        float y0 = (2.0f * y / VIRTUAL_HEIGHT) - 1.0f;
+        float x1 = (2.0f * (x + w) / VIRTUAL_WIDTH) - 1.0f;
+        float y1 = (2.0f * (y + h) / VIRTUAL_HEIGHT) - 1.0f;
 
         // Vertex data: two triangles
         GLfloat vertices[] = {
-                x0, y0,   x1, y0,   x1, y1,
-                x0, y0,   x1, y1,   x0, y1
+                x0, y0, x1, y0, x1, y1,
+                x0, y0, x1, y1, x0, y1
         };
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -65,8 +61,6 @@ public:
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
-
-        glDisableVertexAttribArray(posAttrib);
     }
 
 private:

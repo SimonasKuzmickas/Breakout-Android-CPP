@@ -2,10 +2,18 @@
 
 struct Rect {
     float x, y, w, h;
+
     Rect() : x(0), y(0), w(0), h(0) {}
 
     Rect(float xVal, float yVal, float wVal, float hVal)
             : x(xVal), y(yVal), w(wVal), h(hVal) {}
+
+    bool overlaps(const Rect& other) const {
+        return !(x + w <= other.x ||
+                 other.x + other.w <= x ||
+                 y + h <= other.y ||
+                 other.y + other.h <= y);
+    }
 };
 
 struct Vector2 {

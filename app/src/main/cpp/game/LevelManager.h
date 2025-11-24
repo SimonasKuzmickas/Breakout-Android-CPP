@@ -6,14 +6,11 @@
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
 
-class GameWorld : public ISceneComponent, public ISceneRender {
+class LevelManager : public ISceneComponent, public ISceneRender {
 public:
-    explicit GameWorld(AppContext* context)
+    explicit LevelManager()
     {
-        int width = ANativeWindow_getWidth(context->window);
-        int height = ANativeWindow_getHeight(context->window);
-
-        worldBounds = Rect(0, 0, (float)width, (float)height);
+        worldBounds = Rect(0, 0, 1080.0f, 1920.0f);
     }
 
     void onAwake() override {
@@ -25,7 +22,7 @@ public:
     }
 
     void onRender() override {
-        graphics->drawRectangle(0, 0, 100, 100,
+        graphics->drawRectangle(0, 0, 1920, 1080,
                                 0, 0, 0, 1);
     }
 

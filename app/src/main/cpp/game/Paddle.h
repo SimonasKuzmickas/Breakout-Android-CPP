@@ -36,10 +36,12 @@ public:
         direction = dir;
     }
 
+    Rect getBounds() { return bounds; }
+
 private:
-    static constexpr float WORLD_WIDTH = 100.0f;
-    static constexpr float DEFAULT_SPEED = 0.75f;
-    inline static const Rect DEFAULT_BOUNDS{40, 1, 20, 5};
+    static constexpr float WORLD_WIDTH = 1920.0f;
+    static constexpr float DEFAULT_SPEED = 15.0f;
+    inline static const Rect DEFAULT_BOUNDS{1920.0f / 2 - 150, 20, 300, 20};
 
     Rect bounds;
     Direction direction;

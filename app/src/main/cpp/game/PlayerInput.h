@@ -17,14 +17,19 @@ static PlayerInput* g_playerInput = nullptr;
 
 class PlayerInput : public ISceneComponent, public ISceneUpdate {
 public:
+    explicit PlayerInput(AppContext* context)
+    {
+        int width = ANativeWindow_getWidth(context->window);
+        int height = ANativeWindow_getHeight(context->window);
+
+        isMoving = false;
+        worldBounds = Rect(0, 0, (float)width, (float)height);
+    }
 
     void onAwake() override {
         g_playerInput = this;
 
-        auto gameWorld = blackboard->getComponent<GameWorld>();
         paddle = blackboard->getComponent<Paddle>();
-
-        worldBounds = gameWorld->getWorldBounds();
         position = Vector2(0, 0);
         isMoving = false;
     }
