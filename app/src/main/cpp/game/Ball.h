@@ -31,8 +31,23 @@ public:
             velocity.y = -velocity.y;
         }
 
-        if (paddle && bounds.overlaps(paddle->getBounds())) {
-            velocity.y = -velocity.y;
+        Rect paddleBounds = paddle->getBounds();
+        if (paddle && bounds.overlaps(paddleBounds)) {
+            float ballCenterX   = bounds.x + bounds.w * 0.5f;
+            float paddleCenterX = paddleBounds.x + paddleBounds.w * 0.5f;
+            float offset        = ballCenterX - paddleCenterX;
+
+            float normalized = offset / (paddleBounds.w * 0.5f);
+            float speed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+
+            Vector2 newDir(normalized, 1.0f);
+
+            float len = std::sqrt(newDir.x * newDir.x + newDir.y * newDir.y);
+            newDir.x /= len;
+            newDir.y /= len;
+
+            velocity.x = newDir.x * speed;
+            velocity.y = newDir.y * speed;
         }
     }
 
