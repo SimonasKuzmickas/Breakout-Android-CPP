@@ -6,7 +6,7 @@
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
 
-class GameWorld : public ISceneComponent {
+class GameWorld : public ISceneComponent, public ISceneRender {
 public:
     explicit GameWorld(AppContext* context)
     {
@@ -17,11 +17,16 @@ public:
     }
 
     void onAwake() override {
-
+        graphics = blackboard->getComponent<Graphics>();
     }
 
     void onDestroy() override {
 
+    }
+
+    void onRender() override {
+        graphics->drawRectangle(0, 0, 100, 100,
+                                0, 0, 0, 1);
     }
 
     Rect getWorldBounds() {
@@ -30,4 +35,5 @@ public:
 
 private:
     Rect worldBounds;
+    std::shared_ptr<Graphics> graphics;
 };

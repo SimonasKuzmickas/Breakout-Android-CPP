@@ -114,7 +114,29 @@ private:
         eglQuerySurface(dpy, surf, EGL_WIDTH,  &graphicsContext->width);
         eglQuerySurface(dpy, surf, EGL_HEIGHT, &graphicsContext->height);
 
-        glViewport(0, 0, graphicsContext->width, graphicsContext->height);
+        // --- Letterbox viewport calculation ---
+        const int VIRTUAL_WIDTH  = 1920;
+        const int VIRTUAL_HEIGHT = 1080;
+        float targetAspect = static_cast<float>(VIRTUAL_WIDTH) / VIRTUAL_HEIGHT;
+        float screenAspect = static_cast<float>(graphicsContext->width) / graphicsContext->height;
+
+        int vpX, vpY, vpW, vpH;
+
+        if (screenAspect > targetAspect) {
+            // Screen is wider → black bars left/right
+            vpH = graphicsContext->height;
+            vpW = static_cast<int>(vpH * targetAspect);
+            vpX = (graphicsContext->width - vpW) / 2;
+            vpY = 0;
+        } else {
+            // Screen is taller → black bars top/bottom
+            vpW = graphicsContext->width;
+            vpH = static_cast<int>(vpW / targetAspect);
+            vpX = 0;
+            vpY = (graphicsContext->height - vpH) / 2;
+        }
+
+        glViewport(vpX, vpY, vpW, vpH);
 
         return true;
     }
@@ -148,7 +170,7 @@ private:
     void flip() {
         eglSwapBuffers(graphicsContext->display,graphicsContext->surface);
 
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
         glClear(GL_COLOR_BUFFER_BIT);
     }
