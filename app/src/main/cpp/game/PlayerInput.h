@@ -1,5 +1,4 @@
 #pragma once
-#include "scene/ISceneComponent.h"
 #include "Math.h"
 
 enum class TouchAction {

@@ -1,5 +1,4 @@
 #pragma once
-#include "scene/ISceneComponent.h"
 
 struct GraphicsContext {
     EGLContext context = EGL_NO_CONTEXT;
