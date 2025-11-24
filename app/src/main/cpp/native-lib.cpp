@@ -1,28 +1,27 @@
 #include <jni.h>
-#include <android/log.h>
 #include <thread>
 
+#include <EGL/egl.h>
+#include <GLES2/gl2.h>
+#include <android/native_window.h>
+#include <android/native_window_jni.h>
 #include "Session.h"
-#include "EmptyModule.h"
+#include "GraphicsModule.h"
 
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
-
-void mainLoop(AppContext* ctx) {
-
-    const double delta = 1.0 / 60.0;
-    auto last = std::chrono::steady_clock::now();
+void gameLoop(AppContext* appContext) {
+    const double deltaTime = 1.0 / 60.0;
+    auto lastTick = std::chrono::steady_clock::now();
 
     Session session;
-    session.addModule(std::make_shared<EmptyModule>(ctx));
+    session.addModule(std::make_shared<GraphicsModule>(appContext));
     session.start();
 
-    while (ctx->running) {
+    while (appContext->running) {
         auto now = std::chrono::steady_clock::now();
-        auto next = last + std::chrono::duration<double>(delta);
+        auto next = lastTick + std::chrono::duration<double>(deltaTime);
 
         if (now >= next) {
-            last = now;
+            lastTick = now;
             session.update();
             session.render();
         }
@@ -36,28 +35,26 @@ void mainLoop(AppContext* ctx) {
 extern "C"
 JNIEXPORT jlong JNICALL
 Java_com_nordcurrent_breakout_GameView_nativeStart(JNIEnv* env, jobject, jobject surface) {
-    auto* ctx = new AppContext();
-
-    ctx->window = ANativeWindow_fromSurface(env, surface);
-    ctx->running = true;
-    ctx->thread = std::thread(mainLoop, ctx);
-
-    return reinterpret_cast<jlong>(ctx);
+    auto* context = new AppContext();
+    context->window = ANativeWindow_fromSurface(env, surface);
+    context->running = true;
+    context->thread = std::thread(gameLoop, context);
+    return reinterpret_cast<jlong>(context);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_nordcurrent_breakout_GameView_nativeStop(JNIEnv*, jobject, jlong handle) {
-    auto* ctx = reinterpret_cast<AppContext*>(handle);
-    if (!ctx) return;
+    auto* context = reinterpret_cast<AppContext*>(handle);
+    if (!context) return;
 
-    ctx->running = false;
-    if (ctx->thread.joinable()) ctx->thread.join();
+    context->running = false;
+    if (context->thread.joinable()) context->thread.join();
 
-    if (ctx->window) {
-        ANativeWindow_release(ctx->window);
-        ctx->window = nullptr;
+    if (context->window) {
+        ANativeWindow_release(context->window);
+        context->window = nullptr;
     }
 
-    delete ctx;
+    delete context;
 }

@@ -26,8 +26,7 @@ project("breakout")
 # used in the AndroidManifest.xml file.
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
-        native-lib.cpp
-        Graphics.cpp)
+        native-lib.cpp)
 
 find_library(log-lib log)
 find_library(android-lib android)

@@ -1,10 +1,5 @@
 #pragma once
 #include "IModule.h"
-#include "Graphics.h"
-#include <thread>
-#include <atomic>
-
-#include "Graphics.h"
 
 struct GraphicsContext {
     EGLContext context = EGL_NO_CONTEXT;
@@ -14,10 +9,15 @@ struct GraphicsContext {
     int height;
 };
 
+struct AppContext {
+    ANativeWindow* window = nullptr;
+    std::thread thread;
+    std::atomic<bool> running{false};
+};
 
-class EmptyModule : public IModule {
+class GraphicsModule : public IModule {
 public:
-    EmptyModule(AppContext* context) {
+    GraphicsModule(AppContext* context) {
         appContext = context;
     }
 
