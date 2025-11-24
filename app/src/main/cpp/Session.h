@@ -15,11 +15,19 @@ public:
     }
 
     void update() {
-        for (auto& m : modules) m->onUpdate();
+        for (auto& m : modules) {
+            if (auto* updatable = dynamic_cast<IModuleUpdate*>(m.get())) {
+                updatable->onUpdate();
+            }
+        }
     }
 
     void render() {
-        for (auto& m : modules) m->onRender();
+        for (auto& m : modules) {
+            if (auto* renderable = dynamic_cast<IModuleRender*>(m.get())) {
+                renderable->onRender();
+            }
+        }
     }
 
     void shutdown() {

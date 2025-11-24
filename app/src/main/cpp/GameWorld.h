@@ -22,14 +22,6 @@ public:
 
     }
 
-    void onUpdate() override  {
-
-    }
-
-    void onRender() override  {
-
-    }
-
     void onShutdown() override{
 
     }

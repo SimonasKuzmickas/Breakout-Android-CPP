@@ -15,7 +15,7 @@ struct AppContext {
     std::atomic<bool> running{false};
 };
 
-class GraphicsModule : public IModule {
+class GraphicsModule : public IModule, public IModuleRender {
 public:
     GraphicsModule(AppContext* context) {
         appContext = context;
@@ -25,9 +25,7 @@ public:
         initGraphics();
         initSquare();
     }
-    void onUpdate() override  {
 
-    }
     void onRender() override  {
         renderRedScreen();
         renderSquare();
