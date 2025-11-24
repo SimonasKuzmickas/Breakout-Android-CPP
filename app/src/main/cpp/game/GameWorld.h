@@ -13,16 +13,14 @@ public:
         int width = ANativeWindow_getWidth(context->window);
         int height = ANativeWindow_getHeight(context->window);
 
-        worldBounds = Rect(0, 0, width, height);
-        LOGI("Game World Start: %d x %d", worldBounds.width(), worldBounds.height());
-      //  LOGI("Game World Start!" + context->window.);
+        worldBounds = Rect(0, 0, (int)width, (int)height);
     }
 
-    void onStart() override   {
+    void onStart() override {
 
     }
 
-    void onShutdown() override{
+    void onShutdown() override {
 
     }
 

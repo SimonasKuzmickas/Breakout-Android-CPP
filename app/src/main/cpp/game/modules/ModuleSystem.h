@@ -7,16 +7,15 @@
 class ModuleSystem {
 public:
     ModuleSystem()
-            : blackboard(modules) // pass reference to modules
+            : blackboard(modules)
     {}
 
     void addModule(std::shared_ptr<IModule> module) {
-        module->setBlackboard(&blackboard);
         modules.push_back(module);
+        module->setBlackboard(&blackboard);
     }
 
     void start() {
-        //blackboard =
         for (auto &m: modules) m->onStart();
     }
 
