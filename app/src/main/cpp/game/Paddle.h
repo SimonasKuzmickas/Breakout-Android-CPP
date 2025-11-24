@@ -1,25 +1,20 @@
 #pragma once
 #include "modules/IModule.h"
 #include "Math.h"
-#include <android/log.h>
-#include "GameWorld.h"
 
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
-
-class Paddle : public IModule {
+class Paddle : public IModule, public IModuleRender {
 public:
 
     void onStart() override {
+        graphics = blackboard->getModule<Graphics>();
 
         auto gameWorld = blackboard->getModule<GameWorld>();
-        if (!gameWorld) {
-            LOGI("GameWorld module not found!");
-            return;
-        }
-
         worldBounds = gameWorld->getWorldBounds();
-        position = Vector2(worldBounds.width() / 2, worldBounds.height());
+        position = Rect(40, 1, 20, 5);
+    }
+
+    void onRender() override {
+       graphics->drawRectangle(position.x, position.y, position.w, position.h, 255, 0, 1, 1);
     }
 
     void onShutdown() override {
@@ -28,5 +23,11 @@ public:
 
 private:
     Rect worldBounds;
-    Vector2 position;
+    Rect position;
+    std::shared_ptr<Graphics> graphics;
 };
+
+//#include <android/log.h>
+//
+//#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
+//#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)

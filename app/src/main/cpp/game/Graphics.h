@@ -15,9 +15,9 @@ struct AppContext {
     std::atomic<bool> running{false};
 };
 
-class GraphicsModule : public IModule, public IModuleRender {
+class Graphics : public IModule, public IModuleRender {
 public:
-    GraphicsModule(AppContext* context) {
+    Graphics(AppContext* context) {
         appContext = context;
     }
 
@@ -27,14 +27,53 @@ public:
     }
 
     void onRender() override {
-        renderRedScreen();
-        renderSquare();
+        //renderRedScreen();
+       // renderSquare();
+
+        //DrawRectangle(0,0,80,80, 255, 0, 1, 1);
         flip();
     }
 
     void onShutdown() override {
 
     }
+
+    void drawRectangle(float x, float y, float w, float h,
+                       float r, float g, float b, float a) {
+        float screenW = graphicsContext->width;
+        float screenH = graphicsContext->height;
+
+        float xPixels = (x / 100.0f) * screenW;
+        float yPixels = (y / 100.0f) * screenH;
+        float wPixels = (w / 100.0f) * screenW;
+        float hPixels = (h / 100.0f) * screenH;
+
+        float x0 = (2.0f * xPixels / screenW) - 1.0f;
+        float y0 = (2.0f * yPixels / screenH) - 1.0f;
+        float x1 = (2.0f * (xPixels + wPixels) / screenW) - 1.0f;
+        float y1 = (2.0f * (yPixels + hPixels) / screenH) - 1.0f;
+
+
+        // Vertex data: two triangles
+        GLfloat vertices[] = {
+                x0, y0,   x1, y0,   x1, y1,
+                x0, y0,   x1, y1,   x0, y1
+        };
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+
+        glUseProgram(program);
+        glUniform4f(colUniform, r, g, b, a);
+
+        glEnableVertexAttribArray(posAttrib);
+        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glDisableVertexAttribArray(posAttrib);
+    }
+
 
 private:
     GraphicsContext* graphicsContext;
@@ -96,8 +135,11 @@ private:
     }
 
     void flip() {
+        eglSwapBuffers(graphicsContext->display,graphicsContext->surface);
 
-       eglSwapBuffers(graphicsContext->display,graphicsContext->surface);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+        glClear(GL_COLOR_BUFFER_BIT);
     }
 
     void initSquare() {
@@ -124,23 +166,5 @@ private:
 
         posAttrib=glGetAttribLocation(program,"aPos");
         colUniform=glGetUniformLocation(program,"uColor");
-    }
-
-    void renderSquare() {
-        if (graphicsContext->display==EGL_NO_DISPLAY) return;
-        eglMakeCurrent(graphicsContext->display,graphicsContext->surface,graphicsContext->surface,graphicsContext);
-
-        // glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(program);
-
-        glUniform4f(colUniform,0.0f,1.0f,0.0f,1.0f); // green
-
-        glBindBuffer(GL_ARRAY_BUFFER,vbo);
-        glEnableVertexAttribArray(posAttrib);
-        glVertexAttribPointer(posAttrib,2,GL_FLOAT,GL_FALSE,0,0);
-
-        glDrawArrays(GL_TRIANGLES,0,6);
-
-        glDisableVertexAttribArray(posAttrib);
     }
 };

@@ -1,14 +1,11 @@
 #pragma once
 
 struct Rect {
-    float left, top, right, bottom;
+    float x, y, w, h;
+    Rect() : x(0), y(0), w(0), h(0) {}
 
-    Rect() : left(0), top(0), right(0), bottom(0) {}  // default
-    Rect(float l, float t, float r, float b)
-            : left(l), top(t), right(r), bottom(b) {}
-
-    float width() const { return right - left; }
-    float height() const { return bottom - top; }
+    Rect(float xVal, float yVal, float wVal, float hVal)
+            : x(xVal), y(yVal), w(wVal), h(hVal) {}
 };
 
 struct Vector2 {

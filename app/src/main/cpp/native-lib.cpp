@@ -6,18 +6,20 @@
 #include <android/native_window_jni.h>
 
 #include "game/modules/ModuleSystem.h"
-#include "game/GraphicsModule.h"
+#include "game/Graphics.h"
 #include "game/GameWorld.h"
 #include "game/Paddle.h"
+#include "game/PlayerController.h"
 
 void gameLoop(AppContext* appContext) {
     const double deltaTime = 1.0 / 60.0;
     auto lastTick = std::chrono::steady_clock::now();
 
     ModuleSystem moduleSystem;
-    moduleSystem.addModule(std::make_shared<GraphicsModule>(appContext));
+    moduleSystem.addModule(std::make_shared<Graphics>(appContext));
     moduleSystem.addModule(std::make_shared<GameWorld>(appContext));
     moduleSystem.addModule(std::make_shared<Paddle>());
+    moduleSystem.addModule(std::make_shared<PlayerController>());
     moduleSystem.start();
 
     while (appContext->running) {
