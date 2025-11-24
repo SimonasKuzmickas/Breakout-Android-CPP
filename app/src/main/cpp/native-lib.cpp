@@ -1,8 +1,4 @@
 #include <jni.h>
-#include <string>
-
-#include <jni.h>
-
 #include <android/log.h>
 #include <thread>
 
@@ -12,18 +8,18 @@
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
 
-void mainLoop() {
+void mainLoop(AppContext* ctx) {
 
-    const double dt = 1.0 / 60.0;
+    const double delta = 1.0 / 60.0;
     auto last = std::chrono::steady_clock::now();
 
     Session session;
-    session.addModule(std::make_shared<EmptyModule>());
+    session.addModule(std::make_shared<EmptyModule>(ctx));
     session.start();
 
-    while (running) {
+    while (ctx->running) {
         auto now = std::chrono::steady_clock::now();
-        auto next = last + std::chrono::duration<double>(dt);
+        auto next = last + std::chrono::duration<double>(delta);
 
         if (now >= next) {
             last = now;
@@ -38,17 +34,30 @@ void mainLoop() {
 }
 
 extern "C"
-JNIEXPORT void JNICALL
+JNIEXPORT jlong JNICALL
 Java_com_nordcurrent_breakout_GameView_nativeStart(JNIEnv* env, jobject, jobject surface) {
-    g_window = ANativeWindow_fromSurface(env, surface);
-    running = true;
-    g_thread = std::thread(mainLoop);
+    auto* ctx = new AppContext();
+
+    ctx->window = ANativeWindow_fromSurface(env, surface);
+    ctx->running = true;
+    ctx->thread = std::thread(mainLoop, ctx);
+
+    return reinterpret_cast<jlong>(ctx);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_nordcurrent_breakout_GameView_nativeStop(JNIEnv*, jobject) {
-    running = false;
-    if (g_thread.joinable()) g_thread.join();
-}
+Java_com_nordcurrent_breakout_GameView_nativeStop(JNIEnv*, jobject, jlong handle) {
+    auto* ctx = reinterpret_cast<AppContext*>(handle);
+    if (!ctx) return;
 
+    ctx->running = false;
+    if (ctx->thread.joinable()) ctx->thread.join();
+
+    if (ctx->window) {
+        ANativeWindow_release(ctx->window);
+        ctx->window = nullptr;
+    }
+
+    delete ctx;
+}
