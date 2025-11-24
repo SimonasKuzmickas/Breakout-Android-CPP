@@ -28,6 +28,11 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
         native-lib.cpp)
 
+target_include_directories(${CMAKE_PROJECT_NAME}
+        PRIVATE
+        ${CMAKE_SOURCE_DIR}/src/main/cpp/game
+)
+
 find_library(log-lib log)
 find_library(android-lib android)
 find_library(gles-lib GLESv2)
@@ -44,3 +49,4 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         ${gles-lib}
         ${egl-lib}
 )
+

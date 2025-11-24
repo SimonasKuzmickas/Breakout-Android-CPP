@@ -5,9 +5,9 @@
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 
-#include "Session.h"
-#include "GraphicsModule.h"
-#include "GameWorld.h"
+#include "game/Session.h"
+#include "game/GraphicsModule.h"
+#include "game/GameWorld.h"
 
 void gameLoop(AppContext* appContext) {
     const double deltaTime = 1.0 / 60.0;
