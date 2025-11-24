@@ -1,9 +1,10 @@
 package com.nordcurrent.breakout
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
+import android.view.MotionEvent
+import androidx.appcompat.app.AppCompatActivity
 import com.nordcurrent.breakout.databinding.ActivityMainBinding
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,12 +21,6 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(GameView(this))
     }
-
-    /**
-     * A native method that is implemented by the 'breakout' native library,
-     * which is packaged with this application.
-     */
-    external fun stringFromJNI(): String
 
     companion object {
         // Used to load the 'breakout' library on application startup.

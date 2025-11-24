@@ -27,10 +27,6 @@ public:
     }
 
     void onRender() override {
-        //renderRedScreen();
-       // renderSquare();
-
-        //DrawRectangle(0,0,80,80, 255, 0, 1, 1);
         flip();
     }
 
@@ -73,7 +69,6 @@ public:
 
         glDisableVertexAttribArray(posAttrib);
     }
-
 
 private:
     GraphicsContext* graphicsContext;
@@ -125,23 +120,6 @@ private:
         return true;
     }
 
-    void renderRedScreen() {
-
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // eglSwapBuffers(g_display, g_surface);
-    }
-
-    void flip() {
-        eglSwapBuffers(graphicsContext->display,graphicsContext->surface);
-
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-
     void initSquare() {
         // Vertex data: two triangles for a square
         GLfloat vertices[] = {
@@ -166,5 +144,13 @@ private:
 
         posAttrib=glGetAttribLocation(program,"aPos");
         colUniform=glGetUniformLocation(program,"uColor");
+    }
+
+    void flip() {
+        eglSwapBuffers(graphicsContext->display,graphicsContext->surface);
+
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+        glClear(GL_COLOR_BUFFER_BIT);
     }
 };

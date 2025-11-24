@@ -18,6 +18,12 @@ public:
 
     }
 
+    void move(float direction)
+    {
+        //LOGI("playerInput: INPUT TOUCH DOWN: x=%f", direction);
+        position.x += direction;
+    }
+
 private:
     Rect position;
     std::shared_ptr<Graphics> graphics;

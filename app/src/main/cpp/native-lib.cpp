@@ -9,12 +9,12 @@
 #include "game/Graphics.h"
 #include "game/GameWorld.h"
 #include "game/Paddle.h"
-#include "game/PlayerController.h"
+#include "game/PlayerInput.h"
 
-//#include <android/log.h>
-//
-//#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
-//#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
+#include <android/log.h>
+
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
 
 void gameLoop(AppContext* appContext) {
     const double deltaTime = 1.0 / 60.0;
@@ -24,7 +24,7 @@ void gameLoop(AppContext* appContext) {
     scene.addComponent(std::make_shared<Graphics>(appContext));
     scene.addComponent(std::make_shared<GameWorld>(appContext));
     scene.addComponent(std::make_shared<Paddle>());
-    scene.addComponent(std::make_shared<PlayerController>());
+    scene.addComponent(std::make_shared<PlayerInput>());
     scene.start();
 
     while (appContext->running) {
@@ -68,4 +68,13 @@ Java_com_nordcurrent_breakout_GameView_nativeStop(JNIEnv*, jobject, jlong handle
     }
 
     delete context;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_nordcurrent_breakout_GameView_nativeOnTouch(JNIEnv* env, jobject thiz,
+                                                     jint pointerId, jfloat x, jfloat y, jint action) {
+    if (g_playerInput) {
+        g_playerInput->onTouch(pointerId, x, y, action);
+    }
 }
