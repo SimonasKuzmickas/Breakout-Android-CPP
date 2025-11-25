@@ -12,7 +12,7 @@
 class LevelManager : public ISceneComponent, public ISceneRender {
 public:
 
-    Event<> onHitEdge;
+    Event<> onHitWall;
     Event<> onDestroyBrick;
 
     explicit LevelManager()
@@ -28,7 +28,7 @@ public:
         const int brickWidth  = 100;
         const int brickHeight = 50;
         const int startX = 220;
-        const int startY = 500;
+        const int startY = 600;
         const int spacingX = 10;
         const int spacingY = 10;
 

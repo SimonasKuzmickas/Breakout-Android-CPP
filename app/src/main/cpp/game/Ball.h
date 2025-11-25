@@ -51,19 +51,19 @@ public:
             bounds.x = levelBounds.left();
             velocity.x = -velocity.x;
 
-            levelManager->onHitEdge.invoke();
+            levelManager->onHitWall.invoke();
         } else if (bounds.x + bounds.w > levelBounds.right()) {
             bounds.x = levelBounds.right() - bounds.w;
             velocity.x = -velocity.x;
 
-            levelManager->onHitEdge.invoke();
+            levelManager->onHitWall.invoke();
         }
 
         if (bounds.y + bounds.h > levelBounds.top()) {
             bounds.y = levelBounds.top() - bounds.h;
             velocity.y = -velocity.y;
 
-            levelManager->onHitEdge.invoke();
+            levelManager->onHitWall.invoke();
         }
 
         Rect paddleBounds = paddle->getBounds();

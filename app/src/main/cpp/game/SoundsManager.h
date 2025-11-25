@@ -50,7 +50,7 @@ public:
 
         auto levelManager = getComponent<LevelManager>();
         if (levelManager) {
-            levelManager->onHitEdge.subscribe([this]() {
+            levelManager->onHitWall.subscribe([this]() {
                 play("wall");
             });
 
