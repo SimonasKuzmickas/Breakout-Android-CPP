@@ -32,7 +32,7 @@ public:
         powerUpManager->onPickup.subscribe([this]() {
             soundsAPI.play("powerup");
         });
-        
+
         auto levelManager = getComponent<LevelManager>();
         if (levelManager) {
             levelManager->onDestroyBrick.subscribe([this](const Brick& brick) {

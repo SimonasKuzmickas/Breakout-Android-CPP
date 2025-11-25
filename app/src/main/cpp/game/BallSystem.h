@@ -105,6 +105,10 @@ public:
         balls.emplace_back(x, y, s, v);
     }
 
+    const std::vector<Ball>& getBalls() const {
+        return balls;
+    }
+
 private:
     std::vector<Ball> balls;
     std::shared_ptr<Graphics> graphics;
