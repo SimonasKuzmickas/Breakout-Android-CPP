@@ -23,12 +23,13 @@ public:
             });
         }
 
+        auto ballSystem = getComponent<BallSystem>();
+        ballSystem->onHitWall.subscribe([this]() {
+            soundsAPI.play("wall");
+        });
+
         auto levelManager = getComponent<LevelManager>();
         if (levelManager) {
-            levelManager->onHitWall.subscribe([this]() {
-                soundsAPI.play("wall");
-            });
-
             levelManager->onDestroyBrick.subscribe([this]() {
                 soundsAPI.play("brick");
             });

@@ -11,7 +11,6 @@
 
 class LevelManager : public ISceneComponent, public ISceneRender {
 public:
-    Event<> onHitWall;
     Event<> onDestroyBrick;
 
     explicit LevelManager()
