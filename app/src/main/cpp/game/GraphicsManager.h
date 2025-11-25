@@ -4,6 +4,7 @@
 #include "Paddle.h"
 #include "BallSystem.h"
 #include "PowerUpSystem.h"
+#include "LaserShooter.h"
 
 class GraphicsManager : public ISceneComponent, public ISceneRender {
 public:
@@ -14,6 +15,7 @@ public:
         ballSystem = getComponent<BallSystem>();
         levelManager = getComponent<LevelSystem>();
         powerUpManager = getComponent<PowerUpSystem>();
+        laserShooter = getComponent<LaserShooter>();
 
         for (int i = 1; i <= 12; ++i) {
             std::string filename = "powerup" + std::to_string(i) + ".png";
@@ -34,6 +36,8 @@ public:
         resourceBrick1 = graphicsAPI.loadTextureFromAssets("brick1.png");
         resourcePaddleLeft = graphicsAPI.loadTextureFromAssets("paddleleft.png");
         resourcePaddleRight = graphicsAPI.loadTextureFromAssets("paddleright.png");
+        resourceShooterLeft = graphicsAPI.loadTextureFromAssets("shooter_left.png");
+        resourceShooterRight = graphicsAPI.loadTextureFromAssets("shooter_right.png");
     }
 
     void onDestroy() override {}
@@ -43,6 +47,7 @@ public:
         drawPaddle();
         drawBalls();
         drawPowerUps();
+        drawLaserShooter();
 
         graphicsAPI.flip();
     }
@@ -53,14 +58,19 @@ public:
 
 private:
     GraphicsAPI graphicsAPI;
+
     std::shared_ptr<Paddle> paddle;
     std::shared_ptr<BallSystem> ballSystem;
     std::shared_ptr<LevelSystem> levelManager;
     std::shared_ptr<PowerUpSystem> powerUpManager;
+    std::shared_ptr<LaserShooter> laserShooter;
 
     std::array<GLuint, 12> resourcePowerUps;
     std::array<GLuint, 3> resourcePaddles;
     std::array<GLuint, 3> resourceBalls;
+
+    GLuint resourceShooterLeft;
+    GLuint resourceShooterRight;
     GLuint resourcePaddleLeft;
     GLuint resourcePaddleRight;
     GLuint resourceBackground;
@@ -73,6 +83,21 @@ private:
             auto bounds = powerup.bounds;
             int index = static_cast<int>(powerup.powerUpType);
             drawImage(resourcePowerUps[index], bounds.x, bounds.y, bounds.w, bounds.h);
+        }
+    }
+
+    void drawLaserShooter() {
+        for (auto& laser : laserShooter->getLasers()) {
+            auto bounds = laser.bounds;
+            drawImage(resourceBalls[0], bounds.x, bounds.y, bounds.w, bounds.h);
+        }
+
+        if(laserShooter->getIsActive()) {
+            auto bounds = paddle->getBounds();
+            float cornerWidth  = 50.0f;
+
+            drawImage(resourceShooterLeft, bounds.x, bounds.y, cornerWidth, bounds.h);
+            drawImage(resourceShooterRight, bounds.x + bounds.w - cornerWidth, bounds.y, cornerWidth, bounds.h);
         }
     }
 

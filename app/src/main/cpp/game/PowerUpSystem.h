@@ -5,6 +5,7 @@
 #include "helpers/Event.h"
 #include "scene/ISceneComponent.h"
 #include "Paddle.h"
+#include "LaserShooter.h"
 #include "BallSystem.h"
 
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
@@ -42,6 +43,7 @@ public:
     void onAwake() override {
         levelManager = getComponent<LevelSystem>();
         paddle = getComponent<Paddle>();
+        laserShooter = getComponent<LaserShooter>();
         ballSystem = getComponent<BallSystem>();
 
         if (levelManager) {
@@ -91,7 +93,7 @@ public:
                 case PowerUp::PowerUpType::MultiBall:
                     for (const auto &ball: ballSystem->getBalls()) {
                         auto v = ball.velocity;
-                        
+
                         ballSystem->createBall(ball.bounds.x, ball.bounds.y, ball.bounds.w, v.rotate( 0.2f));
                         ballSystem->createBall(ball.bounds.x, ball.bounds.y, ball.bounds.w, v.rotate(-0.2f));
                     }
@@ -103,6 +105,10 @@ public:
 
             case PowerUp::PowerUpType::FireBall:
                 ballSystem->setBallType(BallSystem::BallsType::Fire);
+                break;
+
+            case PowerUp::PowerUpType::Laser:
+                laserShooter->activate(true);
                 break;
 
             case PowerUp::PowerUpType::ExpandPaddle:
@@ -132,9 +138,11 @@ public:
 
 private:
     std::vector<PowerUp> powerUps;
+
     std::shared_ptr<LevelSystem> levelManager;
     std::shared_ptr<BallSystem> ballSystem;
     std::shared_ptr<Paddle> paddle;
+    std::shared_ptr<LaserShooter> laserShooter;
 
     PowerUp::PowerUpType getRandomPowerUpType() {
         static bool seeded = false;

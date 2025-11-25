@@ -56,6 +56,7 @@ public:
         sounds["brick"]   = { loadWavFromAssets(appContext->assetManager, "brickdestroy.wav", sr, ch) };
         sounds["powerup"]   = { loadWavFromAssets(appContext->assetManager, "powerup.wav", sr, ch) };
         sounds["explosion"]   = { loadWavFromAssets(appContext->assetManager, "explosion.wav", sr, ch) };
+        sounds["laser"]   = { loadWavFromAssets(appContext->assetManager, "laser.wav", sr, ch) };
 
         oboe::AudioStreamBuilder builder;
         builder.setDirection(oboe::Direction::Output)

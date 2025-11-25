@@ -12,6 +12,7 @@
 #include "game/PowerUpSystem.h"
 #include "game/BallSystem.h"
 #include "game/Paddle.h"
+#include "game/LaserShooter.h"
 
 #include <android/log.h>
 
@@ -30,6 +31,7 @@ void gameLoop(AppContext* appContext) {
     scene.addComponent(std::make_shared<PowerUpSystem>());
     scene.addComponent(std::make_shared<BallSystem>());
     scene.addComponent(std::make_shared<Paddle>());
+    scene.addComponent(std::make_shared<LaserShooter>());
 
     scene.start();
 

@@ -22,6 +22,13 @@ public:
             });
         }
 
+        auto laserShooter = getComponent<LaserShooter>();
+        if (laserShooter) {
+            laserShooter->onLaserShoot.subscribe([this]() {
+                soundsAPI.play("laser");
+            });
+        }
+
         auto ballSystem = getComponent<BallSystem>();
         ballSystem->onHitWall.subscribe([this]() {
             soundsAPI.play("wall");

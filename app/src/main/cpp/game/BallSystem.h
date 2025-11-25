@@ -47,7 +47,6 @@ public:
         auto& bricks = levelManager->getBricks();
         auto levelBounds = levelManager->getLevelBounds();
 
-        // TODO: Implement Strong Ball!
         for (auto& ball : balls) {
 
             switch (ballsType) {
@@ -86,9 +85,6 @@ public:
                     if (handleAxisFireCollision(ball, ball.bounds.y, ball.velocity.y))
                         continue;
 
-                    break;
-
-                default:
                     break;
             }
 
