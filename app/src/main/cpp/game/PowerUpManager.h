@@ -50,7 +50,6 @@ public:
     }
 
     void onDestroy() override {
-
     }
 
     void onUpdate() override {
@@ -59,15 +58,9 @@ public:
 
             if(paddle->getBounds().overlaps(powerup.bounds))
             {
-                removePowerUp(powerup);
-
+                ApplyEffect(powerup.powerUpType);
                 onPickup.invoke();
-
-                for (const auto& ball : ballSystem->getBalls()) {
-                    auto velocity = ball.velocity;
-                    velocity.x = -velocity.x;
-                    ballSystem->createBall(ball.bounds.x, ball.bounds.y, ball.bounds.w, velocity);
-                }
+                removePowerUp(powerup);
             }
         }
     }
@@ -91,6 +84,22 @@ public:
 
         if (target != powerUps.end()) {
             powerUps.erase(target);
+        }
+    }
+
+    void ApplyEffect(PowerUp::PowerUpType powerUpType)
+    {
+        switch (powerUpType) {
+            case PowerUp::PowerUpType::MultiBall:
+                for (const auto &ball: ballSystem->getBalls()) {
+                    auto velocity = ball.velocity;
+                    velocity.x = -velocity.x;
+                    ballSystem->createBall(ball.bounds.x, ball.bounds.y, ball.bounds.w, velocity);
+                }
+                break;
+            default:
+
+                break;
         }
     }
 

@@ -50,7 +50,7 @@ public:
 
             if (ball.bounds.y < 0.0f) {
                 // TODO: Game Over
-                return;
+                removeBall(ball);
             }
 
             if (ball.bounds.x < levelBounds.left()) {
@@ -103,6 +103,17 @@ public:
 
     void createBall(float x, float y, float s, Vector2 v) {
         balls.emplace_back(x, y, s, v);
+    }
+
+    void removeBall(const Ball& ballRef) {
+        auto target = std::find_if(balls.begin(), balls.end(),
+           [&](const Ball& b) {
+               return &b == &ballRef;
+           });
+
+        if (target != balls.end()) {
+            balls.erase(target);
+        }
     }
 
     const std::vector<Ball>& getBalls() const {
