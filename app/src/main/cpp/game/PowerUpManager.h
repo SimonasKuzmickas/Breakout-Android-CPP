@@ -36,12 +36,11 @@ struct PowerUp {
     PowerUpType powerUpType;
 };
 
-class PowerUpManager : public ISceneComponent, public ISceneRender, public ISceneUpdate {
+class PowerUpManager : public ISceneComponent, public ISceneUpdate {
 public:
     Event<> onPickup;
 
     void onAwake() override {
-        graphics = getComponent<Graphics>();
         levelManager = getComponent<LevelManager>();
         paddle = getComponent<Paddle>();
         ballSystem = getComponent<BallSystem>();
@@ -69,14 +68,6 @@ public:
                 onPickup.invoke();
                 removePowerUp(powerup);
             }
-        }
-    }
-
-    void onRender() override {
-        for (auto& powerup : powerUps) {
-            auto bounds = powerup.bounds;
-            int index = static_cast<int>(powerup.powerUpType);
-            graphics->drawImage(graphics->resourcePowerUps[index], bounds.x, bounds.y, bounds.w, bounds.h);
         }
     }
 
@@ -132,12 +123,15 @@ public:
         }
     }
 
+    const std::vector<PowerUp>& getPowerUps() {
+        return powerUps;
+    }
+
 private:
     std::vector<PowerUp> powerUps;
     std::shared_ptr<LevelManager> levelManager;
     std::shared_ptr<BallSystem> ballSystem;
     std::shared_ptr<Paddle> paddle;
-    std::shared_ptr<Graphics> graphics;
 
     PowerUp::PowerUpType getRandomPowerUpType() {
         static bool seeded = false;

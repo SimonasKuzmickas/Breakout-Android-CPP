@@ -1,20 +1,20 @@
 #pragma once
 
 #include "helpers/GraphicsAPI.h"
+#include "Paddle.h"
+#include "BallSystem.h"
+#include "PowerUpManager.h"
 
 class Graphics : public ISceneComponent, public ISceneRender {
 public:
     Graphics(AppContext* context) : graphicsAPI(context) {}
 
-    std::array<GLuint, 12> resourcePowerUps;
-    std::array<GLuint, 3> resourcePaddles;
-    std::array<GLuint, 3> resourceBalls;
-    GLuint resourcePaddleLeft;
-    GLuint resourcePaddleRight;
-    GLuint resourceBackground;
-    GLuint resourceBrick1;
-
     void onAwake() override {
+        paddle = getComponent<Paddle>();
+        ballSystem = getComponent<BallSystem>();
+        levelManager = getComponent<LevelManager>();
+        powerUpManager = getComponent<PowerUpManager>();
+
         for (int i = 1; i <= 12; ++i) {
             std::string filename = "powerup" + std::to_string(i) + ".png";
             resourcePowerUps[i - 1] = graphicsAPI.loadTextureFromAssets(filename.c_str());
@@ -39,6 +39,11 @@ public:
     void onDestroy() override {}
 
     void onRender() override {
+        drawLevel();
+        drawPaddle();
+        drawBalls();
+        drawPowerUps();
+
         graphicsAPI.flip();
     }
 
@@ -48,4 +53,55 @@ public:
 
 private:
     GraphicsAPI graphicsAPI;
+    std::shared_ptr<Paddle> paddle;
+    std::shared_ptr<BallSystem> ballSystem;
+    std::shared_ptr<LevelManager> levelManager;
+    std::shared_ptr<PowerUpManager> powerUpManager;
+
+    std::array<GLuint, 12> resourcePowerUps;
+    std::array<GLuint, 3> resourcePaddles;
+    std::array<GLuint, 3> resourceBalls;
+    GLuint resourcePaddleLeft;
+    GLuint resourcePaddleRight;
+    GLuint resourceBackground;
+    GLuint resourceBrick1;
+
+    float paddleAnimation = 0;
+
+    void drawPowerUps() {
+        for (auto& powerup : powerUpManager->getPowerUps()) {
+            auto bounds = powerup.bounds;
+            int index = static_cast<int>(powerup.powerUpType);
+            drawImage(resourcePowerUps[index], bounds.x, bounds.y, bounds.w, bounds.h);
+        }
+    }
+
+    void drawPaddle() {
+        paddleAnimation = std::fmod(paddleAnimation + 0.2f, 3.0f);
+
+        auto bounds = paddle->getBounds();
+        float cornerWidth  = 50.0f;
+
+        drawImage(resourcePaddles[(int)paddleAnimation], bounds.x + cornerWidth, bounds.y, bounds.w - cornerWidth * 2, bounds.h);
+        drawImage(resourcePaddleLeft, bounds.x, bounds.y, cornerWidth, bounds.h);
+        drawImage(resourcePaddleRight, bounds.x + bounds.w - cornerWidth, bounds.y, cornerWidth, bounds.h);
+    }
+
+    void drawBalls() {
+        int index = static_cast<int>(ballSystem->getBallsType());
+
+        for (auto& ball : ballSystem->getBalls()) {
+            drawImage(resourceBalls[index], ball.bounds.x, ball.bounds.y, ball.bounds.w, ball.bounds.h);
+        }
+    }
+
+    void drawLevel() {
+        auto levelBounds = levelManager->getLevelBounds();
+        drawImage(resourceBackground, levelBounds.x, levelBounds.y, levelBounds.w, levelBounds.h);
+
+        for (auto& brick : levelManager->getBricks()) {
+            auto bounds = brick.getBounds();
+            drawImage(resourceBrick1, bounds.x, bounds.y, bounds.w, bounds.h);
+        }
+    }
 };

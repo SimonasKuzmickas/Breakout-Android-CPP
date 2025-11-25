@@ -8,7 +8,7 @@
 #include "LevelManager.h"
 #include <algorithm>
 
-class BallSystem : public ISceneComponent, public ISceneRender, public ISceneUpdate {
+class BallSystem : public ISceneComponent, public ISceneUpdate {
 public:
     enum class BallsType {
         Normal,
@@ -19,7 +19,6 @@ public:
     Event<> onHitWall;
 
     void onAwake() override {
-        graphics = getComponent<Graphics>();
         paddle = getComponent<Paddle>();
         levelManager = getComponent<LevelManager>();
 
@@ -104,14 +103,6 @@ public:
         }
     }
 
-    void onRender() override {
-        int index = static_cast<int>(ballsType);
-
-        for (auto& ball : balls) {
-            graphics->drawImage(graphics->resourceBalls[index], ball.bounds.x, ball.bounds.y, ball.bounds.w, ball.bounds.h);
-        }
-    }
-
     void onDestroy() override {
         balls.clear();
     }
@@ -136,6 +127,10 @@ public:
         ballsType = type;
     }
 
+    BallsType getBallsType() const {
+        return ballsType;
+    }
+
     const std::vector<Ball>& getBalls() const {
         return balls;
     }
@@ -147,7 +142,6 @@ public:
 
 private:
     std::vector<Ball> balls;
-    std::shared_ptr<Graphics> graphics;
     std::shared_ptr<Paddle> paddle;
     std::shared_ptr<LevelManager> levelManager;
 

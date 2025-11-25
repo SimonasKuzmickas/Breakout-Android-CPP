@@ -9,7 +9,7 @@
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
 
-class LevelManager : public ISceneComponent, public ISceneRender {
+class LevelManager : public ISceneComponent {
 public:
     Event<Brick> onDestroyBrick;
 
@@ -19,8 +19,6 @@ public:
     }
 
     void onAwake() override {
-        graphics = getComponent<Graphics>();
-
         const int rows = 6;
         const int cols = 14;
         const int brickWidth  = 100;
@@ -41,15 +39,6 @@ public:
 
     void onDestroy() override {
 
-    }
-
-    void onRender() override {
-        graphics->drawImage(graphics->resourceBackground, levelBounds.x, levelBounds.y, levelBounds.w, levelBounds.h);
-
-        for (auto& brick : bricks) {
-            auto bounds = brick.getBounds();
-            graphics->drawImage(graphics->resourceBrick1, bounds.x, bounds.y, bounds.w, bounds.h);
-        }
     }
 
     void createBrick(float x, float y) {
@@ -79,6 +68,5 @@ public:
 
 private:
     Rect levelBounds;
-    std::shared_ptr<Graphics> graphics;
     std::vector<Brick> bricks;
 };
