@@ -4,10 +4,21 @@
 #include "helpers/Math.h"
 #include "helpers/Event.h"
 #include "scene/ISceneComponent.h"
-#include "Brick.h"
 
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
+
+struct Brick {
+public:
+    Brick(float x, float y)
+            : bounds{x, y, 100, 50} {}
+
+    [[nodiscard]] const Rect& getBounds() const {
+        return bounds;
+    }
+private:
+    Rect bounds;
+};
 
 class LevelManager : public ISceneComponent {
 public:

@@ -2,11 +2,17 @@
 
 #include <algorithm>
 #include "helpers/Math.h"
-#include "Ball.h"
 #include "Paddle.h"
-#include "Brick.h"
 #include "LevelManager.h"
 #include <algorithm>
+
+struct Ball {
+    Rect bounds;
+    Vector2 velocity;
+
+    Ball(float x, float y, float radius, const Vector2& v)
+            : bounds{x, y, radius, radius}, velocity(v) {}
+};
 
 class BallSystem : public ISceneComponent, public ISceneUpdate {
 public:
@@ -26,6 +32,10 @@ public:
         ballsType = BallsType::Normal;
 
         createBall(1000, 30, 30, Vector2(7.0f, 7.0f));
+    }
+
+    void onDestroy() override {
+        balls.clear();
     }
 
     void onUpdate() override {
@@ -101,10 +111,6 @@ public:
                 paddle->onHit.invoke();
             }
         }
-    }
-
-    void onDestroy() override {
-        balls.clear();
     }
 
     void createBall(float x, float y, float s, Vector2 v) {

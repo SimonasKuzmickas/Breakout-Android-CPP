@@ -26,16 +26,16 @@ public:
 
     }
 
+    void onDestroy() override {
+
+    }
+
     void onUpdate() override {
         bounds.x += static_cast<float>(direction) * speed;
 
         // paddle to wall collision
         const float maxX = WORLD_WIDTH - bounds.w;
         bounds.x = std::clamp(bounds.x, 0.0f, maxX);
-    }
-
-    void onDestroy() override {
-
     }
 
     void move(Direction dir) {

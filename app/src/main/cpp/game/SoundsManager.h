@@ -2,7 +2,6 @@
 
 #include <android/log.h>
 #include "helpers/Math.h"
-#include "Brick.h"
 #include "scene/ISceneComponent.h"
 #include "helpers/SoundsAPI.h"
 

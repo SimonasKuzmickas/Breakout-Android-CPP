@@ -4,7 +4,6 @@
 #include "helpers/Math.h"
 #include "helpers/Event.h"
 #include "scene/ISceneComponent.h"
-#include "Brick.h"
 #include "Paddle.h"
 #include "BallSystem.h"
 
