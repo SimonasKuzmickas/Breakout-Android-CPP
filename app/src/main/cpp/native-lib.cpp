@@ -5,13 +5,13 @@
 #include <android/native_window_jni.h>
 
 #include "game/scene/Scene.h"
-#include "game/Graphics.h"
-#include "game/LevelManager.h"
-#include "game/PowerUpManager.h"
-#include "game/Paddle.h"
-#include "game/PlayerInput.h"
-#include "game/BallSystem.h"
+#include "game/GraphicsManager.h"
 #include "game/SoundsManager.h"
+#include "game/PlayerInput.h"
+#include "game/LevelSystem.h"
+#include "game/PowerUpSystem.h"
+#include "game/BallSystem.h"
+#include "game/Paddle.h"
 
 #include <android/log.h>
 
@@ -23,13 +23,14 @@ void gameLoop(AppContext* appContext) {
     auto lastTick = std::chrono::steady_clock::now();
 
     Scene scene;
-    scene.addComponent(std::make_shared<Graphics>(appContext));
-    scene.addComponent(std::make_shared<LevelManager>());
-    scene.addComponent(std::make_shared<PowerUpManager>());
-    scene.addComponent(std::make_shared<Paddle>());
-    scene.addComponent(std::make_shared<BallSystem>());
-    scene.addComponent(std::make_shared<PlayerInput>(appContext));
+    scene.addComponent(std::make_shared<GraphicsManager>(appContext));
     scene.addComponent(std::make_shared<SoundsManager>(appContext));
+    scene.addComponent(std::make_shared<PlayerInput>(appContext));
+    scene.addComponent(std::make_shared<LevelSystem>());
+    scene.addComponent(std::make_shared<PowerUpSystem>());
+    scene.addComponent(std::make_shared<BallSystem>());
+    scene.addComponent(std::make_shared<Paddle>());
+
     scene.start();
 
     while (appContext->running) {

@@ -20,11 +20,11 @@ private:
     Rect bounds;
 };
 
-class LevelManager : public ISceneComponent {
+class LevelSystem : public ISceneComponent {
 public:
     Event<Brick> onDestroyBrick;
 
-    explicit LevelManager()
+    explicit LevelSystem()
     {
         levelBounds = Rect(0, 0, 1920.0f, 1080.0f);
     }

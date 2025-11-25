@@ -27,12 +27,12 @@ public:
             soundsAPI.play("wall");
         });
 
-        auto powerUpManager = getComponent<PowerUpManager>();
+        auto powerUpManager = getComponent<PowerUpSystem>();
         powerUpManager->onPickup.subscribe([this]() {
             soundsAPI.play("powerup");
         });
 
-        auto levelManager = getComponent<LevelManager>();
+        auto levelManager = getComponent<LevelSystem>();
         if (levelManager) {
             levelManager->onDestroyBrick.subscribe([this](const Brick& brick) {
                 soundsAPI.play("brick");

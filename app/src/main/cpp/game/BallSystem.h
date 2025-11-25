@@ -3,8 +3,7 @@
 #include <algorithm>
 #include "helpers/Math.h"
 #include "Paddle.h"
-#include "LevelManager.h"
-#include <algorithm>
+#include "LevelSystem.h"
 
 struct Ball {
     Rect bounds;
@@ -26,7 +25,7 @@ public:
 
     void onAwake() override {
         paddle = getComponent<Paddle>();
-        levelManager = getComponent<LevelManager>();
+        levelManager = getComponent<LevelSystem>();
 
         globalSpeedMultiplier = 1;
         ballsType = BallsType::Normal;
@@ -149,7 +148,7 @@ public:
 private:
     std::vector<Ball> balls;
     std::shared_ptr<Paddle> paddle;
-    std::shared_ptr<LevelManager> levelManager;
+    std::shared_ptr<LevelSystem> levelManager;
 
     float globalSpeedMultiplier;
     BallsType ballsType;

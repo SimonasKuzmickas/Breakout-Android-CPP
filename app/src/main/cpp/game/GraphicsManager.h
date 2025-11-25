@@ -3,17 +3,17 @@
 #include "helpers/GraphicsAPI.h"
 #include "Paddle.h"
 #include "BallSystem.h"
-#include "PowerUpManager.h"
+#include "PowerUpSystem.h"
 
-class Graphics : public ISceneComponent, public ISceneRender {
+class GraphicsManager : public ISceneComponent, public ISceneRender {
 public:
-    Graphics(AppContext* context) : graphicsAPI(context) {}
+    GraphicsManager(AppContext* context) : graphicsAPI(context) {}
 
     void onAwake() override {
         paddle = getComponent<Paddle>();
         ballSystem = getComponent<BallSystem>();
-        levelManager = getComponent<LevelManager>();
-        powerUpManager = getComponent<PowerUpManager>();
+        levelManager = getComponent<LevelSystem>();
+        powerUpManager = getComponent<PowerUpSystem>();
 
         for (int i = 1; i <= 12; ++i) {
             std::string filename = "powerup" + std::to_string(i) + ".png";
@@ -55,8 +55,8 @@ private:
     GraphicsAPI graphicsAPI;
     std::shared_ptr<Paddle> paddle;
     std::shared_ptr<BallSystem> ballSystem;
-    std::shared_ptr<LevelManager> levelManager;
-    std::shared_ptr<PowerUpManager> powerUpManager;
+    std::shared_ptr<LevelSystem> levelManager;
+    std::shared_ptr<PowerUpSystem> powerUpManager;
 
     std::array<GLuint, 12> resourcePowerUps;
     std::array<GLuint, 3> resourcePaddles;

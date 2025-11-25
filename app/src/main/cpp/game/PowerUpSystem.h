@@ -35,12 +35,12 @@ struct PowerUp {
     PowerUpType powerUpType;
 };
 
-class PowerUpManager : public ISceneComponent, public ISceneUpdate {
+class PowerUpSystem : public ISceneComponent, public ISceneUpdate {
 public:
     Event<> onPickup;
 
     void onAwake() override {
-        levelManager = getComponent<LevelManager>();
+        levelManager = getComponent<LevelSystem>();
         paddle = getComponent<Paddle>();
         ballSystem = getComponent<BallSystem>();
 
@@ -128,7 +128,7 @@ public:
 
 private:
     std::vector<PowerUp> powerUps;
-    std::shared_ptr<LevelManager> levelManager;
+    std::shared_ptr<LevelSystem> levelManager;
     std::shared_ptr<BallSystem> ballSystem;
     std::shared_ptr<Paddle> paddle;
 
