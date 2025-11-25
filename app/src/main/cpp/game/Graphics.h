@@ -35,7 +35,7 @@ public:
         graphicsAPI.flip();
     }
 
-    void drawImage(GLuint textureId, float x, float y, float w, float h, float r, float g, float b, float a) {
+    void drawImage(GLuint textureId, float x, float y, float w, float h) {
         graphicsAPI.drawTexture(textureId, x, y, w, h);
     }
 

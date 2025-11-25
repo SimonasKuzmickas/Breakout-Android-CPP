@@ -13,20 +13,24 @@
 
 struct PowerUp {
     enum class PowerUpType {
-        MultiBall,
         None,
-        ExtraLife,
+        MultiBall,
+        FastBall,
+        SlowBall,
         ExpandPaddle,
         ShrinkPaddle,
-        SlowBall,
-        FastBall,
-        StickyPaddle,
         Laser,
-        Shield
+        StrongBall,
+        FireBall,
+        ExtraLife,
+        Score50,
+        Score100,
+        Score250,
+        Score500
     };
 
     PowerUp(float x, float y, PowerUpType type)
-            : bounds{x, y, 80, 40}, powerUpType{type} {}
+            : bounds{x, y, 120, 40}, powerUpType{type} {}
 
     Rect bounds;
     PowerUpType powerUpType;
@@ -44,7 +48,10 @@ public:
 
         if (levelManager) {
             levelManager->onDestroyBrick.subscribe([this](const Brick& brick) {
-                createPowerUp(brick.getBounds().x + 10, brick.getBounds().y + 5, PowerUp::PowerUpType::MultiBall);
+                int rnd = std::rand() % 10;
+                if(rnd < 4) {
+                    createPowerUp(brick.getBounds().x + 10, brick.getBounds().y + 5, getRandomPowerUpType());
+                }
             });
         }
     }
@@ -68,7 +75,8 @@ public:
     void onRender() override {
         for (auto& powerup : powerUps) {
             auto bounds = powerup.bounds;
-            graphics->drawImage(graphics->resourcePowerUps[0], bounds.x, bounds.y, bounds.w, bounds.h,1, 1, 1, 1);
+            int index = static_cast<int>(powerup.powerUpType);
+            graphics->drawImage(graphics->resourcePowerUps[index], bounds.x, bounds.y, bounds.w, bounds.h);
         }
     }
 
@@ -94,9 +102,14 @@ public:
                 for (const auto &ball: ballSystem->getBalls()) {
                     auto velocity = ball.velocity;
                     velocity.x = -velocity.x;
+                    velocity.y = -velocity.y;
                     ballSystem->createBall(ball.bounds.x, ball.bounds.y, ball.bounds.w, velocity);
                 }
                 break;
+
+            case PowerUp::PowerUpType::ExpandPaddle:
+                paddle->expand(150);
+
             default:
 
                 break;
@@ -109,4 +122,14 @@ private:
     std::shared_ptr<BallSystem> ballSystem;
     std::shared_ptr<Paddle> paddle;
     std::shared_ptr<Graphics> graphics;
+
+    PowerUp::PowerUpType getRandomPowerUpType() {
+        static bool seeded = false;
+        if (!seeded) {
+            std::srand(static_cast<unsigned>(std::time(nullptr)));
+            seeded = true;
+        }
+        int r = std::rand() % 11; // 0..10
+        return static_cast<PowerUp::PowerUpType>(r);
+    }
 };

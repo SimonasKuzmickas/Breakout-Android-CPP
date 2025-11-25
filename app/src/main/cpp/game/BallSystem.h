@@ -17,6 +17,8 @@ public:
         paddle = getComponent<Paddle>();
         levelManager = getComponent<LevelManager>();
 
+        globalSpeedMultiplier = 1;
+
         createBall(1000, 30, 30, Vector2(7.0f, 7.0f));
     }
 
@@ -24,11 +26,13 @@ public:
         if (!levelManager)
             return;
 
+        globalSpeedMultiplier += 0.0005f;
+
         auto& bricks = levelManager->getBricks();
         auto levelBounds = levelManager->getLevelBounds();
 
         for (auto& ball : balls) {
-                ball.bounds.x += ball.velocity.x;
+                ball.bounds.x += ball.velocity.x * globalSpeedMultiplier;
                 for (auto& brick : levelManager->getBricks()) {
                     if (ball.bounds.overlaps(brick.getBounds())) {
                         ball.bounds.x -= ball.velocity.x;
@@ -38,7 +42,7 @@ public:
                     }
                 }
 
-                ball.bounds.y += ball.velocity.y;
+                ball.bounds.y += ball.velocity.y * globalSpeedMultiplier;
                 for (auto& brick : levelManager->getBricks()) {
                     if (ball.bounds.overlaps(brick.getBounds())) {
                         ball.bounds.y -= ball.velocity.y;
@@ -93,7 +97,7 @@ public:
 
     void onRender() override {
         for (auto& ball : balls) {
-            graphics->drawImage(graphics->resourceBall, ball.bounds.x, ball.bounds.y, ball.bounds.w, ball.bounds.h,1, 1, 1, 1);
+            graphics->drawImage(graphics->resourceBall, ball.bounds.x, ball.bounds.y, ball.bounds.w, ball.bounds.h);
         }
     }
 
@@ -125,4 +129,6 @@ private:
     std::shared_ptr<Graphics> graphics;
     std::shared_ptr<Paddle> paddle;
     std::shared_ptr<LevelManager> levelManager;
+
+    float globalSpeedMultiplier;
 };

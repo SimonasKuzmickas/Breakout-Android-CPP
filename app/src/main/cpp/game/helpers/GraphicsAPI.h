@@ -37,30 +37,30 @@ public:
         initSquare();
     }
 
-    void drawRectangle(float x, float y, float w, float h,
-                       float r, float g, float b, float a) const {
-
-        float x0 = (2.0f * x / VIRTUAL_WIDTH) - 1.0f;
-        float y0 = (2.0f * y / VIRTUAL_HEIGHT) - 1.0f;
-        float x1 = (2.0f * (x + w) / VIRTUAL_WIDTH) - 1.0f;
-        float y1 = (2.0f * (y + h) / VIRTUAL_HEIGHT) - 1.0f;
-
-        GLfloat vertices[] = {
-                x0, y0, x1, y0, x1, y1,
-                x0, y0, x1, y1, x0, y1
-        };
-
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
-
-        glUseProgram(program);
-        glUniform4f(colUniform, r, g, b, a);
-
-        glEnableVertexAttribArray(posAttrib);
-        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-    }
+//    void drawRectangle(float x, float y, float w, float h,
+//                       float r, float g, float b, float a) const {
+//
+//        float x0 = (2.0f * x / VIRTUAL_WIDTH) - 1.0f;
+//        float y0 = (2.0f * y / VIRTUAL_HEIGHT) - 1.0f;
+//        float x1 = (2.0f * (x + w) / VIRTUAL_WIDTH) - 1.0f;
+//        float y1 = (2.0f * (y + h) / VIRTUAL_HEIGHT) - 1.0f;
+//
+//        GLfloat vertices[] = {
+//                x0, y0, x1, y0, x1, y1,
+//                x0, y0, x1, y1, x0, y1
+//        };
+//
+//        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+//        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+//
+//        glUseProgram(program);
+//        glUniform4f(colUniform, r, g, b, a);
+//
+//        glEnableVertexAttribArray(posAttrib);
+//        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+//
+//        glDrawArrays(GL_TRIANGLES, 0, 6);
+//    }
 
     void drawTexture(GLuint texture,
                      float x, float y, float w, float h) const

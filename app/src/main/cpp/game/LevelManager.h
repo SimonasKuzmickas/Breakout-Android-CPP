@@ -44,12 +44,11 @@ public:
     }
 
     void onRender() override {
-        graphics->drawImage(graphics->resourceBackground, levelBounds.x, levelBounds.y, levelBounds.w, levelBounds.h,
-                                0, 0, 0, 1);
+        graphics->drawImage(graphics->resourceBackground, levelBounds.x, levelBounds.y, levelBounds.w, levelBounds.h);
 
         for (auto& brick : bricks) {
             auto bounds = brick.getBounds();
-            graphics->drawImage(graphics->resourceBrick1, bounds.x, bounds.y, bounds.w, bounds.h,1, 1, 1, 1);
+            graphics->drawImage(graphics->resourceBrick1, bounds.x, bounds.y, bounds.w, bounds.h);
         }
     }
 

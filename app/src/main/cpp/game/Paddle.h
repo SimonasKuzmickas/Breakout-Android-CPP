@@ -38,8 +38,7 @@ public:
     void onRender() override {
         paddleAnimation = std::fmod(paddleAnimation + 0.2f, 3.0f);
 
-        graphics->drawImage(graphics->resourcePaddles[(int)paddleAnimation], bounds.x, bounds.y, bounds.w, bounds.h,
-                                255, 0, 1, 1);
+        graphics->drawImage(graphics->resourcePaddles[(int)paddleAnimation], bounds.x, bounds.y, bounds.w, bounds.h);
     }
 
     void onDestroy() override {
@@ -50,11 +49,16 @@ public:
         direction = dir;
     }
 
+    void expand(float increase)
+    {
+        bounds.w += increase;
+    }
+
     Rect getBounds() { return bounds; }
 
 private:
     static constexpr float WORLD_WIDTH = 1920.0f;
-    static constexpr float DEFAULT_SPEED = 15.0f;
+    static constexpr float DEFAULT_SPEED = 20.0f;
     inline static const Rect DEFAULT_BOUNDS{1920.0f / 2 - 250, 20, 300, 60};
 
     Rect bounds;
