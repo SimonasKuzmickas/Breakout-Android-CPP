@@ -4,6 +4,8 @@
 #include <GLES2/gl2.h>
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
 
 #include "game/scene/Scene.h"
 #include "game/Graphics.h"
@@ -11,6 +13,7 @@
 #include "game/Paddle.h"
 #include "game/PlayerInput.h"
 #include "game/BallSystem.h"
+#include "game/SoundsManager.h"
 
 #include <android/log.h>
 
@@ -27,6 +30,7 @@ void gameLoop(AppContext* appContext) {
     scene.addComponent(std::make_shared<Paddle>());
     scene.addComponent(std::make_shared<BallSystem>());
     scene.addComponent(std::make_shared<PlayerInput>(appContext));
+    scene.addComponent(std::make_shared<SoundsManager>(appContext));
     scene.start();
 
     while (appContext->running) {
@@ -45,18 +49,17 @@ void gameLoop(AppContext* appContext) {
     scene.destroy();
 }
 
-extern "C"
-JNIEXPORT jlong JNICALL
-Java_com_nordcurrent_breakout_GameView_nativeStart(JNIEnv* env, jobject, jobject surface) {
+extern "C" JNIEXPORT jlong JNICALL
+Java_com_nordcurrent_breakout_GameView_nativeStart(JNIEnv* env, jobject, jobject surface, jobject assetManager) {
     auto* context = new AppContext();
     context->window = ANativeWindow_fromSurface(env, surface);
     context->running = true;
     context->thread = std::thread(gameLoop, context);
+    context->assetManager = AAssetManager_fromJava(env, assetManager);
     return reinterpret_cast<jlong>(context);
 }
 
-extern "C"
-JNIEXPORT void JNICALL
+extern "C" JNIEXPORT void JNICALL
 Java_com_nordcurrent_breakout_GameView_nativeStop(JNIEnv*, jobject, jlong handle) {
     auto* context = reinterpret_cast<AppContext*>(handle);
     if (!context) return;
@@ -72,8 +75,7 @@ Java_com_nordcurrent_breakout_GameView_nativeStop(JNIEnv*, jobject, jlong handle
     delete context;
 }
 
-extern "C"
-JNIEXPORT void JNICALL
+extern "C" JNIEXPORT void JNICALL
 Java_com_nordcurrent_breakout_GameView_nativeOnTouch(JNIEnv* env, jobject thiz,
                                                      jint pointerId, jfloat x, jfloat y, jint action) {
     if (g_playerInput) {

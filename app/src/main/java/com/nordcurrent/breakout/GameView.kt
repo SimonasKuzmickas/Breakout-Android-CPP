@@ -1,6 +1,7 @@
 package com.nordcurrent.breakout
 
 import android.content.Context
+import android.content.res.AssetManager
 import android.view.MotionEvent
 import android.view.Surface
 import android.view.SurfaceView
@@ -12,13 +13,14 @@ class GameView(context: Context) : SurfaceView(context), SurfaceHolder.Callback 
 
     private var nativeHandle: Long = 0
 
-    external fun nativeStart(surface: Surface): Long
+    external fun nativeStart(surface: Surface, mgr: AssetManager?): Long
     external fun nativeStop(handle: Long)
 
     private external fun nativeOnTouch(pointerId: Int, x: Float, y: Float, action: Int)
 
     override fun surfaceCreated(holder: SurfaceHolder) {
-        nativeHandle = nativeStart(holder.surface)
+
+        nativeHandle = nativeStart(holder.surface, context.resources.assets)
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {

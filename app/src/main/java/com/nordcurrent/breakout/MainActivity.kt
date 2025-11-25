@@ -10,6 +10,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private external fun nativeInit()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -19,6 +21,9 @@ class MainActivity : AppCompatActivity() {
 //        // Example of a call to a native method
 //        binding.sampleText.text = stringFromJNI()
 
+
+
+        // deprecated: if it's not broken - don't fix it
         val decorView = getWindow().getDecorView()
         decorView.setSystemUiVisibility(
             (View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY

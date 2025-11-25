@@ -28,6 +28,11 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
         native-lib.cpp)
 
+add_subdirectory(
+        ${CMAKE_SOURCE_DIR}/../../../../external/oboe
+        ${CMAKE_BINARY_DIR}/oboe
+)
+
 target_include_directories(${CMAKE_PROJECT_NAME}
         PRIVATE
         ${CMAKE_SOURCE_DIR}/src/main/cpp/game
@@ -44,9 +49,9 @@ find_library(egl-lib EGL)
 target_link_libraries(${CMAKE_PROJECT_NAME}
         android
         log
+        oboe
         ${log-lib}
         ${android-lib}
         ${gles-lib}
         ${egl-lib}
 )
-

@@ -12,6 +12,7 @@ struct AppContext {
     ANativeWindow* window = nullptr;
     std::thread thread;
     std::atomic<bool> running{false};
+    AAssetManager* assetManager = nullptr;
 };
 
 class Graphics : public ISceneComponent, public ISceneRender {
