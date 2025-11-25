@@ -7,9 +7,9 @@ class BallSystem : public ISceneComponent, public ISceneRender, public ISceneUpd
 public:
 
     void onAwake() override {
-        graphics = blackboard->getComponent<Graphics>();
-        paddle = blackboard->getComponent<Paddle>();
-        levelManager = blackboard->getComponent<LevelManager>();
+        graphics = getComponent<Graphics>();
+        paddle = getComponent<Paddle>();
+        levelManager = getComponent<LevelManager>();
 
         createBall(1000, 50, 30, Vector2(10.0f, 10.0f));
     }

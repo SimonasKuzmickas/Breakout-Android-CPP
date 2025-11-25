@@ -7,12 +7,10 @@ class Event {
 public:
     using Handler = std::function<void(Args...)>;
 
-    // Subscribe
     void subscribe(const Handler& handler) {
         handlers.push_back(handler);
     }
 
-    // Trigger (notify all subscribers)
     void invoke(Args... args) {
         for (auto& h : handlers) {
             h(args...);

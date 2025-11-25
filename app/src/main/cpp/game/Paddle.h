@@ -19,7 +19,7 @@ public:
               speed(DEFAULT_SPEED) {}
 
     void onAwake() override {
-        graphics = blackboard->getComponent<Graphics>();
+        graphics = getComponent<Graphics>();
     }
 
     void onUpdate() override {
@@ -39,7 +39,7 @@ public:
 
     }
 
-    void hit()
+    void hitBall()
     {
         onHit.invoke();
     }

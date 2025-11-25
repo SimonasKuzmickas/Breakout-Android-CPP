@@ -14,6 +14,14 @@ public:
          blackboard = board;
     }
 
-protected:
+    template<typename T>
+    std::shared_ptr<T> getComponent() const {
+        if (!blackboard) {
+            return nullptr;
+        }
+        return blackboard->getComponent<T>();
+    }
+
+private:
     Blackboard *blackboard = nullptr;
 };

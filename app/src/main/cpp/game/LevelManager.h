@@ -15,7 +15,7 @@ public:
     }
 
     void onAwake() override {
-        graphics = blackboard->getComponent<Graphics>();
+        graphics = getComponent<Graphics>();
 
         const int rows = 6;
         const int cols = 14;

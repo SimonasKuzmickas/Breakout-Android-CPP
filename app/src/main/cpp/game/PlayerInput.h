@@ -29,7 +29,7 @@ public:
     void onAwake() override {
         g_playerInput = this;
 
-        paddle = blackboard->getComponent<Paddle>();
+        paddle = getComponent<Paddle>();
         position = Vector2(0, 0);
         isMoving = false;
     }

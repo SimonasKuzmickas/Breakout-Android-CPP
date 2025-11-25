@@ -41,7 +41,7 @@ public:
         } else {
             LOGE("Failed to open Oboe stream: %s", oboe::convertToText(result));
         }
-        auto paddle = blackboard->getComponent<Paddle>();
+        auto paddle = getComponent<Paddle>();
         if (paddle) {
             paddle->onHit.subscribe([this]() {
                 this->play();
