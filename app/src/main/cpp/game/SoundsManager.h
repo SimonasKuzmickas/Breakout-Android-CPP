@@ -17,7 +17,7 @@ public:
     SoundsManager(AppContext* context) { appContext = context; }
 
     void onAwake() override {
-        // Preload WAV
+
         uint32_t sampleRate;
         uint16_t channels;
         samples = loadWavFromAssets(appContext->assetManager, "paddlehit.wav",
@@ -29,7 +29,9 @@ public:
                 ->setFormat(oboe::AudioFormat::Float)
                 ->setChannelCount(channels)
                 ->setSampleRate(sampleRate)
-                ->setCallback(this);
+                ->setCallback(this)
+                ->setSharingMode(oboe::SharingMode::Exclusive);
+
 
         oboe::Result result = builder.openStream(mStream);
         //  builder.setSampleRate(mStream->getSampleRate());
@@ -39,7 +41,18 @@ public:
         } else {
             LOGE("Failed to open Oboe stream: %s", oboe::convertToText(result));
         }
-        play();
+        auto paddle = blackboard->getComponent<Paddle>();
+        if (paddle) {
+            paddle->onHit.subscribe([this]() {
+                this->play();
+            });
+        }
+
+
+
+        auto latencyMs = mStream->calculateLatencyMillis();
+        LOGI("Estimated latency: %d ms", latencyMs);
+
     }
 
     void onDestroy() override {

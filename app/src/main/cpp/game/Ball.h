@@ -71,6 +71,8 @@ public:
 
             velocity.x = dirX * speed;
             velocity.y = dirY * speed;
+
+            paddle->hit();
         }
     }
 
