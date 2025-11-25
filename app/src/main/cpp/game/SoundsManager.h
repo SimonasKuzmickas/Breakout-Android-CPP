@@ -19,7 +19,7 @@ public:
         auto paddle = getComponent<Paddle>();
         if (paddle) {
             paddle->onHit.subscribe([this]() {
-                soundsAPI.play("wall");
+                soundsAPI.play("paddle");
             });
         }
 
@@ -30,7 +30,7 @@ public:
             });
 
             levelManager->onDestroyBrick.subscribe([this]() {
-                soundsAPI.play("paddle");
+                soundsAPI.play("brick");
             });
         }
     }
