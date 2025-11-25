@@ -6,13 +6,10 @@
 class BallSystem : public ISceneComponent, public ISceneRender, public ISceneUpdate {
 public:
 
-    void createBall(float x, float y, float s, Vector2 v) {
-        balls.emplace_back(x, y, s, v, paddle);
-    }
-
     void onAwake() override {
         graphics = blackboard->getComponent<Graphics>();
         paddle = blackboard->getComponent<Paddle>();
+        levelManager = blackboard->getComponent<LevelManager>();
 
         createBall(1000, 50, 30, Vector2(10.0f, 10.0f));
     }
@@ -25,7 +22,7 @@ public:
 
     void onRender() override {
         for (auto& ball : balls) {
-            graphics->drawRectangle(ball.getBounds().x, ball.getBounds().y, ball.getBounds().w, ball.getBounds().h,255, 0, 1, 1);
+            graphics->drawRectangle(ball.getBounds().x, ball.getBounds().y, ball.getBounds().w, ball.getBounds().h,1, 1, 1, 1);
         }
     }
 
@@ -33,8 +30,13 @@ public:
         balls.clear();
     }
 
+    void createBall(float x, float y, float s, Vector2 v) {
+        balls.emplace_back(x, y, s, v, paddle, levelManager);
+    }
+
 private:
     std::vector<Ball> balls;
     std::shared_ptr<Graphics> graphics;
     std::shared_ptr<Paddle> paddle;
+    std::shared_ptr<LevelManager> levelManager;
 };
