@@ -1,5 +1,5 @@
-// Session.h
 #pragma once
+
 #include <vector>
 #include <memory>
 #include "ISceneComponent.h"
@@ -18,7 +18,10 @@ public:
     }
 
     void start() {
-        for (auto &m: components) m->onAwake();
+        for (auto &m: components)
+        {
+            m->onAwake();
+        }
     }
 
     void update() {
@@ -38,7 +41,9 @@ public:
     }
 
     void destroy() {
-        for (auto &m: components) m->onDestroy();
+        for (auto &m: components) {
+            m->onDestroy();
+        }
     }
 
 private:

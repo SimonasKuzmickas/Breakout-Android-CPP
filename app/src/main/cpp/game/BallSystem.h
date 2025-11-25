@@ -1,7 +1,8 @@
 #pragma once
-#include "Math.h"
-#include "Ball.h"
+
 #include <algorithm>
+#include "helpers/Math.h"
+#include "Ball.h"
 
 class BallSystem : public ISceneComponent, public ISceneRender, public ISceneUpdate {
 public:

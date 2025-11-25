@@ -1,5 +1,6 @@
 #pragma once
-#include "Math.h"
+
+#include "helpers/Math.h"
 #include "Paddle.h"
 #include "Brick.h"
 #include "LevelManager.h"
@@ -45,17 +46,24 @@ public:
             return;
         }
 
-        if (bounds.x < 0.0f) {
-            bounds.x = 0;
+        auto levelBounds = levelManager->getLevelBounds();
+        if (bounds.x < levelBounds.left()) {
+            bounds.x = levelBounds.left();
             velocity.x = -velocity.x;
-        } else if (bounds.x + bounds.w > WORLD_WIDTH) {
-            bounds.x = WORLD_WIDTH - bounds.w;
+
+            levelManager->onHitEdge.invoke();
+        } else if (bounds.x + bounds.w > levelBounds.right()) {
+            bounds.x = levelBounds.right() - bounds.w;
             velocity.x = -velocity.x;
+
+            levelManager->onHitEdge.invoke();
         }
 
-        if (bounds.y + bounds.h > WORLD_HEIGHT) {
-            bounds.y = WORLD_HEIGHT - bounds.h;
+        if (bounds.y + bounds.h > levelBounds.top()) {
+            bounds.y = levelBounds.top() - bounds.h;
             velocity.y = -velocity.y;
+
+            levelManager->onHitEdge.invoke();
         }
 
         Rect paddleBounds = paddle->getBounds();
@@ -72,7 +80,7 @@ public:
             velocity.x = dirX * speed;
             velocity.y = dirY * speed;
 
-            paddle->hitBall();
+            paddle->onHit.invoke();
         }
     }
 
@@ -84,7 +92,4 @@ private:
     Vector2 velocity;
     std::shared_ptr<Paddle> paddle;
     std::shared_ptr<LevelManager> levelManager;
-
-    const float WORLD_WIDTH  = 1920.0f;
-    const float WORLD_HEIGHT = 1080.0f;
 };

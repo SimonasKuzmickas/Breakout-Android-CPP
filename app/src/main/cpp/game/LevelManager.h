@@ -1,7 +1,9 @@
 #pragma once
-#include "scene/ISceneComponent.h"
+
 #include <android/log.h>
-#include "Math.h"
+#include "helpers/Math.h"
+#include "helpers/Event.h"
+#include "scene/ISceneComponent.h"
 #include "Brick.h"
 
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
@@ -9,9 +11,12 @@
 
 class LevelManager : public ISceneComponent, public ISceneRender {
 public:
+
+    Event<> onHitEdge;
+
     explicit LevelManager()
     {
-        worldBounds = Rect(0, 0, 1080.0f, 1920.0f);
+        levelBounds = Rect(0, 0, 1920.0f, 1080.0f);
     }
 
     void onAwake() override {
@@ -40,7 +45,7 @@ public:
     }
 
     void onRender() override {
-        graphics->drawRectangle(0, 0, 1920, 1080,
+        graphics->drawRectangle(levelBounds.x, levelBounds.y, levelBounds.w, levelBounds.h,
                                 0, 0, 0, 1);
 
         for (auto& brick : bricks) {
@@ -54,18 +59,18 @@ public:
     }
 
     void removeBrick(const Brick& brickRef) {
-        auto it = std::find_if(bricks.begin(), bricks.end(),
+        auto target = std::find_if(bricks.begin(), bricks.end(),
             [&](const Brick& b) {
             return &b == &brickRef;
         });
 
-        if (it != bricks.end()) {
-            bricks.erase(it);
+        if (target != bricks.end()) {
+            bricks.erase(target);
         }
     }
 
-    Rect getWorldBounds() {
-        return worldBounds;
+    Rect getLevelBounds() {
+        return levelBounds;
     }
 
     const std::vector<Brick>& getBricks() {
@@ -73,7 +78,7 @@ public:
     }
 
 private:
-    Rect worldBounds;
+    Rect levelBounds;
     std::shared_ptr<Graphics> graphics;
     std::vector<Brick> bricks;
 };

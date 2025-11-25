@@ -1,12 +1,12 @@
 #pragma once
 
 #define DR_WAV_IMPLEMENTATION
+#include "thirdparty/dr_wav.h"
 #include <android/log.h>
 #include <oboe/Oboe.h>
 
+#include "helpers/Math.h"
 #include "Brick.h"
-#include "Math.h"
-#include "dr_wav.h"
 #include "scene/ISceneComponent.h"
 
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
@@ -41,14 +41,13 @@ public:
         } else {
             LOGE("Failed to open Oboe stream: %s", oboe::convertToText(result));
         }
+
         auto paddle = getComponent<Paddle>();
         if (paddle) {
             paddle->onHit.subscribe([this]() {
                 this->play();
             });
         }
-
-
 
         auto latencyMs = mStream->calculateLatencyMillis();
         LOGI("Estimated latency: %d ms", latencyMs);

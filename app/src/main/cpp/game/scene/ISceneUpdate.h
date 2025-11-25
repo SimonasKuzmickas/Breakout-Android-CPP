@@ -1,4 +1,3 @@
-// IModule.h
 #pragma once
 
 class ISceneUpdate {

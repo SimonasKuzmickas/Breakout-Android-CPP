@@ -14,6 +14,11 @@ struct Rect {
                  y + h <= other.y ||
                  other.y + other.h <= y);
     }
+
+    float left()   const { return y; }
+    float right()  const { return x + w; }
+    float top()    const { return y + h; }
+    float bottom() const { return y; }
 };
 
 struct Vector2 {

@@ -1,5 +1,6 @@
 #pragma once
-#include "Math.h"
+
+#include "helpers/Math.h"
 
 enum class TouchAction {
     Down = 0,

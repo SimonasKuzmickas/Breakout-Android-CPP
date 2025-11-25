@@ -1,5 +1,5 @@
-// Session.h
 #pragma once
+
 #include <vector>
 #include <memory>
 #include "ISceneComponent.h"
@@ -22,6 +22,6 @@ public:
     }
 
 private:
-    const std::vector<std::shared_ptr<ISceneComponent>>& componentsRef; // non-owning reference
+    const std::vector<std::shared_ptr<ISceneComponent>>& componentsRef;
 
 };

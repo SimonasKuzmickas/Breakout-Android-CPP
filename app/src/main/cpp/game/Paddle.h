@@ -1,8 +1,9 @@
 #pragma once
-#include "Math.h"
-#include "Event.h"
+
 #include <algorithm>
 #include <android/log.h>
+#include "helpers/Math.h"
+#include "helpers/Event.h"
 
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
@@ -37,11 +38,6 @@ public:
 
     void onDestroy() override {
 
-    }
-
-    void hitBall()
-    {
-        onHit.invoke();
     }
 
     void move(Direction dir) {
