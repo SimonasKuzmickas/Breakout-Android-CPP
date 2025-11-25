@@ -53,6 +53,17 @@ public:
         bricks.emplace_back(x, y);
     }
 
+    void removeBrick(const Brick& brickRef) {
+        auto it = std::find_if(bricks.begin(), bricks.end(),
+            [&](const Brick& b) {
+            return &b == &brickRef;
+        });
+
+        if (it != bricks.end()) {
+            bricks.erase(it);
+        }
+    }
+
     Rect getWorldBounds() {
         return worldBounds;
     }

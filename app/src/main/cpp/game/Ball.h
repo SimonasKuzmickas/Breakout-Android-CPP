@@ -16,8 +16,29 @@ struct Ball {
 public:
 
     void update() {
-        bounds.x += velocity.x;
-        bounds.y += velocity.y;
+        if (levelManager) {
+            auto& bricks = levelManager->getBricks();
+
+            bounds.x += velocity.x;
+            for (auto& brick : levelManager->getBricks()) {
+                if (bounds.overlaps(brick.getBounds())) {
+                    bounds.x -= velocity.x;
+                    velocity.x = -velocity.x;
+                    levelManager->removeBrick((brick));
+                    break;
+                }
+            }
+
+            bounds.y += velocity.y;
+            for (auto& brick : levelManager->getBricks()) {
+                if (bounds.overlaps(brick.getBounds())) {
+                    bounds.y -= velocity.y;
+                    velocity.y = -velocity.y;
+                    levelManager->removeBrick((brick));
+                    break;
+                }
+            }
+        }
 
         if (bounds.y < 0.0f) {
             // TODO: Game Over
@@ -50,42 +71,6 @@ public:
 
             velocity.x = dirX * speed;
             velocity.y = dirY * speed;
-        }
-
-        if (levelManager) {
-            auto& bricks = levelManager->getBricks();
-
-            for (auto& brick : bricks) {
-                Rect brickBounds = brick.getBounds();
-                if (bounds.overlaps(brickBounds)) {
-
-                    float overlapLeft   = (bounds.x + bounds.w) - brickBounds.x;
-                    float overlapRight  = (brickBounds.x + brickBounds.w) - bounds.x;
-                    float overlapTop    = (bounds.y + bounds.h) - brickBounds.y;
-                    float overlapBottom = (brickBounds.y + brickBounds.h) - bounds.y;
-                    float minOverlapX = std::min(overlapLeft, overlapRight);
-                    float minOverlapY = std::min(overlapTop, overlapBottom);
-                    if (minOverlapX < minOverlapY) {
-                        // Resolve X
-                        if (overlapLeft < overlapRight)
-                            bounds.x -= minOverlapX;
-                        else
-                            bounds.x += minOverlapX;
-
-                        velocity.x = -velocity.x;
-                    } else {
-                        // Resolve Y
-                        if (overlapTop < overlapBottom)
-                            bounds.y -= minOverlapY;
-                        else
-                            bounds.y += minOverlapY;
-
-                        velocity.y = -velocity.y;
-                    }
-                    break; // only handle one brick per frame
-                }
-            }
-
         }
     }
 
