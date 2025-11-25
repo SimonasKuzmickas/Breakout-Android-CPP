@@ -45,7 +45,7 @@ public:
             return;
         }
 
-        float center = worldBounds.w / 2.0f;
+        float center = worldBounds.w * 0.5f;
         float offset = position.x - center;
 
         if (offset < 0.0f) {

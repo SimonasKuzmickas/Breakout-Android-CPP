@@ -7,6 +7,7 @@
 #include <functional>
 #include <vector>
 #include <thread>
+#include "AppContext.h"
 
 struct GraphicsContext {
     EGLContext context = EGL_NO_CONTEXT;
@@ -17,27 +18,20 @@ struct GraphicsContext {
     int height;
 };
 
-struct AppContext {
-    ANativeWindow* window = nullptr;
-    std::thread thread;
-    std::atomic<bool> running{false};
-    AAssetManager* assetManager = nullptr;
-};
-
 class GraphicsAPI {
 public:
+    const float VIRTUAL_WIDTH = 1920.0f;
+    const float VIRTUAL_HEIGHT = 1080.0f;
+
     GraphicsAPI(AppContext* context) {
         appContext = context;
 
-        initGraphics();
+        initGraphics(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
         initSquare();
     }
 
     void drawRectangle(float x, float y, float w, float h,
                        float r, float g, float b, float a) const {
-
-        const float VIRTUAL_WIDTH = 1920.0f;
-        const float VIRTUAL_HEIGHT = 1080.0f;
 
         float x0 = (2.0f * x / VIRTUAL_WIDTH) - 1.0f;
         float y0 = (2.0f * y / VIRTUAL_HEIGHT) - 1.0f;
@@ -78,7 +72,7 @@ private:
     GLuint posAttrib;
     GLuint colUniform;
 
-    bool initGraphics()
+    bool initGraphics(int width, int height)
     {
         EGLint attributes[] = {
                 EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
@@ -115,9 +109,7 @@ private:
         eglQuerySurface(dpy, surf, EGL_HEIGHT, &graphicsContext->height);
 
         // --- Letterbox viewport calculation ---
-        const int VIRTUAL_WIDTH  = 1920;
-        const int VIRTUAL_HEIGHT = 1080;
-        float targetAspect = static_cast<float>(VIRTUAL_WIDTH) / VIRTUAL_HEIGHT;
+        float targetAspect = static_cast<float>((float)width) / float(height);
         float screenAspect = static_cast<float>(graphicsContext->width) / graphicsContext->height;
 
         int vpX, vpY, vpW, vpH;
