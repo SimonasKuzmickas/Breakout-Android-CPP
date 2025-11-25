@@ -73,7 +73,7 @@ public:
         return levelBounds;
     }
 
-    const std::vector<Brick>& getBricks() {
+    std::vector<Brick>& getBricks() {
         return bricks;
     }
 

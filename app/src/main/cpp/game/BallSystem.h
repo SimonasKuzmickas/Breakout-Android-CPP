@@ -22,6 +22,7 @@ public:
     };
 
     Event<> onHitWall;
+    Event<> onExplosion;
 
     void onAwake() override {
         paddle = getComponent<Paddle>();
@@ -41,44 +42,70 @@ public:
         if (!levelManager)
             return;
 
-        globalSpeedMultiplier += 0.0005f;
+        globalSpeedMultiplier += SPEED_GROWTH;
 
         auto& bricks = levelManager->getBricks();
         auto levelBounds = levelManager->getLevelBounds();
 
         // TODO: Implement Strong Ball!
         for (auto& ball : balls) {
-                ball.bounds.x += ball.velocity.x * globalSpeedMultiplier;
-                for (auto& brick : levelManager->getBricks()) {
-                    if (ball.bounds.overlaps(brick.getBounds())) {
-                        ball.bounds.x -= ball.velocity.x;
-                        ball.velocity.x = -ball.velocity.x;
 
-                        levelManager->removeBrick((brick));
-                        break;
+            switch (ballsType) {
+                case BallsType::Normal:
+                    // --- MOVE X ---
+                    ball.bounds.x += ball.velocity.x * globalSpeedMultiplier;
+                    if (handleAxisNormalCollision(ball, ball.bounds.x, ball.velocity.x))
+                        continue;  // brick hit, done with this ball
+
+                    // --- MOVE Y ---
+                    ball.bounds.y += ball.velocity.y * globalSpeedMultiplier;
+                    if (handleAxisNormalCollision(ball, ball.bounds.y, ball.velocity.y))
+                        continue;
+
+                    break;
+
+                case BallsType::Strong:
+                    // --- MOVE XY ---
+                    ball.bounds.x += ball.velocity.x * globalSpeedMultiplier;
+                    ball.bounds.y += ball.velocity.y * globalSpeedMultiplier;
+
+                    if (Brick* hit = checkBallCollision(ball))
+                    {
+                        levelManager->removeBrick(*hit);
                     }
-                }
+                    break;
 
-                ball.bounds.y += ball.velocity.y * globalSpeedMultiplier;
-                for (auto& brick : levelManager->getBricks()) {
-                    if (ball.bounds.overlaps(brick.getBounds())) {
-                        ball.bounds.y -= ball.velocity.y;
-                        ball.velocity.y = -ball.velocity.y;
-                        levelManager->removeBrick((brick));
-                        break;
-                    }
-                }
+                case BallsType::Fire:
+                    // --- MOVE X ---
+                    ball.bounds.x += ball.velocity.x * globalSpeedMultiplier;
+                    if (handleAxisFireCollision(ball, ball.bounds.x, ball.velocity.x))
+                        continue;  // brick hit, done with this ball
 
+                    // --- MOVE Y ---
+                    ball.bounds.y += ball.velocity.y * globalSpeedMultiplier;
+                    if (handleAxisFireCollision(ball, ball.bounds.y, ball.velocity.y))
+                        continue;
+
+                    break;
+
+                default:
+                    break;
+            }
+
+            // ---- OUT OF BOUNDS
             if (ball.bounds.y < 0.0f) {
                 // TODO: Game Over
                 removeBall(ball);
             }
 
+            // ---- WALL COLLISIONS ----
+            // LEFT
             if (ball.bounds.x < levelBounds.left()) {
                 ball.bounds.x = levelBounds.left();
                 ball.velocity.x = -ball.velocity.x;
 
                 onHitWall.invoke();
+            // RIGHT
             } else if (ball.bounds.x + ball.bounds.w > levelBounds.right()) {
                 ball.bounds.x = levelBounds.right() - ball.bounds.w;
                 ball.velocity.x = -ball.velocity.x;
@@ -86,6 +113,7 @@ public:
                 onHitWall.invoke();
             }
 
+            // TOP
             if (ball.bounds.y + ball.bounds.h > levelBounds.top()) {
                 ball.bounds.y = levelBounds.top() - ball.bounds.h;
                 ball.velocity.y = -ball.velocity.y;
@@ -93,21 +121,25 @@ public:
                 onHitWall.invoke();
             }
 
-            Rect paddleBounds = paddle->getBounds();
-            if (paddle && ball.bounds.overlaps(paddleBounds)) {
-                float normalized = ((ball.bounds.x + ball.bounds.w * 0.5f) - (paddleBounds.x + paddleBounds.w * 0.5f))
-                                   / (paddleBounds.w * 0.5f);
+            // ---- PADDLE COLLISION ----
+            if(ball.velocity.y < 0)
+            {
+                Rect paddleBounds = paddle->getBounds();
+                if (paddle && ball.bounds.overlaps(paddleBounds)) {
+                    float normalized = ((ball.bounds.x + ball.bounds.w * 0.5f) - (paddleBounds.x + paddleBounds.w * 0.5f))
+                                       / (paddleBounds.w * 0.5f);
 
-                float speed = std::sqrt(ball.velocity.x * ball.velocity.x + ball.velocity.y * ball.velocity.y);
+                    float speed = std::sqrt(ball.velocity.x * ball.velocity.x + ball.velocity.y * ball.velocity.y);
 
-                float len = std::sqrt(normalized * normalized + 1.0f);
-                float dirX = normalized / len;
-                float dirY = 1.0f / len;
+                    float len = std::sqrt(normalized * normalized + 1.0f);
+                    float dirX = normalized / len;
+                    float dirY = 1.0f / len;
 
-                ball.velocity.x = dirX * speed;
-                ball.velocity.y = dirY * speed;
+                    ball.velocity.x = dirX * speed;
+                    ball.velocity.y = dirY * speed;
 
-                paddle->onHit.invoke();
+                    paddle->onHit.invoke();
+                }
             }
         }
     }
@@ -152,4 +184,63 @@ private:
 
     float globalSpeedMultiplier;
     BallsType ballsType;
+
+    static constexpr float SPEED_GROWTH = 0.0005f;
+
+    Brick* checkBallCollision(Ball& ball)
+    {
+        for (auto& brick : levelManager->getBricks()) {
+            if (ball.bounds.overlaps(brick.getBounds())) {
+                return &brick;
+            }
+        }
+        return nullptr;
+    }
+
+    bool handleAxisNormalCollision(Ball& ball, float& axisPos, float& axisVel)
+    {
+        if (Brick* hit = checkBallCollision(ball))
+        {
+            axisPos -= axisVel;
+            axisVel = -axisVel;
+            levelManager->removeBrick(*hit);
+            return true;
+        }
+        return false;
+    }
+
+    bool handleAxisFireCollision(Ball& ball, float& axisPos, float& axisVel)
+    {
+        if (Brick* hit = checkBallCollision(ball))
+        {
+            onExplosion.invoke();
+
+            auto brickBounds = hit->getBounds();
+
+            axisPos -= axisVel;
+            axisVel = -axisVel;
+            levelManager->removeBrick(*hit);
+
+            auto explosionBounds = Rect(brickBounds.x - 50, brickBounds.y - 50,
+                                        brickBounds.w + 100, brickBounds.h + 100);
+
+            auto& bricks = levelManager->getBricks();
+            std::vector<int> toRemove;
+
+            for (int i = 0; i < static_cast<int>(bricks.size()); ++i) {
+                if (explosionBounds.overlaps(bricks[i].getBounds())) {
+                    toRemove.push_back(i);
+                }
+            }
+
+            for (int i = static_cast<int>(toRemove.size()) - 1; i >= 0; --i) {
+                int idx = toRemove[i];
+                levelManager->removeBrick(bricks[idx]); // or removeBrickByIndex(idx)
+            }
+
+            return true;
+        }
+
+        return false;
+    }
 };

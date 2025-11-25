@@ -27,6 +27,10 @@ public:
             soundsAPI.play("wall");
         });
 
+        ballSystem->onExplosion.subscribe([this]() {
+            soundsAPI.play("explosion");
+        });
+
         auto powerUpManager = getComponent<PowerUpSystem>();
         powerUpManager->onPickup.subscribe([this]() {
             soundsAPI.play("powerup");

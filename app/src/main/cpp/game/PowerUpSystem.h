@@ -88,17 +88,21 @@ public:
     void ApplyEffect(PowerUp::PowerUpType powerUpType)
     {
         switch (powerUpType) {
-            case PowerUp::PowerUpType::MultiBall:
-                for (const auto &ball: ballSystem->getBalls()) {
-                    auto velocity = ball.velocity;
-                    velocity.x = -velocity.x;
-                    velocity.y = -velocity.y;
-                    ballSystem->createBall(ball.bounds.x, ball.bounds.y, ball.bounds.w, velocity);
-                }
-                break;
+                case PowerUp::PowerUpType::MultiBall:
+                    for (const auto &ball: ballSystem->getBalls()) {
+                        auto v = ball.velocity;
+                        
+                        ballSystem->createBall(ball.bounds.x, ball.bounds.y, ball.bounds.w, v.rotate( 0.2f));
+                        ballSystem->createBall(ball.bounds.x, ball.bounds.y, ball.bounds.w, v.rotate(-0.2f));
+                    }
+                    break;
 
             case PowerUp::PowerUpType::StrongBall:
                 ballSystem->setBallType(BallSystem::BallsType::Strong);
+                break;
+
+            case PowerUp::PowerUpType::FireBall:
+                ballSystem->setBallType(BallSystem::BallsType::Fire);
                 break;
 
             case PowerUp::PowerUpType::ExpandPaddle:
