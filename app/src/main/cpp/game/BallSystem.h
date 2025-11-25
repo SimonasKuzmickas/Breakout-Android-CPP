@@ -68,7 +68,7 @@ public:
                     ball.bounds.x += ball.velocity.x * globalSpeedMultiplier;
                     ball.bounds.y += ball.velocity.y * globalSpeedMultiplier;
 
-                    if (Brick* hit = checkBallCollision(ball))
+                    if (Brick* hit = levelManager->checkBrickCollision(ball.bounds))
                     {
                         levelManager->removeBrick(*hit);
                     }
@@ -89,7 +89,7 @@ public:
             }
 
             // ---- OUT OF BOUNDS
-            if (ball.bounds.y < 0.0f) {
+            if (!ball.bounds.overlaps(levelManager->getLevelBounds())) {
                 // TODO: Game Over
                 removeBall(ball);
             }
@@ -183,19 +183,9 @@ private:
 
     static constexpr float SPEED_GROWTH = 0.0005f;
 
-    Brick* checkBallCollision(Ball& ball)
-    {
-        for (auto& brick : levelManager->getBricks()) {
-            if (ball.bounds.overlaps(brick.getBounds())) {
-                return &brick;
-            }
-        }
-        return nullptr;
-    }
-
     bool handleAxisNormalCollision(Ball& ball, float& axisPos, float& axisVel)
     {
-        if (Brick* hit = checkBallCollision(ball))
+        if (Brick* hit = levelManager->checkBrickCollision(ball.bounds))
         {
             axisPos -= axisVel;
             axisVel = -axisVel;
@@ -207,7 +197,7 @@ private:
 
     bool handleAxisFireCollision(Ball& ball, float& axisPos, float& axisVel)
     {
-        if (Brick* hit = checkBallCollision(ball))
+        if (Brick* hit = levelManager->checkBrickCollision(ball.bounds))
         {
             onExplosion.invoke();
 

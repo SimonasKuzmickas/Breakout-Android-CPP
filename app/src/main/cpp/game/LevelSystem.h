@@ -77,6 +77,16 @@ public:
         return bricks;
     }
 
+    Brick* checkBrickCollision(Rect bounds)
+    {
+        for (auto& brick : bricks) {
+            if (bounds.overlaps(brick.getBounds())) {
+                return &brick;
+            }
+        }
+        return nullptr;
+    }
+
 private:
     Rect levelBounds;
     std::vector<Brick> bricks;

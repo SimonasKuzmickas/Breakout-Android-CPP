@@ -25,7 +25,7 @@ public:
         for (auto& laser : lasers) {
             laser.bounds.y += 10;
 
-            if (Brick* hit = checkLaserCollision(laser))
+            if (Brick* hit = levelSystem->checkBrickCollision(laser.bounds))
             {
                 levelSystem->removeBrick(*hit);
                 removeLaser(laser);
@@ -87,17 +87,6 @@ private:
 
     std::vector<Laser> lasers;
 
-
     float shootTime = 0;
     float activeTime = 0;
-
-    Brick* checkLaserCollision(Laser& laser)
-    {
-        for (auto& brick : levelSystem->getBricks()) {
-            if (laser.bounds.overlaps(brick.getBounds())) {
-                return &brick;
-            }
-        }
-        return nullptr;
-    }
 };
