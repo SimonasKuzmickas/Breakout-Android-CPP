@@ -10,6 +10,12 @@
 
 class BallSystem : public ISceneComponent, public ISceneRender, public ISceneUpdate {
 public:
+    enum class BallsType {
+        Normal,
+        Strong,
+        Fire
+    };
+
     Event<> onHitWall;
 
     void onAwake() override {
@@ -18,6 +24,7 @@ public:
         levelManager = getComponent<LevelManager>();
 
         globalSpeedMultiplier = 1;
+        ballsType = BallsType::Normal;
 
         createBall(1000, 30, 30, Vector2(7.0f, 7.0f));
     }
@@ -31,12 +38,14 @@ public:
         auto& bricks = levelManager->getBricks();
         auto levelBounds = levelManager->getLevelBounds();
 
+        // TODO: Implement Strong Ball!
         for (auto& ball : balls) {
                 ball.bounds.x += ball.velocity.x * globalSpeedMultiplier;
                 for (auto& brick : levelManager->getBricks()) {
                     if (ball.bounds.overlaps(brick.getBounds())) {
                         ball.bounds.x -= ball.velocity.x;
                         ball.velocity.x = -ball.velocity.x;
+
                         levelManager->removeBrick((brick));
                         break;
                     }
@@ -96,8 +105,10 @@ public:
     }
 
     void onRender() override {
+        int index = static_cast<int>(ballsType);
+
         for (auto& ball : balls) {
-            graphics->drawImage(graphics->resourceBall, ball.bounds.x, ball.bounds.y, ball.bounds.w, ball.bounds.h);
+            graphics->drawImage(graphics->resourceBalls[index], ball.bounds.x, ball.bounds.y, ball.bounds.w, ball.bounds.h);
         }
     }
 
@@ -120,8 +131,18 @@ public:
         }
     }
 
+    void setBallType(BallsType type)
+    {
+        ballsType = type;
+    }
+
     const std::vector<Ball>& getBalls() const {
         return balls;
+    }
+
+    void increaseGlobalSpeed(float multiplier)
+    {
+        globalSpeedMultiplier *= multiplier;
     }
 
 private:
@@ -131,4 +152,5 @@ private:
     std::shared_ptr<LevelManager> levelManager;
 
     float globalSpeedMultiplier;
+    BallsType ballsType;
 };

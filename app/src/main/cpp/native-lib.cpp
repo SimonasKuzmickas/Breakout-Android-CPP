@@ -4,7 +4,6 @@
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 
-
 #include "game/scene/Scene.h"
 #include "game/Graphics.h"
 #include "game/LevelManager.h"

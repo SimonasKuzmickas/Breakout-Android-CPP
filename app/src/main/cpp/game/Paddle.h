@@ -30,7 +30,7 @@ public:
     void onUpdate() override {
         bounds.x += static_cast<float>(direction) * speed;
 
-        // clamping to screen borders
+        // paddle to wall collision
         const float maxX = WORLD_WIDTH - bounds.w;
         bounds.x = std::clamp(bounds.x, 0.0f, maxX);
     }
@@ -38,7 +38,10 @@ public:
     void onRender() override {
         paddleAnimation = std::fmod(paddleAnimation + 0.2f, 3.0f);
 
-        graphics->drawImage(graphics->resourcePaddles[(int)paddleAnimation], bounds.x, bounds.y, bounds.w, bounds.h);
+        float cornerWidth  = 50.0f;
+        graphics->drawImage(graphics->resourcePaddles[(int)paddleAnimation], bounds.x + cornerWidth, bounds.y, bounds.w - cornerWidth * 2, bounds.h);
+        graphics->drawImage(graphics->resourcePaddleLeft, bounds.x, bounds.y, cornerWidth, bounds.h);
+        graphics->drawImage(graphics->resourcePaddleRight, bounds.x + bounds.w - cornerWidth, bounds.y, cornerWidth, bounds.h);
     }
 
     void onDestroy() override {
@@ -51,7 +54,13 @@ public:
 
     void expand(float increase)
     {
+        bounds.x -= increase * 0.5f;
         bounds.w += increase;
+
+        if(bounds.w < 120)
+        {
+            bounds.w = 120;
+        }
     }
 
     Rect getBounds() { return bounds; }

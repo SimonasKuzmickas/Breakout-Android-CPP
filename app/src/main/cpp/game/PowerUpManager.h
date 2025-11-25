@@ -107,11 +107,27 @@ public:
                 }
                 break;
 
+            case PowerUp::PowerUpType::StrongBall:
+                ballSystem->setBallType(BallSystem::BallsType::Strong);
+                break;
+
             case PowerUp::PowerUpType::ExpandPaddle:
                 paddle->expand(150);
+                break;
+
+            case PowerUp::PowerUpType::ShrinkPaddle:
+                paddle->expand(-150);
+                break;
+
+            case PowerUp::PowerUpType::FastBall:
+                ballSystem->increaseGlobalSpeed(1.5f);
+                break;
+
+            case PowerUp::PowerUpType::SlowBall:
+                ballSystem->increaseGlobalSpeed(0.75f);
+                break;
 
             default:
-
                 break;
         }
     }

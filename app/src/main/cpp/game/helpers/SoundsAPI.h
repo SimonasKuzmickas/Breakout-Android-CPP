@@ -22,8 +22,6 @@ public:
         appContext = context;
     }
 
-
-    // Oboe callback: fill audio buffer
     virtual oboe::DataCallbackResult onAudioReady(oboe::AudioStream* stream,
                                           void* audioData,
                                           int32_t numFrames) override {
@@ -31,10 +29,8 @@ public:
         int channels = stream->getChannelCount();
         int samplesNeeded = numFrames * channels;
 
-        // Clear buffer
         for (int i = 0; i < samplesNeeded; i++) out[i] = 0.0f;
 
-        // Mix all active sounds
         for (auto& [name, s] : sounds) {
             if (!s.playing) continue;
 
@@ -115,7 +111,6 @@ public:
         return samples;
     }
 
-
 private:
     std::unordered_map<std::string, Sound> sounds;
     std::shared_ptr<oboe::AudioStream> mStream;
@@ -125,7 +120,3 @@ private:
     size_t readIndex = 0;
     bool playing = false;
 };
-
-
-//        auto latencyMs = mStream->calculateLatencyMillis();
-//        LOGI("Estimated latency: %d ms", latencyMs);
