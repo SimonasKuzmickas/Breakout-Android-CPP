@@ -10,6 +10,7 @@ public:
     std::array<GLuint, 3> resourcePaddles;
     GLuint resourceBall;
     GLuint resourceBrick1;
+    GLuint resourcePowerUp1;
 
     void onAwake() override {
         for (int i = 1; i <= 3; ++i) {
@@ -19,6 +20,7 @@ public:
         resourceBackground = graphicsAPI.loadTextureFromAssets("background.png");
         resourceBall = graphicsAPI.loadTextureFromAssets("ball.png");
         resourceBrick1 = graphicsAPI.loadTextureFromAssets("brick1.png");
+        resourcePowerUp1 = graphicsAPI.loadTextureFromAssets("powerup1.png");
     }
 
     void onDestroy() override {}

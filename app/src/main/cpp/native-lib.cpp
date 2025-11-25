@@ -8,6 +8,7 @@
 #include "game/scene/Scene.h"
 #include "game/Graphics.h"
 #include "game/LevelManager.h"
+#include "game/PowerUpManager.h"
 #include "game/Paddle.h"
 #include "game/PlayerInput.h"
 #include "game/BallSystem.h"
@@ -25,6 +26,7 @@ void gameLoop(AppContext* appContext) {
     Scene scene;
     scene.addComponent(std::make_shared<Graphics>(appContext));
     scene.addComponent(std::make_shared<LevelManager>());
+    scene.addComponent(std::make_shared<PowerUpManager>());
     scene.addComponent(std::make_shared<Paddle>());
     scene.addComponent(std::make_shared<BallSystem>());
     scene.addComponent(std::make_shared<PlayerInput>(appContext));

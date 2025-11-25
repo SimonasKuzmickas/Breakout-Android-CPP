@@ -9,7 +9,7 @@
 #include <thread>
 #include "AppContext.h"
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "../thirdparty/stb_image.h"
 
 struct Vertex {
     float x, y;   // position

@@ -11,7 +11,7 @@
 
 class LevelManager : public ISceneComponent, public ISceneRender {
 public:
-    Event<> onDestroyBrick;
+    Event<Brick> onDestroyBrick;
 
     explicit LevelManager()
     {
@@ -59,15 +59,15 @@ public:
 
     void removeBrick(const Brick& brickRef) {
         auto target = std::find_if(bricks.begin(), bricks.end(),
-            [&](const Brick& b) {
-            return &b == &brickRef;
-        });
+                                   [&](const Brick& b) {
+                                       return &b == &brickRef;
+                                   });
+
+        onDestroyBrick.invoke(brickRef);
 
         if (target != bricks.end()) {
             bricks.erase(target);
         }
-
-        onDestroyBrick.invoke();
     }
 
     Rect getLevelBounds() {
