@@ -8,6 +8,13 @@
 #include <vector>
 #include <thread>
 #include "AppContext.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+struct Vertex {
+    float x, y;   // position
+    float u, v;   // texture coords
+};
 
 struct GraphicsContext {
     EGLContext context = EGL_NO_CONTEXT;
@@ -23,7 +30,7 @@ public:
     const float VIRTUAL_WIDTH = 1920.0f;
     const float VIRTUAL_HEIGHT = 1080.0f;
 
-    GraphicsAPI(AppContext* context) {
+    GraphicsAPI(AppContext *context) {
         appContext = context;
 
         initGraphics(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
@@ -55,31 +62,103 @@ public:
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
+    void drawTexture(GLuint texture,
+                     float x, float y, float w, float h) const
+    {
+        float x0 = (2.0f * x / VIRTUAL_WIDTH) - 1.0f;
+        float y0 = (2.0f * y / VIRTUAL_HEIGHT) - 1.0f;
+        float x1 = (2.0f * (x + w) / VIRTUAL_WIDTH) - 1.0f;
+        float y1 = (2.0f * (y + h) / VIRTUAL_HEIGHT) - 1.0f;
+
+        GLfloat verts[] = {
+                x0, y0, 0.0f, 1.0f,   // bottom-left
+                x1, y0, 1.0f, 1.0f,   // bottom-right
+                x1, y1, 1.0f, 0.0f,   // top-right
+
+                x0, y0, 0.0f, 1.0f,   // bottom-left
+                x1, y1, 1.0f, 0.0f,   // top-right
+                x0, y1, 0.0f, 0.0f    // top-left
+        };
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_DYNAMIC_DRAW);
+
+        glUseProgram(program);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glUniform1i(texUniform, 0);
+
+        glEnableVertexAttribArray(posAttrib);
+        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE,
+                              4 * sizeof(GLfloat), (void*)0);
+
+        glEnableVertexAttribArray(uvAttrib);
+        glVertexAttribPointer(uvAttrib, 2, GL_FLOAT, GL_FALSE,
+                              4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glDisableVertexAttribArray(posAttrib);
+        glDisableVertexAttribArray(uvAttrib);
+    }
+
     void flip() {
-        eglSwapBuffers(graphicsContext->display,graphicsContext->surface);
+        eglSwapBuffers(graphicsContext->display, graphicsContext->surface);
 
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
+    GLuint loadTextureFromAssets(const char* filename) {
+        AAsset* asset = AAssetManager_open(appContext->assetManager, filename, AASSET_MODE_BUFFER);
+        size_t length = AAsset_getLength(asset);
+        const void* buffer = AAsset_getBuffer(asset);
+
+        int width, height, channels;
+        unsigned char* pixels = stbi_load_from_memory(
+                reinterpret_cast<const unsigned char*>(buffer),
+                length,
+                &width, &height, &channels,
+                STBI_rgb_alpha);
+
+        GLuint texId;
+        glGenTextures(1, &texId);
+        glBindTexture(GL_TEXTURE_2D, texId);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+                     width, height, 0,
+                     GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+        stbi_image_free(pixels);
+        AAsset_close(asset);
+
+        return texId;
+    }
+
 private:
-    GraphicsContext* graphicsContext;
-    AppContext* appContext;
+    GraphicsContext *graphicsContext;
+    AppContext *appContext;
 
     GLuint program;
     GLuint vbo;
     GLuint posAttrib;
     GLuint colUniform;
 
-    bool initGraphics(int width, int height)
-    {
+    GLint uvAttrib;
+    GLint texUniform;   // for texture sampler
+
+    bool initGraphics(int width, int height) {
         EGLint attributes[] = {
                 EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-                EGL_SURFACE_TYPE,    EGL_WINDOW_BIT,
-                EGL_RED_SIZE,        8,
-                EGL_GREEN_SIZE,      8,
-                EGL_BLUE_SIZE,       8,
+                EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+                EGL_RED_SIZE, 8,
+                EGL_GREEN_SIZE, 8,
+                EGL_BLUE_SIZE, 8,
                 EGL_NONE
         };
 
@@ -105,11 +184,11 @@ private:
         graphicsContext->surface = surf;
         graphicsContext->context = ctx;
 
-        eglQuerySurface(dpy, surf, EGL_WIDTH,  &graphicsContext->width);
+        eglQuerySurface(dpy, surf, EGL_WIDTH, &graphicsContext->width);
         eglQuerySurface(dpy, surf, EGL_HEIGHT, &graphicsContext->height);
 
         // --- Letterbox viewport calculation ---
-        float targetAspect = static_cast<float>((float)width) / float(height);
+        float targetAspect = static_cast<float>((float) width) / float(height);
         float screenAspect = static_cast<float>(graphicsContext->width) / graphicsContext->height;
 
         int vpX, vpY, vpW, vpH;
@@ -134,27 +213,65 @@ private:
     }
 
     void initSquare() {
+        // Vertex data: position (x,y) + texture coordinates (u,v)
         GLfloat vertices[] = {
-                -0.5f,-0.5f,  0.5f,-0.5f,  0.5f,0.5f,
-                -0.5f,-0.5f,  0.5f,0.5f,  -0.5f,0.5f
+                // x,    y,    u, v
+                -0.5f, -0.5f, 0.0f, 0.0f,  // bottom-left
+                0.5f, -0.5f, 1.0f, 0.0f,  // bottom-right
+                0.5f,  0.5f, 1.0f, 1.0f,  // top-right
+
+                -0.5f, -0.5f, 0.0f, 0.0f,  // bottom-left
+                0.5f,  0.5f, 1.0f, 1.0f,  // top-right
+                -0.5f,  0.5f, 0.0f, 1.0f   // top-left
         };
 
-        glGenBuffers(1,&vbo);
-        glBindBuffer(GL_ARRAY_BUFFER,vbo);
-        glBufferData(GL_ARRAY_BUFFER,sizeof(vertices),vertices,GL_STATIC_DRAW);
+        // Upload vertex data
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-        const char* vsSrc="attribute vec2 aPos;void main(){gl_Position=vec4(aPos,0.0,1.0);}";
-        const char* fsSrc="precision mediump float;uniform vec4 uColor;void main(){gl_FragColor=uColor;}";
+        // Vertex shader
+        const char *vsSrc =
+                "attribute vec2 aPos;"
+                "attribute vec2 aUV;"
+                "varying vec2 vUV;"
+                "void main() {"
+                "  gl_Position = vec4(aPos, 0.0, 1.0);"
+                "  vUV = aUV;"
+                "}";
 
-        GLuint vs=glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vs,1,&vsSrc,nullptr); glCompileShader(vs);
-        GLuint fs=glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fs,1,&fsSrc,nullptr); glCompileShader(fs);
+        // Fragment shader
+        const char *fsSrc =
+                "precision mediump float;"
+                "uniform sampler2D uTex;"
+                "varying vec2 vUV;"
+                "void main() {"
+                "  gl_FragColor = texture2D(uTex, vUV);"
+                "}";
 
-        program=glCreateProgram();
-        glAttachShader(program,vs); glAttachShader(program,fs); glLinkProgram(program);
+        // Compile vertex shader
+        GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vs, 1, &vsSrc, nullptr);
+        glCompileShader(vs);
 
-        posAttrib=glGetAttribLocation(program,"aPos");
-        colUniform=glGetUniformLocation(program,"uColor");
+        // Compile fragment shader
+        GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fs, 1, &fsSrc, nullptr);
+        glCompileShader(fs);
+
+        // Link program
+        program = glCreateProgram();
+        glAttachShader(program, vs);
+        glAttachShader(program, fs);
+        glLinkProgram(program);
+
+        // Query attribute/uniform locations
+        posAttrib   = glGetAttribLocation(program, "aPos");
+        uvAttrib    = glGetAttribLocation(program, "aUV");
+        texUniform  = glGetUniformLocation(program, "uTex");
+
+        // Enable blending for transparency
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 };

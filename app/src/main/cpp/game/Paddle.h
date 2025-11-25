@@ -4,6 +4,10 @@
 #include <android/log.h>
 #include "helpers/Math.h"
 #include "helpers/Event.h"
+#include "scene/ISceneComponent.h"
+#include "scene/ISceneRender.h"
+#include "scene/ISceneUpdate.h"
+#include "Graphics.h"
 
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
@@ -32,7 +36,9 @@ public:
     }
 
     void onRender() override {
-        graphics->drawRectangle(bounds.x, bounds.y, bounds.w, bounds.h,
+        paddleAnimation = std::fmod(paddleAnimation + 0.2f, 3.0f);
+
+        graphics->drawImage(graphics->resourcePaddles[(int)paddleAnimation], bounds.x, bounds.y, bounds.w, bounds.h,
                                 255, 0, 1, 1);
     }
 
@@ -49,10 +55,11 @@ public:
 private:
     static constexpr float WORLD_WIDTH = 1920.0f;
     static constexpr float DEFAULT_SPEED = 15.0f;
-    inline static const Rect DEFAULT_BOUNDS{1920.0f / 2 - 150, 20, 300, 20};
+    inline static const Rect DEFAULT_BOUNDS{1920.0f / 2 - 250, 20, 300, 60};
 
     Rect bounds;
     Direction direction;
     float speed;
     std::shared_ptr<Graphics> graphics;
+    float paddleAnimation = 0;
 };

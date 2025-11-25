@@ -93,7 +93,7 @@ public:
 
     void onRender() override {
         for (auto& ball : balls) {
-            graphics->drawRectangle(ball.bounds.x, ball.bounds.y, ball.bounds.w, ball.bounds.h,1, 1, 1, 1);
+            graphics->drawImage(graphics->resourceBall, ball.bounds.x, ball.bounds.y, ball.bounds.w, ball.bounds.h,1, 1, 1, 1);
         }
     }
 
