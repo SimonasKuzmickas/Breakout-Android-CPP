@@ -12,7 +12,7 @@ public:
         paddle = getComponent<Paddle>();
         levelManager = getComponent<LevelManager>();
 
-        createBall(1000, 50, 30, Vector2(10.0f, 10.0f));
+        createBall(1000, 30, 30, Vector2(7.0f, 7.0f));
     }
 
     void onUpdate() override {

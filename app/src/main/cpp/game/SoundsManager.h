@@ -12,45 +12,57 @@
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
 
+struct Sound {
+    std::vector<float> samples;
+    size_t readIndex = 0;
+    bool playing = false;
+    float gain = 1.0f;
+};
+
 class SoundsManager : public ISceneComponent, public oboe::AudioStreamCallback {
 public:
     SoundsManager(AppContext* context) { appContext = context; }
 
     void onAwake() override {
+        uint32_t sr; uint16_t ch;
 
-        uint32_t sampleRate;
-        uint16_t channels;
-        samples = loadWavFromAssets(appContext->assetManager, "paddlehit.wav",
-                                    sampleRate, channels);
+        sounds["paddle"] = { loadWavFromAssets(appContext->assetManager, "paddlehit.wav", sr, ch) };
+        sounds["wall"]   = { loadWavFromAssets(appContext->assetManager, "wallhit.wav", sr, ch) };
 
         oboe::AudioStreamBuilder builder;
         builder.setDirection(oboe::Direction::Output)
                 ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
+                ->setSharingMode(oboe::SharingMode::Exclusive)
                 ->setFormat(oboe::AudioFormat::Float)
-                ->setChannelCount(channels)
-                ->setSampleRate(sampleRate)
-                ->setCallback(this)
-                ->setSharingMode(oboe::SharingMode::Exclusive);
+                ->setChannelCount(ch)
+                ->setSampleRate(sr)
+                ->setCallback(this);
 
-
-        oboe::Result result = builder.openStream(mStream);
-        //  builder.setSampleRate(mStream->getSampleRate());
-        if (result == oboe::Result::OK) {
-            mStream->requestStart();
-            LOGI("Audio stream started");
-        } else {
-            LOGE("Failed to open Oboe stream: %s", oboe::convertToText(result));
-        }
+        builder.openStream(mStream);
+        mStream->requestStart();
 
         auto paddle = getComponent<Paddle>();
         if (paddle) {
             paddle->onHit.subscribe([this]() {
-                this->play();
+                play("wall");
             });
         }
 
-        auto latencyMs = mStream->calculateLatencyMillis();
-        LOGI("Estimated latency: %d ms", latencyMs);
+        auto levelManager = getComponent<LevelManager>();
+        if (levelManager) {
+            levelManager->onHitEdge.subscribe([this]() {
+                play("wall");
+            });
+
+            levelManager->onDestroyBrick.subscribe([this]() {
+                //this->play();
+
+                play("paddle");
+            });
+        }
+
+//        auto latencyMs = mStream->calculateLatencyMillis();
+//        LOGI("Estimated latency: %d ms", latencyMs);
 
     }
 
@@ -63,10 +75,11 @@ public:
         }
     }
 
-    // Trigger playback once
-    void play() {
-        readIndex = 0;
-        playing = true;
+    void play(const std::string& name, float gain = 1.0f) {
+        auto& s = sounds[name];
+        s.readIndex = 0;
+        s.playing = true;
+        s.gain = gain;
     }
 
     std::vector<float> loadWavFromAssets(AAssetManager* mgr, const char* filename,
@@ -96,30 +109,35 @@ public:
     }
 
     // Oboe callback: fill audio buffer
-    oboe::DataCallbackResult onAudioReady(oboe::AudioStream* oboeStream,
+    oboe::DataCallbackResult onAudioReady(oboe::AudioStream* stream,
                                           void* audioData,
                                           int32_t numFrames) override {
         float* out = static_cast<float*>(audioData);
-        int32_t channels = oboeStream->getChannelCount();
-        int32_t samplesNeeded = numFrames * channels;
+        int channels = stream->getChannelCount();
+        int samplesNeeded = numFrames * channels;
 
-        for (int i = 0; i < samplesNeeded; i++) {
-            if (playing && readIndex < samples.size()) {
-                out[i] = samples[readIndex++];
-            } else {
-                out[i] = 0.0f;  // silence
+        // Clear buffer
+        for (int i = 0; i < samplesNeeded; i++) out[i] = 0.0f;
+
+        // Mix all active sounds
+        for (auto& [name, s] : sounds) {
+            if (!s.playing) continue;
+
+            for (int i = 0; i < samplesNeeded; i++) {
+                if (s.readIndex < s.samples.size()) {
+                    out[i] += s.samples[s.readIndex++] * s.gain;
+                } else {
+                    s.playing = false; // finished
+                    break;
+                }
             }
-        }
-
-        // Stop playing once buffer ends
-        if (readIndex >= samples.size()) {
-            playing = false;
         }
 
         return oboe::DataCallbackResult::Continue;
     }
 
 private:
+    std::unordered_map<std::string, Sound> sounds;
     std::shared_ptr<oboe::AudioStream> mStream;
     AppContext* appContext;
 

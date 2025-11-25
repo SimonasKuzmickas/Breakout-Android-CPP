@@ -13,6 +13,7 @@ class LevelManager : public ISceneComponent, public ISceneRender {
 public:
 
     Event<> onHitEdge;
+    Event<> onDestroyBrick;
 
     explicit LevelManager()
     {
@@ -67,6 +68,8 @@ public:
         if (target != bricks.end()) {
             bricks.erase(target);
         }
+
+        onDestroyBrick.invoke();
     }
 
     Rect getLevelBounds() {
