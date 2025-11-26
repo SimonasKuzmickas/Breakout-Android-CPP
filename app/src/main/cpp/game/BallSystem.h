@@ -27,6 +27,16 @@ public:
     void onAwake() override {
         paddle = getComponent<Paddle>();
         levelSystem = getComponent<LevelSystem>();
+        levelSystem->onlevelStart.subscribe([this]() {
+            Start();
+        });
+
+        Start();
+    }
+
+    void Start()
+    {
+        balls.clear();
 
         globalSpeedMultiplier = 1;
         ballsType = BallsType::Normal;
@@ -90,16 +100,13 @@ public:
 
             // ---- OUT OF BOUNDS
             if (!ball.bounds.overlaps(levelSystem->getLevelBounds())) {
-                // TODO: Game Over
                 removeBall(ball);
 
                 if(balls.empty())
                 {
                     onLost.invoke();
 
-                    globalSpeedMultiplier = 1;
-                    ballsType = BallsType::Normal;
-                    createBall(1000, 200, 30, Vector2(7.0f, 7.0f));
+                    Start();
                 }
             }
 

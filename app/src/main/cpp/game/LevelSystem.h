@@ -19,6 +19,7 @@ private:
 class LevelSystem : public ISceneComponent {
 public:
     Event<Brick> onDestroyBrick;
+    Event<> onlevelStart;
 
     explicit LevelSystem() {
         levelBounds = Rect(0, 0, 1920.0f, 1080.0f);
@@ -54,6 +55,8 @@ public:
                 createBrick(x, y);
             }
         }
+
+        onlevelStart.invoke();
     }
 
     void createBrick(float x, float y) {

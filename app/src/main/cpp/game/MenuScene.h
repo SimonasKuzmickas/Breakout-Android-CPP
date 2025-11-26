@@ -23,11 +23,11 @@ public:
         addComponent(std::make_shared<LaserShooter>());
         addComponent(std::make_shared<SoundsManager>(appContext));
 
-        auto menuLayout = std::make_shared<UIMenuLayout>(appContext);
-        addComponent(menuLayout);
+        auto layout = std::make_shared<UIMenuLayout>(appContext);
+        addComponent(layout);
 
-        if (menuLayout) {
-            menuLayout->onStartPressed.subscribe([this]() {
+        if (layout) {
+            layout->onStartPressed.subscribe([this]() {
                 sceneManager->requestChange(std::make_unique<GameScene>(appContext));
             });
         }
