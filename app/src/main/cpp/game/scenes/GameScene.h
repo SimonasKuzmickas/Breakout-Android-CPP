@@ -11,6 +11,7 @@
 #include "../components/Paddle.h"
 #include "../components/LaserShooter.h"
 #include "GameOverScene.h"
+#include "SceneId.h"
 
 class GameScene : public IScene {
 public:
@@ -22,7 +23,7 @@ public:
     void onStart() override {
         auto playerState = std::make_shared<PlayerState>();
         playerState->onDeath.subscribe([this]() {
-            sceneManager->requestChange(std::make_unique<GameOverScene>(appContext));
+            sceneManager->requestChange(SceneId::GameOver);
         });
 
         addComponent(std::make_shared<GraphicsManager>(appContext));

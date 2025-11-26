@@ -4,7 +4,8 @@
 #include <memory>
 #include "ISceneComponent.h"
 
-class SceneManager;
+
+class ISceneManager;
 
 class IScene {
 protected:
@@ -47,12 +48,12 @@ public:
         }
     }
 
-    void setManager(SceneManager* manager) { sceneManager = manager; }
+    void setManager(ISceneManager* manager) { sceneManager = manager; }
 
 private:
     std::vector<std::shared_ptr<ISceneComponent>> components;
     Blackboard blackboard;
 
 protected:
-    SceneManager* sceneManager = nullptr;
+    ISceneManager* sceneManager = nullptr;
 };

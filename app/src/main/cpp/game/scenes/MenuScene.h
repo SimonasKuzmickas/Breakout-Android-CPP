@@ -5,6 +5,8 @@
 #include "../ui/UILayoutHandler.h"
 #include "../ui/UILayoutMenu.h"
 #include "../ui/UIAutoPlayer.h"
+#include "SceneManager.h"
+#include "SceneId.h"
 
 class MenuScene : public IScene {
 public:
@@ -27,7 +29,7 @@ public:
 
         if (layout) {
             layout->onStartPressed.subscribe([this]() {
-                sceneManager->requestChange(std::make_unique<GameScene>(appContext));
+                sceneManager->requestChange(SceneId::Game);
             });
         }
     }

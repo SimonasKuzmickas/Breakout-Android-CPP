@@ -1,19 +1,16 @@
 #pragma once
 
 #include "../scene/IScene.h"
-#include "../GraphicsManager.h"
 #include "../ui/UILayoutHandler.h"
-#include "../ui/UILayoutMenu.h"
 #include "../ui/UILayoutGameOver.h"
-//#include "MenuScene.h"
+#include "SceneId.h"
 
 class GameOverScene : public IScene {
 public:
     Event<> onPressedMenu;
     Event<> onPressedRetry;
 
-    explicit GameOverScene(AppContext* context)
-    {
+    explicit GameOverScene(AppContext* context) {
         appContext = context;
     }
 
@@ -22,7 +19,11 @@ public:
         addComponent(layout);
 
         layout->onMenuPressed.subscribe([this]() {
-           // sceneManager->requestChange(std::make_unique<MenuScene>(appContext));
+            sceneManager->requestChange((int)SceneId::Menu);
+        });
+
+        layout->onRetryPressed.subscribe([this]() {
+            sceneManager->requestChange((int)SceneId::GameOver);
         });
     }
 

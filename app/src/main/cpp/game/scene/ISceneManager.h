@@ -1,18 +1,21 @@
 #pragma once
 #include "IScene.h"
 
-class SceneManager {
+class ISceneManager {
 public:
-    void requestChange(std::unique_ptr<IScene> newScene) {
-        pendingScene = std::move(newScene);
+    virtual std::unique_ptr<IScene> createScene(int id) = 0;
+
+    void requestChange(int sceneId) {
+        pendingScene = sceneId;
     }
 
     void update() {
         if (currentScene) {
             currentScene->update();
         }
-        if (pendingScene) {
-            changeState(std::move(pendingScene));
+        if (pendingScene > -1) {
+            changeState(createScene(pendingScene));
+            pendingScene = -1;
         }
     }
 
@@ -22,7 +25,6 @@ public:
             currentScene = nullptr;
         }
     }
-
 private:
     void changeState(std::unique_ptr<IScene> newScene) {
         if (currentScene) currentScene->destroy();
@@ -32,5 +34,5 @@ private:
     }
 
     std::unique_ptr<IScene> currentScene;
-    std::unique_ptr<IScene> pendingScene;
+    int pendingScene = -1;
 };
