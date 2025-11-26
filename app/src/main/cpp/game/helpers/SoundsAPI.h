@@ -67,7 +67,7 @@ public:
         uint32_t sr;
         uint16_t ch;
 
-        loadWavFromAssets(appContext->assetManager, "sample.wav", sr, ch);
+        loadWavFromAssets(appContext->assetManager, "sfx_sample.wav", sr, ch);
 
         oboe::AudioStreamBuilder builder;
         builder.setDirection(oboe::Direction::Output)

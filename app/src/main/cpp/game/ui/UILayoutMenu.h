@@ -11,8 +11,8 @@ public:
     void onAwake() override {
         UILayoutHandler::onAwake();
 
-        resourceBackground = loadImage("background.png");
-        resourceBlock = loadImage("block.png");
+        resourceBackground = loadImage("bg_space.png");
+        resourceBlock = loadImage("ui_block.png");
         resourceStartButton = loadImage("startbutton.png");
         resourcesTitle = loadImage("title.png");
     }

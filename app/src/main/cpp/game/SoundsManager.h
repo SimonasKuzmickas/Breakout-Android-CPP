@@ -22,13 +22,13 @@ public:
     void onAwake() override {
         soundsAPI.initialize();
 
-        soundPaddle = soundsAPI.include("paddlehit");
-        soundWall = soundsAPI.include("wallhit");
-        soundBrick = soundsAPI.include("brickdestroy");
-        soundPowerUp = soundsAPI.include("powerup");
-        soundExplosion = soundsAPI.include("explosion");
-        soundLaser = soundsAPI.include("laser");
-        lifeLost = soundsAPI.include("lifelost");
+        soundPaddle = soundsAPI.include("sfx_paddlehit");
+        soundWall = soundsAPI.include("sfx_wallhit");
+        soundBrick = soundsAPI.include("sfx_brickdestroy");
+        soundPowerUp = soundsAPI.include("sfx_powerup");
+        soundExplosion = soundsAPI.include("sfx_explosion");
+        soundLaser = soundsAPI.include("sfx_laser");
+        lifeLost = soundsAPI.include("sfx_lifelost");
 
         auto paddle = getComponent<Paddle>();
         if (paddle) {

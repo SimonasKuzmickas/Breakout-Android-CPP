@@ -26,7 +26,7 @@ public:
             resourcePaddles[i - 1] = loadImage(filename.c_str());
         }
 
-        resourceBackground = loadImage("background.png");
+        resourceBackground = loadImage("bg_space.png");
         resourceBrick1 = loadImage("brick1.png");
         resourcePaddleLeft = loadImage("paddleleft.png");
         resourcePaddleRight = loadImage("paddleright.png");
@@ -34,7 +34,7 @@ public:
         resourceShooterRight = loadImage("shooter_right.png");
         resourceLife = loadImage("life.png");
         resourceNumbers = loadImage("numbers.png");
-        resourceBalls = loadImage("balls.png");
+        resourceBalls = loadImage("tex_balls.png");
         resourcePowerUps = loadImage("powerups.png");
     }
 

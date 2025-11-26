@@ -14,10 +14,10 @@ public:
     void onAwake() override {
         UILayoutHandler::onAwake();
 
-        resourceBackground = loadImage("background.png");
+        resourceBackground = loadImage("bg_space.png");
         resourcesRetryButton = loadImage("retry.png");
         resourcesMenuButton = loadImage("menu.png");
-        resourceBlock = loadImage("block.png");
+        resourceBlock = loadImage("ui_block.png");
         resourcesGameOver = loadImage("gameover.png");
 
         inputHandler = getComponent<UILayoutHandler>();
