@@ -14,7 +14,8 @@ public:
     Paddle()
             : bounds(DEFAULT_BOUNDS),
               direction(Direction::None),
-              speed(DEFAULT_SPEED) {}
+              speed(DEFAULT_SPEED),
+              transitionWidth(DEFAULT_BOUNDS.w){}
 
     void onAwake() override {
 
@@ -30,20 +31,31 @@ public:
         // paddle to wall collision
         const float maxX = WORLD_WIDTH - bounds.w;
         bounds.x = std::clamp(bounds.x, 0.0f, maxX);
+
+        float difference = transitionWidth - bounds.w;
+        difference *= 0.3f;
+
+        bounds.x -= difference * 0.5f;
+        bounds.w += difference;
+
+        if(bounds.w < 120) {
+            bounds.w = 120;
+        }
     }
 
     void move(Direction dir) {
         direction = dir;
     }
 
+    void start()
+    {
+        bounds = DEFAULT_BOUNDS;
+        transitionWidth = bounds.w;
+    }
+
     void expand(float increase)
     {
-        bounds.x -= increase * 0.5f;
-        bounds.w += increase;
-
-        if(bounds.w < 120) {
-            bounds.w = 120;
-        }
+        transitionWidth += increase;
     }
 
     Rect getBounds() { return bounds; }
@@ -56,4 +68,5 @@ private:
     Rect bounds;
     Direction direction;
     float speed;
+    float transitionWidth = 0;
 };

@@ -28,13 +28,13 @@ public:
         paddle = getComponent<Paddle>();
         levelSystem = getComponent<LevelSystem>();
         levelSystem->onlevelStart.subscribe([this]() {
-            Start();
+            start();
         });
 
-        Start();
+        start();
     }
 
-    void Start()
+    void start()
     {
         balls.clear();
 
@@ -42,6 +42,8 @@ public:
         ballsType = BallsType::Normal;
 
         createBall(1000, 200, 30, Vector2(7.0f, 7.0f));
+
+        paddle->start();
     }
 
     void onDestroy() override {
@@ -106,7 +108,7 @@ public:
                 {
                     onLost.invoke();
 
-                    Start();
+                    start();
                 }
             }
 

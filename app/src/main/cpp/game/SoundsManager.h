@@ -14,6 +14,7 @@ public:
     Sound* soundPowerUp;
     Sound* soundExplosion;
     Sound* soundLaser;
+    Sound* lifeLost;
 
 
     void onAwake() override {
@@ -25,6 +26,7 @@ public:
         soundPowerUp = soundsAPI.include("powerup");
         soundExplosion = soundsAPI.include("explosion");
         soundLaser = soundsAPI.include("laser");
+        lifeLost = soundsAPI.include("lifelost");
 
         auto paddle = getComponent<Paddle>();
         if (paddle) {
@@ -45,6 +47,10 @@ public:
             soundWall->play();
         });
 
+        ballSystem->onLost.subscribe([this]() {
+            lifeLost->play();
+        });
+
         ballSystem->onExplosion.subscribe([this]() {
             soundExplosion->play();
         });
@@ -60,6 +66,8 @@ public:
                 soundBrick->play();
             });
         }
+
+
     }
 
     void onUpdate() override {
