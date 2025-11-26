@@ -2,9 +2,10 @@
 
 #include "scene/IScene.h"
 #include "GraphicsManager.h"
-#include "ui/UIInputHandler.h"
+#include "ui/UILayoutHandler.h"
 #include "ui/UIMenuLayout.h"
 #include "ui/UIGameOverLayout.h"
+//#include "MenuScene.h"
 
 class GameOverScene : public IScene {
 public:
@@ -17,10 +18,12 @@ public:
     }
 
     void onStart() override {
-        addComponent(std::make_shared<UIInputHandler>(appContext));
-
         auto layout = std::make_shared<UIGameOverLayout>(appContext);
         addComponent(layout);
+
+        layout->onMenuPressed.subscribe([this]() {
+           // sceneManager->requestChange(std::make_unique<MenuScene>(appContext));
+        });
     }
 
     void onUpdate() override {

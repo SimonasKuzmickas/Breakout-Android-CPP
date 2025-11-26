@@ -24,7 +24,7 @@ public:
         int height = ANativeWindow_getHeight(context->window);
 
         isMoving = false;
-        worldBounds = Rect(0, 0, (float)width, (float)height);
+        screenBounds = Rect(0, 0, (float)width, (float)height);
     }
 
     void onAwake() override {
@@ -45,7 +45,7 @@ public:
             return;
         }
 
-        float center = worldBounds.w * 0.5f;
+        float center = screenBounds.w * 0.5f;
         float offset = position.x - center;
 
         if (offset < 0.0f) {
@@ -89,7 +89,7 @@ public:
     }
 
 private:
-    Rect worldBounds;
+    Rect screenBounds;
     Vector2 position;
     bool isMoving;
     int activePointer = -1;

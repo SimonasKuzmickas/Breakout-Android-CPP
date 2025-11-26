@@ -1,14 +1,13 @@
 #pragma once
 
-class UIMenuLayout : public GraphicsManager {
+class UIMenuLayout : public UILayoutHandler {
 public:
-    UIMenuLayout(AppContext* context) : GraphicsManager(context) {}
+    UIMenuLayout(AppContext* context) : UILayoutHandler(context) {}
 
     Event<> onStartPressed;
 
     void onAwake() override {
-        GraphicsManager::onAwake();
-        inputHandler = getComponent<UIInputHandler>();
+        UILayoutHandler::onAwake();
 
         resourceBackground = loadImage("background.png");
         resourceBlock = loadImage("block.png");
@@ -33,28 +32,9 @@ public:
         graphicsAPI.flip();
     }
 
-    bool drawButton(GLuint textureId, float x, float y, float w, float h) {
-        drawImage(textureId, x, y, w, h);
-
-        if(inputHandler->isPressed())
-        {
-            auto touchPosition = inputHandler->getPosition();
-            auto imageBounds = Rect(x, y, w, h);
-            auto inputBounds = Rect(touchPosition.x, touchPosition.y, 1, 1);
-
-            if(imageBounds.overlaps(inputBounds))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
 private:
     GLuint resourceBackground;
     GLuint resourceBlock;
     GLuint resourceStartButton;
     GLuint resourcesTitle;
-    std::shared_ptr<UIInputHandler> inputHandler;
 };

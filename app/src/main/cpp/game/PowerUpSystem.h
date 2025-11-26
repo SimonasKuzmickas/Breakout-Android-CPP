@@ -49,6 +49,10 @@ public:
                     createPowerUp(brick.getBounds().x + 10, brick.getBounds().y + 5, getRandomPowerUpType());
                 }
             });
+
+            levelSystem->onlevelStart.subscribe([this]() {
+                powerUps.clear();
+            });
         }
     }
 

@@ -4,10 +4,10 @@
 #include "../helpers/AppContext.h"
 #include "../scene/ISceneComponent.h"
 
-class UIInputHandler;
-static UIInputHandler* g_inputHandler = nullptr;
+class UILayoutHandler;
+static UILayoutHandler* g_layoutHandler = nullptr;
 
-class UIInputHandler : public ISceneComponent {
+class UILayoutHandler : public GraphicsManager {
 public:
     enum class TouchAction {
         Down = 0,
@@ -18,7 +18,7 @@ public:
         PointerUp = 6
     };
 
-    explicit UIInputHandler(AppContext *context) {
+    UILayoutHandler(AppContext* context) : GraphicsManager(context) {
         int width = ANativeWindow_getWidth(context->window);
         int height = ANativeWindow_getHeight(context->window);
 
@@ -26,15 +26,37 @@ public:
     }
 
     void onAwake() override {
-        g_inputHandler = this;
+        GraphicsManager::onAwake();
+
+        g_layoutHandler = this;
     }
 
     void onDestroy() override {
-        g_inputHandler = nullptr;
+        GraphicsManager::onDestroy();
+
+        g_layoutHandler = nullptr;
     }
 
     void onUpdate() override {
 
+    }
+
+    bool drawButton(GLuint textureId, float x, float y, float w, float h) {
+        drawImage(textureId, x, y, w, h);
+
+        if(isPressed())
+        {
+            auto touchPosition = getPosition();
+            auto imageBounds = Rect(x, y, w, h);
+            auto inputBounds = Rect(touchPosition.x, touchPosition.y, 1, 1);
+
+            if(imageBounds.overlaps(inputBounds))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     Vector2 getPosition() {

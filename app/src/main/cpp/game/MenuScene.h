@@ -2,7 +2,7 @@
 
 #include "scene/IScene.h"
 #include "GameScene.h"
-#include "ui/UIInputHandler.h"
+#include "ui/UILayoutHandler.h"
 #include "ui/UIMenuLayout.h"
 #include "ui/UIAutoPlayer.h"
 
@@ -13,8 +13,6 @@ public:
     }
 
     void onStart() override {
-        addComponent(std::make_shared<UIInputHandler>(appContext));
-
         addComponent(std::make_shared<UIAutoPlayer>());
         addComponent(std::make_shared<LevelSystem>());
         addComponent(std::make_shared<PowerUpSystem>());
