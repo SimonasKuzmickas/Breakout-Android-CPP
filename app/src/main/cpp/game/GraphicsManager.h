@@ -66,15 +66,10 @@ public:
     void drawNumber(int value, int x, int y, int digitWidth, int digitHeight, int spacing) {
         std::string str = std::to_string(value);
 
-        // Total width of all digits + spacing
         int totalWidth = static_cast<int>(str.size()) * digitWidth +
                          (static_cast<int>(str.size()) - 1) * spacing;
 
-        // If you want right-aligned, shift x by totalWidth
-        // int xposStart = x - totalWidth;   // right-aligned
-        // If you want left-aligned, just use x directly:
         int xposStart = x;
-
         for (size_t i = 0; i < str.size(); ++i) {
             int digit = str[i] - '0';
             int xpos = xposStart + static_cast<int>(i) * (digitWidth + spacing);
