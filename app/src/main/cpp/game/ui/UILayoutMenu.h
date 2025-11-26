@@ -18,10 +18,7 @@ public:
     }
 
     void onUpdate() override {
-        drawLevel();
-        drawPaddle();
-        drawPowerUps();
-        drawBalls();
+        drawGame();
 
         drawImage(resourceBlock, 580, 0, 680, 1080);
         drawImage(resourcesTitle, 600, 480, 650, 660);

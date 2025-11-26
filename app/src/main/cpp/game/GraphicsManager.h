@@ -55,11 +55,8 @@ public:
     }
 
     void onUpdate() override {
-        drawLevel();
-        drawPaddle();
-        drawBalls();
-        drawPowerUps();
-        drawLaserShooter();
+        drawGame();
+
         drawHUD();
 
         graphicsAPI.flip();
@@ -120,6 +117,29 @@ private:
     float paddleAnimation = 0;
 
 protected:
+    void drawGame() {
+        drawBackground();
+
+        graphicsAPI.setColor(0, 0, 0, 0.5f);
+        graphicsAPI.setOffset(20, -20);
+        // draw shadows
+
+        drawLevel();
+        drawPaddle();
+        drawBalls();
+        drawPowerUps();
+        drawLaserShooter();
+
+        graphicsAPI.setColor(1, 1, 1, 1);
+        graphicsAPI.setOffset(0, 0);
+
+        drawLevel();
+        drawPaddle();
+        drawBalls();
+        drawPowerUps();
+        drawLaserShooter();
+    }
+
     void drawHUD() {
         int score = playerState->getScore();
         int numDigits = (score == 0) ? 1 : static_cast<int>(std::log10(score)) + 1;
@@ -184,11 +204,13 @@ protected:
         }
     }
 
-    void drawLevel() {
+    void drawBackground() {
         auto levelBounds = levelSystem->getLevelBounds();
         drawImage(resourceBackground, levelBounds.x, levelBounds.y, levelBounds.w,
                   levelBounds.h);
+    }
 
+    void drawLevel() {
         for (auto &brick: levelSystem->getBricks()) {
             auto bounds = brick.getBounds();
             drawImage(resourceBrick1, bounds.x, bounds.y, bounds.w, bounds.h);

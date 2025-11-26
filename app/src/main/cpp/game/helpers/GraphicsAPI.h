@@ -39,8 +39,23 @@ public:
         initSquare();
     }
 
+    void setColor(float r, float g, float b, float a) {
+        colorR = r;
+        colorG = g;
+        colorB = b;
+        colorA = a;
+    }
+
+    void setOffset(float x, float y) {
+        offsetX = x;
+        offsetY = y;
+    }
+
     void drawTexture(GLuint texture,
                      float x, float y, float w, float h) const {
+        x += offsetX;
+        y += offsetY;
+
         float x0 = (2.0f * x / VIRTUAL_WIDTH) - 1.0f;
         float y0 = (2.0f * y / VIRTUAL_HEIGHT) - 1.0f;
         float x1 = (2.0f * (x + w) / VIRTUAL_WIDTH) - 1.0f;
@@ -60,6 +75,9 @@ public:
         glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_DYNAMIC_DRAW);
 
         glUseProgram(program);
+
+        GLint colorLoc = glGetUniformLocation(program, "uColor");
+        glUniform4f(colorLoc, colorR, colorG, colorB, colorA);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
@@ -101,6 +119,7 @@ public:
                 STBI_rgb_alpha);
 
         GLuint texId;
+
         glGenTextures(1, &texId);
         glBindTexture(GL_TEXTURE_2D, texId);
 
@@ -163,7 +182,10 @@ private:
     GLuint colUniform;
 
     GLint uvAttrib;
-    GLint texUniform;   // for texture sampler
+    GLint texUniform;
+
+    float colorR = 1, colorG = 1, colorB = 1, colorA = 1;
+    float offsetX = 0, offsetY = 0;
 
     bool initGraphics(int width, int height) {
         EGLint attributes[] = {
@@ -258,9 +280,10 @@ private:
         const char *fsSrc =
                 "precision mediump float;"
                 "uniform sampler2D uTex;"
+                "uniform vec4 uColor;"
                 "varying vec2 vUV;"
                 "void main() {"
-                "  gl_FragColor = texture2D(uTex, vUV);"
+                "  gl_FragColor = texture2D(uTex, vUV) * uColor;"
                 "}";
 
         // Compile vertex shader
