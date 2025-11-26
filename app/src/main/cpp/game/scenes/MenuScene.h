@@ -9,36 +9,38 @@
 #include "SceneId.h"
 
 namespace Breakout::Scenes {
-    // MenuScene: Main menu scene that initializes UI
-    // transitions to GameScene when Start is pressed
-    class MenuScene : public IScene {
-    public:
-        explicit MenuScene(AppContext *context)
-                : appContext(context) {}
 
-        void onStart() override {
-            addComponent(std::make_shared<UIAutoPlayer>());
-            addComponent(std::make_shared<LevelSystem>());
-            addComponent(std::make_shared<PowerUpSystem>());
-            addComponent(std::make_shared<BallSystem>());
-            addComponent(std::make_shared<Paddle>());
-            addComponent(std::make_shared<LaserShooter>());
-            addComponent(std::make_shared<SoundsManager>(appContext));
-            addComponent(std::make_shared<PlayerState>());
+// MenuScene: Main menu scene that initializes UI
+// transitions to GameScene when Start is pressed
+class MenuScene : public IScene {
+public:
+    explicit MenuScene(AppContext *context)
+            : appContext(context) {}
 
-            auto layout = std::make_shared<UILayoutMenu>(appContext);
-            addComponent(layout);
+    void onStart() override {
+        addComponent(std::make_shared<UIAutoPlayer>());
+        addComponent(std::make_shared<LevelSystem>());
+        addComponent(std::make_shared<PowerUpSystem>());
+        addComponent(std::make_shared<BallSystem>());
+        addComponent(std::make_shared<Paddle>());
+        addComponent(std::make_shared<LaserShooter>());
+        addComponent(std::make_shared<SoundsManager>(appContext));
+        addComponent(std::make_shared<PlayerState>());
 
-            layout->onStartPressed.addListener([this]() {
-                sceneManager->requestChange(SceneId::Game);
-            });
-        }
+        auto layout = std::make_shared<UILayoutMenu>(appContext);
+        addComponent(layout);
 
-        void onUpdate() override {}
+        layout->onStartPressed.addListener([this]() {
+            sceneManager->requestChange(SceneId::Game);
+        });
+    }
 
-        void onDestroy() override {}
+    void onUpdate() override {}
 
-    private:
-        AppContext *appContext;
-    };
+    void onDestroy() override {}
+
+private:
+    AppContext *appContext;
+};
+
 }

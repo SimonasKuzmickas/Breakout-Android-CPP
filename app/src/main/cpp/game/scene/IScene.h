@@ -4,20 +4,23 @@
 #include <memory>
 #include "ISceneComponent.h"
 
+namespace Breakout {
 
 class ISceneManager;
 
 class IScene {
 protected:
     virtual void onStart() = 0;
+
     virtual void onUpdate() = 0;
+
     virtual void onDestroy() = 0;
 
 public:
     virtual ~IScene() = default;
+
     IScene()
-            : blackboard(components)
-    {}
+            : blackboard(components) {}
 
     void addComponent(std::shared_ptr<ISceneComponent> component) {
         components.push_back(component);
@@ -48,12 +51,14 @@ public:
         }
     }
 
-    void setManager(ISceneManager* manager) { sceneManager = manager; }
+    void setManager(ISceneManager *manager) { sceneManager = manager; }
 
 private:
     std::vector<std::shared_ptr<ISceneComponent>> components;
     Blackboard blackboard;
 
 protected:
-    ISceneManager* sceneManager = nullptr;
+    ISceneManager *sceneManager = nullptr;
 };
+
+}

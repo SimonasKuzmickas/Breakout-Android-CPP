@@ -7,9 +7,11 @@
 #include "components/LaserShooter.h"
 #include "components/PlayerState.h"
 
+namespace Breakout {
+
 class GraphicsManager : public ISceneComponent {
 public:
-    GraphicsManager(AppContext* context) : graphicsAPI(context) {}
+    GraphicsManager(AppContext *context) : graphicsAPI(context) {}
 
     void onAwake() override {
         paddle = getComponent<Paddle>();
@@ -87,7 +89,7 @@ public:
         }
     }
 
-    GLuint loadImage(const char* path) {
+    GLuint loadImage(const char *path) {
         return graphicsAPI.loadTextureFromAssets(path);
     }
 
@@ -118,8 +120,7 @@ private:
     float paddleAnimation = 0;
 
 protected:
-    void drawHUD()
-    {
+    void drawHUD() {
         int score = playerState->getScore();
         int numDigits = (score == 0) ? 1 : static_cast<int>(std::log10(score)) + 1;
 
@@ -138,7 +139,7 @@ protected:
     }
 
     void drawPowerUps() {
-        for (auto& powerup : powerUpManager->getPowerUps()) {
+        for (auto &powerup: powerUpManager->getPowerUps()) {
             auto bounds = powerup.bounds;
             int index = static_cast<int>(powerup.powerUpType);
             drawImage(resourcePowerUps[index], bounds.x, bounds.y, bounds.w, bounds.h);
@@ -146,17 +147,18 @@ protected:
     }
 
     void drawLaserShooter() {
-        for (auto& laser : laserShooter->getLasers()) {
+        for (auto &laser: laserShooter->getLasers()) {
             auto bounds = laser.bounds;
             drawImage(resourceBalls[0], bounds.x, bounds.y, bounds.w, bounds.h);
         }
 
-        if(laserShooter->getIsActive()) {
+        if (laserShooter->getIsActive()) {
             auto bounds = paddle->getBounds();
-            float cornerWidth  = 50.0f;
+            float cornerWidth = 50.0f;
 
             drawImage(resourceShooterLeft, bounds.x, bounds.y, cornerWidth, bounds.h);
-            drawImage(resourceShooterRight, bounds.x + bounds.w - cornerWidth, bounds.y, cornerWidth, bounds.h);
+            drawImage(resourceShooterRight, bounds.x + bounds.w - cornerWidth, bounds.y,
+                      cornerWidth, bounds.h);
         }
     }
 
@@ -164,28 +166,34 @@ protected:
         paddleAnimation = std::fmod(paddleAnimation + 0.2f, 3.0f);
 
         auto bounds = paddle->getBounds();
-        float cornerWidth  = 50.0f;
+        float cornerWidth = 50.0f;
 
-        drawImage(resourcePaddles[(int)paddleAnimation], bounds.x + cornerWidth, bounds.y, bounds.w - cornerWidth * 2, bounds.h);
+        drawImage(resourcePaddles[(int) paddleAnimation], bounds.x + cornerWidth, bounds.y,
+                  bounds.w - cornerWidth * 2, bounds.h);
         drawImage(resourcePaddleLeft, bounds.x, bounds.y, cornerWidth, bounds.h);
-        drawImage(resourcePaddleRight, bounds.x + bounds.w - cornerWidth, bounds.y, cornerWidth, bounds.h);
+        drawImage(resourcePaddleRight, bounds.x + bounds.w - cornerWidth, bounds.y, cornerWidth,
+                  bounds.h);
     }
 
     void drawBalls() {
         int index = static_cast<int>(ballSystem->getBallsType());
 
-        for (auto& ball : ballSystem->getBalls()) {
-            drawImage(resourceBalls[index], ball.bounds.x, ball.bounds.y, ball.bounds.w, ball.bounds.h);
+        for (auto &ball: ballSystem->getBalls()) {
+            drawImage(resourceBalls[index], ball.bounds.x, ball.bounds.y, ball.bounds.w,
+                      ball.bounds.h);
         }
     }
 
     void drawLevel() {
         auto levelBounds = levelSystem->getLevelBounds();
-        drawImage(resourceBackground, levelBounds.x, levelBounds.y, levelBounds.w, levelBounds.h);
+        drawImage(resourceBackground, levelBounds.x, levelBounds.y, levelBounds.w,
+                  levelBounds.h);
 
-        for (auto& brick : levelSystem->getBricks()) {
+        for (auto &brick: levelSystem->getBricks()) {
             auto bounds = brick.getBounds();
             drawImage(resourceBrick1, bounds.x, bounds.y, bounds.w, bounds.h);
         }
     }
 };
+
+}

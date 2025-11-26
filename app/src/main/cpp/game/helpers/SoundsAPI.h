@@ -5,6 +5,8 @@
 #include <oboe/Oboe.h>
 #include "AppContext.h"
 
+namespace Breakout {
+
 struct Sound {
     std::vector<float> samples;
     size_t readIndex = 0;
@@ -20,33 +22,20 @@ struct Sound {
 
 class SoundsAPI : public oboe::AudioStreamCallback {
 public:
-    SoundsAPI(AppContext* context) {
+    SoundsAPI(AppContext *context) {
         appContext = context;
     }
 
-    virtual oboe::DataCallbackResult onAudioReady(oboe::AudioStream* stream,
-                                          void* audioData,
-                                          int32_t numFrames) override {
-        float* out = static_cast<float*>(audioData);
+    virtual oboe::DataCallbackResult onAudioReady(oboe::AudioStream *stream,
+                                                  void *audioData,
+                                                  int32_t numFrames) override {
+        float *out = static_cast<float *>(audioData);
         int channels = stream->getChannelCount();
         int samplesNeeded = numFrames * channels;
 
         for (int i = 0; i < samplesNeeded; i++) out[i] = 0.0f;
 
-//        for (auto& [name, s] : sounds) {
-//            if (!s.playing) continue;
-//
-//            for (int i = 0; i < samplesNeeded; i++) {
-//                if (s.readIndex < s.samples.size()) {
-//                    out[i] += s.samples[s.readIndex++] * s.gain;
-//                } else {
-//                    s.playing = false; // finished
-//                    break;
-//                }
-//            }
-//        }
-
-        for (Sound* s : sounds) {
+        for (Sound *s: sounds) {
             if (!s || !s->playing) continue;
 
             for (int i = 0; i < samplesNeeded; i++) {
@@ -62,32 +51,23 @@ public:
         return oboe::DataCallbackResult::Continue;
     }
 
-    Sound* include(const std::string& name) {
+    Sound *include(const std::string &name) {
         uint32_t sr = 0;
         uint16_t ch = 0;
 
         std::string fullName = name + ".wav";
         auto data = loadWavFromAssets(appContext->assetManager, fullName.c_str(), sr, ch);
 
-        Sound* s = new Sound{ std::move(data) };
+        Sound *s = new Sound{std::move(data)};
         sounds.emplace_back(s);
         return sounds.back();
     }
 
-//    uint32_t sr = 0;
-//    uint16_t ch = 0;
-//
-//    std::string fullName = name + ".wav";
-//    auto data = loadWavFromAssets(appContext->assetManager, fullName.c_str(), sr, ch);
-//
-//    sounds.emplace_back(Sound{ std::move(data), sr, ch });
-//    return sounds.back(); // reference to the stored Sound
+    void initialize() {
+        uint32_t sr;
+        uint16_t ch;
 
-    void initialize()
-    {
-        uint32_t sr; uint16_t ch;
-
-        Sound sound = { loadWavFromAssets(appContext->assetManager, "sample.wav", sr, ch) };
+        Sound sound = {loadWavFromAssets(appContext->assetManager, "sample.wav", sr, ch)};
 
         oboe::AudioStreamBuilder builder;
         builder.setDirection(oboe::Direction::Output)
@@ -100,20 +80,6 @@ public:
 
         builder.openStream(mStream);
         mStream->requestStart();
-
-//        include("paddle");
-//        include("wall");
-//        include("brick");
-//        include("powerup");
-//        include("explosion");
-//        include("laser");
-
-//        sounds["paddle"] = { loadWavFromAssets(appContext->assetManager, "paddlehit.wav", sr, ch) };
-//        sounds["wall"]   = { loadWavFromAssets(appContext->assetManager, "wallhit.wav", sr, ch) };
-//        sounds["brick"]   = { loadWavFromAssets(appContext->assetManager, "brickdestroy.wav", sr, ch) };
-//        sounds["powerup"]   = { loadWavFromAssets(appContext->assetManager, "powerup.wav", sr, ch) };
-//        sounds["explosion"]   = { loadWavFromAssets(appContext->assetManager, "explosion.wav", sr, ch) };
-//        sounds["laser"]   = { loadWavFromAssets(appContext->assetManager, "laser.wav", sr, ch) };
     }
 
     void destroy() {
@@ -124,15 +90,10 @@ public:
         }
     }
 
-//    void play(const std::string& name, float gain = 1.0f) {
-//        auto& s = sounds[name];
-//        s.play();
-//    }
-
-    std::vector<float> loadWavFromAssets(AAssetManager* mgr, const char* filename,
-                                         uint32_t& sampleRate,
-                                         uint16_t& channels) {
-        AAsset* asset = AAssetManager_open(mgr, filename, AASSET_MODE_BUFFER);
+    std::vector<float> loadWavFromAssets(AAssetManager *mgr, const char *filename,
+                                         uint32_t &sampleRate,
+                                         uint16_t &channels) {
+        AAsset *asset = AAssetManager_open(mgr, filename, AASSET_MODE_BUFFER);
         if (!asset) return {};
 
         size_t length = AAsset_getLength(asset);
@@ -156,11 +117,13 @@ public:
     }
 
 private:
-    std::vector<Sound*> sounds;
+    std::vector<Sound *> sounds;
     std::shared_ptr<oboe::AudioStream> mStream;
-    AppContext* appContext;
+    AppContext *appContext;
 
     std::vector<float> samples;
     size_t readIndex = 0;
     bool playing = false;
 };
+
+}

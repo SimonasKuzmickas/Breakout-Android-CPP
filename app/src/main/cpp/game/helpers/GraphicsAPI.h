@@ -11,6 +11,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../thirdparty/stb_image.h"
 
+namespace Breakout {
+
 struct Vertex {
     float x, y;
     float u, v;
@@ -38,8 +40,7 @@ public:
     }
 
     void drawTexture(GLuint texture,
-                     float x, float y, float w, float h) const
-    {
+                     float x, float y, float w, float h) const {
         float x0 = (2.0f * x / VIRTUAL_WIDTH) - 1.0f;
         float y0 = (2.0f * y / VIRTUAL_HEIGHT) - 1.0f;
         float x1 = (2.0f * (x + w) / VIRTUAL_WIDTH) - 1.0f;
@@ -66,11 +67,11 @@ public:
 
         glEnableVertexAttribArray(posAttrib);
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE,
-                              4 * sizeof(GLfloat), (void*)0);
+                              4 * sizeof(GLfloat), (void *) 0);
 
         glEnableVertexAttribArray(uvAttrib);
         glVertexAttribPointer(uvAttrib, 2, GL_FLOAT, GL_FALSE,
-                              4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
+                              4 * sizeof(GLfloat), (void *) (2 * sizeof(GLfloat)));
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -86,14 +87,15 @@ public:
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    GLuint loadTextureFromAssets(const char* filename) {
-        AAsset* asset = AAssetManager_open(appContext->assetManager, filename, AASSET_MODE_BUFFER);
+    GLuint loadTextureFromAssets(const char *filename) {
+        AAsset *asset = AAssetManager_open(appContext->assetManager, filename,
+                                           AASSET_MODE_BUFFER);
         size_t length = AAsset_getLength(asset);
-        const void* buffer = AAsset_getBuffer(asset);
+        const void *buffer = AAsset_getBuffer(asset);
 
         int width, height, channels;
-        unsigned char* pixels = stbi_load_from_memory(
-                reinterpret_cast<const unsigned char*>(buffer),
+        unsigned char *pixels = stbi_load_from_memory(
+                reinterpret_cast<const unsigned char *>(buffer),
                 length,
                 &width, &height, &channels,
                 STBI_rgb_alpha);
@@ -129,7 +131,8 @@ public:
         }
 
         // Detach context
-        eglMakeCurrent(graphicsContext->display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+        eglMakeCurrent(graphicsContext->display, EGL_NO_SURFACE, EGL_NO_SURFACE,
+                       EGL_NO_CONTEXT);
 
         // Destroy EGL objects
         if (graphicsContext->surface != EGL_NO_SURFACE) {
@@ -199,7 +202,8 @@ private:
 
         // --- Letterbox viewport calculation ---
         float targetAspect = static_cast<float>((float) width) / float(height);
-        float screenAspect = static_cast<float>(graphicsContext->width) / graphicsContext->height;
+        float screenAspect =
+                static_cast<float>(graphicsContext->width) / graphicsContext->height;
 
         int vpX, vpY, vpW, vpH;
 
@@ -228,11 +232,11 @@ private:
                 // x,    y,    u, v
                 -0.5f, -0.5f, 0.0f, 0.0f,  // bottom-left
                 0.5f, -0.5f, 1.0f, 0.0f,  // bottom-right
-                0.5f,  0.5f, 1.0f, 1.0f,  // top-right
+                0.5f, 0.5f, 1.0f, 1.0f,  // top-right
 
                 -0.5f, -0.5f, 0.0f, 0.0f,  // bottom-left
-                0.5f,  0.5f, 1.0f, 1.0f,  // top-right
-                -0.5f,  0.5f, 0.0f, 1.0f   // top-left
+                0.5f, 0.5f, 1.0f, 1.0f,  // top-right
+                -0.5f, 0.5f, 0.0f, 1.0f   // top-left
         };
 
         // Upload vertex data
@@ -276,9 +280,9 @@ private:
         glLinkProgram(program);
 
         // Query attribute/uniform locations
-        posAttrib   = glGetAttribLocation(program, "aPos");
-        uvAttrib    = glGetAttribLocation(program, "aUV");
-        texUniform  = glGetUniformLocation(program, "uTex");
+        posAttrib = glGetAttribLocation(program, "aPos");
+        uvAttrib = glGetAttribLocation(program, "aUV");
+        texUniform = glGetUniformLocation(program, "uTex");
 
         // Enable blending for transparency
         glEnable(GL_BLEND);
@@ -311,3 +315,5 @@ private:
 //
 //        glDrawArrays(GL_TRIANGLES, 0, 6);
 //    }
+
+}

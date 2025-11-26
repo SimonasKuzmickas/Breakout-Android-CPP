@@ -4,16 +4,18 @@
 #include <memory>
 #include "ISceneComponent.h"
 
+namespace Breakout {
+
 class ISceneComponent;
 
 class Blackboard {
 public:
-    explicit Blackboard(const std::vector<std::shared_ptr<ISceneComponent>>& components)
+    explicit Blackboard(const std::vector<std::shared_ptr<ISceneComponent>> &components)
             : componentsRef(components) {}
 
-    template <typename T>
+    template<typename T>
     std::shared_ptr<T> getComponent() const {
-        for (auto& m : componentsRef) {
+        for (auto &m: componentsRef) {
             if (auto casted = std::dynamic_pointer_cast<T>(m)) {
                 return casted;
             }
@@ -22,6 +24,8 @@ public:
     }
 
 private:
-    const std::vector<std::shared_ptr<ISceneComponent>>& componentsRef;
+    const std::vector<std::shared_ptr<ISceneComponent>> &componentsRef;
 
 };
+
+}

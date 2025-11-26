@@ -4,6 +4,8 @@
 #include "../scene/ISceneComponent.h"
 #include "LevelSystem.h"
 
+namespace Breakout {
+
 class PlayerState : public ISceneComponent {
 public:
     Event<> onDeath;
@@ -66,3 +68,5 @@ private:
     int score = 0;
     int lives = 3;
 };
+
+}

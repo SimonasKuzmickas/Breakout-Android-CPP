@@ -1,8 +1,10 @@
 #pragma once
 
+namespace Breakout {
+
 class UILayoutMenu : public UILayoutHandler {
 public:
-    UILayoutMenu(AppContext* context) : UILayoutHandler(context) {}
+    UILayoutMenu(AppContext *context) : UILayoutHandler(context) {}
 
     Event<> onStartPressed;
 
@@ -15,7 +17,7 @@ public:
         resourcesTitle = loadImage("title.png");
     }
 
-    void onUpdate () override {
+    void onUpdate() override {
         drawLevel();
         drawPaddle();
         drawPowerUps();
@@ -24,8 +26,7 @@ public:
         drawImage(resourceBlock, 580, 0, 680, 1080);
         drawImage(resourcesTitle, 600, 540, 650, 660);
 
-        if(drawButton(resourceStartButton, 700, 440, 440, 200))
-        {
+        if (drawButton(resourceStartButton, 700, 440, 440, 200)) {
             onStartPressed.invoke();
         }
 
@@ -38,3 +39,5 @@ private:
     GLuint resourceStartButton;
     GLuint resourcesTitle;
 };
+
+}

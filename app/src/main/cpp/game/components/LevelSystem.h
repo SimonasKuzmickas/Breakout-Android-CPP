@@ -4,14 +4,17 @@
 #include "../helpers/Event.h"
 #include "../scene/ISceneComponent.h"
 
+namespace Breakout {
+
 struct Brick {
 public:
     Brick(float x, float y)
             : bounds{x, y, 100, 50} {}
 
-    [[nodiscard]] const Rect& getBounds() const {
+    [[nodiscard]] const Rect &getBounds() const {
         return bounds;
     }
+
 private:
     Rect bounds;
 };
@@ -37,11 +40,10 @@ public:
 
     }
 
-    void createLevel()
-    {
+    void createLevel() {
         const int rows = 6;
         const int cols = 14;
-        const int brickWidth  = 100;
+        const int brickWidth = 100;
         const int brickHeight = 50;
         const int startX = 220;
         const int startY = 600;
@@ -63,11 +65,11 @@ public:
         bricks.emplace_back(x, y);
     }
 
-    void removeBrick(const Brick& brickRef) {
+    void removeBrick(const Brick &brickRef) {
         auto target = std::find_if(bricks.begin(), bricks.end(),
-           [&](const Brick& b) {
-               return &b == &brickRef;
-           });
+                                   [&](const Brick &b) {
+                                       return &b == &brickRef;
+                                   });
 
         onDestroyBrick.invoke(brickRef);
 
@@ -75,7 +77,7 @@ public:
             bricks.erase(target);
         }
 
-        if(bricks.empty()) {
+        if (bricks.empty()) {
             createLevel();
         }
     }
@@ -84,13 +86,12 @@ public:
         return levelBounds;
     }
 
-    std::vector<Brick>& getBricks() {
+    std::vector<Brick> &getBricks() {
         return bricks;
     }
 
-    Brick* checkBrickCollision(Rect bounds)
-    {
-        for (auto& brick : bricks) {
+    Brick *checkBrickCollision(Rect bounds) {
+        for (auto &brick: bricks) {
             if (bounds.overlaps(brick.getBounds())) {
                 return &brick;
             }
@@ -102,3 +103,5 @@ private:
     Rect levelBounds;
     std::vector<Brick> bricks;
 };
+
+}

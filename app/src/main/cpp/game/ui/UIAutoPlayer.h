@@ -3,6 +3,8 @@
 #include <GLES2/gl2.h>
 #include "../scene/ISceneComponent.h"
 
+namespace Breakout {
+
 class UIAutoPlayer : public ISceneComponent {
 public:
 
@@ -11,13 +13,15 @@ public:
         ballSystem = getComponent<BallSystem>();
     }
 
-    void onDestroy() override { }
+    void onDestroy() override {}
 
     void onUpdate() override {
-        auto closestPositionOpt = getClosestBall(*ballSystem, *paddle, true); // try downward first
+        auto closestPositionOpt = getClosestBall(*ballSystem, *paddle,
+                                                 true); // try downward first
 
         if (!closestPositionOpt.has_value()) {
-            closestPositionOpt = getClosestBall(*ballSystem, *paddle, false); // fallback to upward
+            closestPositionOpt = getClosestBall(*ballSystem, *paddle,
+                                                false); // fallback to upward
         }
 
         if (!closestPositionOpt.has_value()) {
@@ -42,11 +46,12 @@ private:
     std::shared_ptr<Paddle> paddle;
     std::shared_ptr<BallSystem> ballSystem;
 
-    std::optional<Vector2> getClosestBall(BallSystem& ballSystem, Paddle& paddle, bool downward) {
+    std::optional<Vector2>
+    getClosestBall(BallSystem &ballSystem, Paddle &paddle, bool downward) {
         std::optional<Vector2> closestBall;
         float closestDist = std::numeric_limits<float>::max();
 
-        for (const Ball& ball : ballSystem.getBalls()) {
+        for (const Ball &ball: ballSystem.getBalls()) {
             // Filter by direction
             if (downward && ball.velocity.y < 0.0f) continue; // skip upward
             if (!downward && ball.velocity.y > 0.0f) continue; // skip downward
@@ -64,3 +69,5 @@ private:
         return closestBall;
     }
 };
+
+}

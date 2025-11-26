@@ -1,5 +1,6 @@
 #pragma once
 
+namespace Breakout {
 
 struct Vector2 {
     float x;
@@ -9,18 +10,18 @@ struct Vector2 {
 
     Vector2(float xVal, float yVal) : x(xVal), y(yVal) {}
 
-    Vector2& operator+=(const Vector2& other) {
+    Vector2 &operator+=(const Vector2 &other) {
         x += other.x;
         y += other.y;
         return *this;
     }
 
     // Optional: plain addition
-    Vector2 operator+(const Vector2& other) const {
+    Vector2 operator+(const Vector2 &other) const {
         return Vector2(x + other.x, y + other.y);
     }
 
-    Vector2 operator-(const Vector2& other) const {
+    Vector2 operator-(const Vector2 &other) const {
         return Vector2(x - other.x, y - other.y);
     }
 
@@ -31,8 +32,8 @@ struct Vector2 {
     Vector2 rotate(float angleRad) {
         float cosA = std::cos(angleRad);
         float sinA = std::sin(angleRad);
-        return { x * cosA - y * sinA,
-                 x * sinA + y * cosA };
+        return {x * cosA - y * sinA,
+                x * sinA + y * cosA};
     }
 
     float length() const {
@@ -48,19 +49,24 @@ struct Rect {
     Rect(float xVal, float yVal, float wVal, float hVal)
             : x(xVal), y(yVal), w(wVal), h(hVal) {}
 
-    bool overlaps(const Rect& other) const {
+    bool overlaps(const Rect &other) const {
         return !(x + w <= other.x ||
                  other.x + other.w <= x ||
                  y + h <= other.y ||
                  other.y + other.h <= y);
     }
 
-    float left()   const { return y; }
-    float right()  const { return x + w; }
-    float top()    const { return y + h; }
+    float left() const { return y; }
+
+    float right() const { return x + w; }
+
+    float top() const { return y + h; }
+
     float bottom() const { return y; }
 
     Vector2 center() const {
         return Vector2(x + w * 0.5f, y + h * 0.5f);
     }
 };
+
+}

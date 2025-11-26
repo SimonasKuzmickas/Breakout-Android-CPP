@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Breakout {
+
 struct Laser {
     Rect bounds;
 
@@ -29,33 +31,30 @@ public:
     }
 
     void onUpdate() override {
-        for (auto& laser : lasers) {
+        for (auto &laser: lasers) {
             laser.bounds.y += 10;
 
-            if (Brick* hit = levelSystem->checkBrickCollision(laser.bounds))
-            {
+            if (Brick *hit = levelSystem->checkBrickCollision(laser.bounds)) {
                 levelSystem->removeBrick(*hit);
                 removeLaser(laser);
             }
 
-            if(!laser.bounds.overlaps(levelSystem->getLevelBounds()))
-            {
+            if (!laser.bounds.overlaps(levelSystem->getLevelBounds())) {
                 removeLaser(laser);
             }
         }
 
-        if(getIsActive())
-        {
+        if (getIsActive()) {
             shootTime -= 0.05f;
-            if(shootTime < 0)
-            {
+            if (shootTime < 0) {
                 onLaserShoot.invoke();
 
                 shootTime = 3;
 
                 auto positionBounds = paddle->getBounds();
                 createLaser(positionBounds.x, positionBounds.y + positionBounds.h);
-                createLaser(positionBounds.x + positionBounds.w, positionBounds.y + positionBounds.h);
+                createLaser(positionBounds.x + positionBounds.w,
+                            positionBounds.y + positionBounds.h);
             }
         }
     }
@@ -64,7 +63,7 @@ public:
         lasers.emplace_back(x, y);
     }
 
-    const std::vector<Laser>& getLasers() const {
+    const std::vector<Laser> &getLasers() const {
         return lasers;
     }
 
@@ -76,11 +75,11 @@ public:
         return isActive;
     }
 
-    void removeLaser(const Laser& laserRef) {
+    void removeLaser(const Laser &laserRef) {
         auto target = std::find_if(lasers.begin(), lasers.end(),
-           [&](const Laser& b) {
-               return &b == &laserRef;
-           });
+                                   [&](const Laser &b) {
+                                       return &b == &laserRef;
+                                   });
 
         if (target != lasers.end()) {
             lasers.erase(target);
@@ -97,3 +96,5 @@ private:
     float shootTime = 0;
     bool isActive = false;
 };
+
+}

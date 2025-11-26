@@ -4,8 +4,11 @@
 #include "../helpers/AppContext.h"
 #include "../scene/ISceneComponent.h"
 
+namespace Breakout {
+
 class UILayoutHandler;
-static UILayoutHandler* g_layoutHandler = nullptr;
+
+static UILayoutHandler *g_layoutHandler = nullptr;
 
 class UILayoutHandler : public GraphicsManager {
 public:
@@ -18,7 +21,7 @@ public:
         PointerUp = 6
     };
 
-    UILayoutHandler(AppContext* context) : GraphicsManager(context) {
+    UILayoutHandler(AppContext *context) : GraphicsManager(context) {
         int width = ANativeWindow_getWidth(context->window);
         int height = ANativeWindow_getHeight(context->window);
 
@@ -44,14 +47,12 @@ public:
     bool drawButton(GLuint textureId, float x, float y, float w, float h) {
         drawImage(textureId, x, y, w, h);
 
-        if(isPressed())
-        {
+        if (isPressed()) {
             auto touchPosition = getPosition();
             auto imageBounds = Rect(x, y, w, h);
             auto inputBounds = Rect(touchPosition.x, touchPosition.y, 1, 1);
 
-            if(imageBounds.overlaps(inputBounds))
-            {
+            if (imageBounds.overlaps(inputBounds)) {
                 return true;
             }
         }
@@ -63,8 +64,7 @@ public:
         return position;
     }
 
-    bool isPressed()
-    {
+    bool isPressed() {
         bool result = pressed;
         pressed = false;
 
@@ -84,10 +84,9 @@ private:
     bool pressed = false;
 
     Vector2 convertMouseToVirtual(int mouseX, int mouseY,
-                                   int screenWidth, int screenHeight,
-                                   float virtualWidth = 1920.0f,
-                                   float virtualHeight = 1080.0f)
-    {
+                                  int screenWidth, int screenHeight,
+                                  float virtualWidth = 1920.0f,
+                                  float virtualHeight = 1080.0f) {
         float targetAspect = virtualWidth / virtualHeight;
         float screenAspect = float(screenWidth) / screenHeight;
 
@@ -95,11 +94,13 @@ private:
         if (screenAspect > targetAspect) {
             vpH = screenHeight;
             vpW = int(vpH * targetAspect);
-            vpX = (screenWidth - vpW) / 2; vpY = 0;
+            vpX = (screenWidth - vpW) / 2;
+            vpY = 0;
         } else {
             vpW = screenWidth;
             vpH = int(vpW / targetAspect);
-            vpX = 0; vpY = (screenHeight - vpH) / 2;
+            vpX = 0;
+            vpY = (screenHeight - vpH) / 2;
         }
 
         if (mouseX < vpX || mouseX >= vpX + vpW ||
@@ -112,3 +113,5 @@ private:
         return {normX * virtualWidth, normY * virtualHeight};
     }
 };
+
+}

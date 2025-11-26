@@ -6,30 +6,32 @@
 #include "SceneId.h"
 
 namespace Breakout::Scenes {
-    // GameOverScene: Displays the game over UI
-    // transitions to Menu or retries GameScene
-    class GameOverScene : public IScene {
-    public:
-        explicit GameOverScene(AppContext* context)
-                : appContext(context) {}
 
-        void onStart() override {
-            auto layout = std::make_shared<UILayoutGameOver>(appContext);
-            addComponent(layout);
+// GameOverScene: Displays the game over UI
+// transitions to Menu or retries GameScene
+class GameOverScene : public IScene {
+public:
+    explicit GameOverScene(AppContext* context)
+            : appContext(context) {}
 
-            layout->onMenuPressed.addListener([this]() {
-                sceneManager->requestChange((int)SceneId::Menu);
-            });
+    void onStart() override {
+        auto layout = std::make_shared<UILayoutGameOver>(appContext);
+        addComponent(layout);
 
-            layout->onRetryPressed.addListener([this]() {
-                sceneManager->requestChange((int)SceneId::GameOver);
-            });
-        }
+        layout->onMenuPressed.addListener([this]() {
+            sceneManager->requestChange((int)SceneId::Menu);
+        });
 
-        void onUpdate() override {}
-        void onDestroy() override {}
+        layout->onRetryPressed.addListener([this]() {
+            sceneManager->requestChange((int)SceneId::GameOver);
+        });
+    }
 
-    private:
-        AppContext* appContext;
-    };
+    void onUpdate() override {}
+    void onDestroy() override {}
+
+private:
+    AppContext* appContext;
+};
+
 }

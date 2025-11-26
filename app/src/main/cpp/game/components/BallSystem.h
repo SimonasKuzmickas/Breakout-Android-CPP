@@ -4,11 +4,13 @@
 #include "Paddle.h"
 #include "LevelSystem.h"
 
+namespace Breakout {
+
 struct Ball {
     Rect bounds;
     Vector2 velocity;
 
-    Ball(float x, float y, float radius, const Vector2& v)
+    Ball(float x, float y, float radius, const Vector2 &v)
             : bounds{x, y, radius, radius}, velocity(v) {}
 };
 
@@ -34,8 +36,7 @@ public:
         start();
     }
 
-    void start()
-    {
+    void start() {
         balls.clear();
 
         globalSpeedMultiplier = 1;
@@ -56,10 +57,10 @@ public:
 
         globalSpeedMultiplier += SPEED_GROWTH;
 
-        auto& bricks = levelSystem->getBricks();
+        auto &bricks = levelSystem->getBricks();
         auto levelBounds = levelSystem->getLevelBounds();
 
-        for (auto& ball : balls) {
+        for (auto &ball: balls) {
 
             switch (ballsType) {
                 case BallsType::Normal:
@@ -80,8 +81,7 @@ public:
                     ball.bounds.x += ball.velocity.x * globalSpeedMultiplier;
                     ball.bounds.y += ball.velocity.y * globalSpeedMultiplier;
 
-                    if (Brick* hit = levelSystem->checkBrickCollision(ball.bounds))
-                    {
+                    if (Brick *hit = levelSystem->checkBrickCollision(ball.bounds)) {
                         levelSystem->removeBrick(*hit);
                     }
                     break;
@@ -104,8 +104,7 @@ public:
             if (!ball.bounds.overlaps(levelSystem->getLevelBounds())) {
                 removeBall(ball);
 
-                if(balls.empty())
-                {
+                if (balls.empty()) {
                     onLost.invoke();
 
                     start();
@@ -119,7 +118,7 @@ public:
                 ball.velocity.x = -ball.velocity.x;
 
                 onHitWall.invoke();
-            // RIGHT
+                // RIGHT
             } else if (ball.bounds.x + ball.bounds.w > levelBounds.right()) {
                 ball.bounds.x = levelBounds.right() - ball.bounds.w;
                 ball.velocity.x = -ball.velocity.x;
@@ -136,14 +135,15 @@ public:
             }
 
             // ---- PADDLE COLLISION ----
-            if(ball.velocity.y < 0)
-            {
+            if (ball.velocity.y < 0) {
                 Rect paddleBounds = paddle->getBounds();
                 if (paddle && ball.bounds.overlaps(paddleBounds)) {
-                    float normalized = ((ball.bounds.x + ball.bounds.w * 0.5f) - (paddleBounds.x + paddleBounds.w * 0.5f))
+                    float normalized = ((ball.bounds.x + ball.bounds.w * 0.5f) -
+                                        (paddleBounds.x + paddleBounds.w * 0.5f))
                                        / (paddleBounds.w * 0.5f);
 
-                    float speed = std::sqrt(ball.velocity.x * ball.velocity.x + ball.velocity.y * ball.velocity.y);
+                    float speed = std::sqrt(ball.velocity.x * ball.velocity.x +
+                                            ball.velocity.y * ball.velocity.y);
 
                     float len = std::sqrt(normalized * normalized + 1.0f);
                     float dirX = normalized / len;
@@ -162,19 +162,18 @@ public:
         balls.emplace_back(x, y, s, v);
     }
 
-    void removeBall(const Ball& ballRef) {
+    void removeBall(const Ball &ballRef) {
         auto target = std::find_if(balls.begin(), balls.end(),
-           [&](const Ball& b) {
-               return &b == &ballRef;
-           });
+                                   [&](const Ball &b) {
+                                       return &b == &ballRef;
+                                   });
 
         if (target != balls.end()) {
             balls.erase(target);
         }
     }
 
-    void setBallType(BallsType type)
-    {
+    void setBallType(BallsType type) {
         ballsType = type;
     }
 
@@ -182,12 +181,11 @@ public:
         return ballsType;
     }
 
-    const std::vector<Ball>& getBalls() const {
+    const std::vector<Ball> &getBalls() const {
         return balls;
     }
 
-    void increaseGlobalSpeed(float multiplier)
-    {
+    void increaseGlobalSpeed(float multiplier) {
         globalSpeedMultiplier *= multiplier;
     }
 
@@ -201,10 +199,8 @@ private:
 
     static constexpr float SPEED_GROWTH = 0.0005f;
 
-    bool handleAxisNormalCollision(Ball& ball, float& axisPos, float& axisVel)
-    {
-        if (Brick* hit = levelSystem->checkBrickCollision(ball.bounds))
-        {
+    bool handleAxisNormalCollision(Ball &ball, float &axisPos, float &axisVel) {
+        if (Brick *hit = levelSystem->checkBrickCollision(ball.bounds)) {
             axisPos -= axisVel;
             axisVel = -axisVel;
             levelSystem->removeBrick(*hit);
@@ -213,10 +209,8 @@ private:
         return false;
     }
 
-    bool handleAxisFireCollision(Ball& ball, float& axisPos, float& axisVel)
-    {
-        if (Brick* hit = levelSystem->checkBrickCollision(ball.bounds))
-        {
+    bool handleAxisFireCollision(Ball &ball, float &axisPos, float &axisVel) {
+        if (Brick *hit = levelSystem->checkBrickCollision(ball.bounds)) {
             onExplosion.invoke();
 
             auto brickBounds = hit->getBounds();
@@ -228,7 +222,7 @@ private:
             auto explosionBounds = Rect(brickBounds.x - 50, brickBounds.y - 50,
                                         brickBounds.w + 100, brickBounds.h + 100);
 
-            auto& bricks = levelSystem->getBricks();
+            auto &bricks = levelSystem->getBricks();
             std::vector<int> toRemove;
 
             for (int i = 0; i < static_cast<int>(bricks.size()); ++i) {
@@ -248,3 +242,5 @@ private:
         return false;
     }
 };
+
+}

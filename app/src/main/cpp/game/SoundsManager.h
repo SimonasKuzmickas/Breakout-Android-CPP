@@ -4,17 +4,19 @@
 #include "scene/ISceneComponent.h"
 #include "helpers/SoundsAPI.h"
 
+namespace Breakout {
+
 class SoundsManager : public ISceneComponent {
 public:
-    SoundsManager(AppContext* context) : soundsAPI(context) {}
+    SoundsManager(AppContext *context) : soundsAPI(context) {}
 
-    Sound* soundPaddle;
-    Sound* soundWall;
-    Sound* soundBrick;
-    Sound* soundPowerUp;
-    Sound* soundExplosion;
-    Sound* soundLaser;
-    Sound* lifeLost;
+    Sound *soundPaddle;
+    Sound *soundWall;
+    Sound *soundBrick;
+    Sound *soundPowerUp;
+    Sound *soundExplosion;
+    Sound *soundLaser;
+    Sound *lifeLost;
 
 
     void onAwake() override {
@@ -62,7 +64,7 @@ public:
 
         auto levelSystem = getComponent<LevelSystem>();
         if (levelSystem) {
-            levelSystem->onDestroyBrick.addListener([this](const Brick& brick) {
+            levelSystem->onDestroyBrick.addListener([this](const Brick &brick) {
                 soundBrick->play();
             });
         }
@@ -81,3 +83,5 @@ public:
 private:
     SoundsAPI soundsAPI;
 };
+
+}

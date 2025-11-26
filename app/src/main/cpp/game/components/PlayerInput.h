@@ -2,6 +2,8 @@
 
 #include "../helpers/Math.h"
 
+namespace Breakout {
+
 // Global pointer to the active PlayerInput instance
 // Used by callbacks to call touch events into C++
 class PlayerInput;
@@ -95,3 +97,5 @@ private:
     int activePointer = -1;
     std::shared_ptr<Paddle> paddle;
 };
+
+}

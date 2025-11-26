@@ -8,6 +8,8 @@
 #include "BallSystem.h"
 #include "PlayerState.h"
 
+namespace Breakout {
+
 struct PowerUp {
     enum class PowerUpType {
         None,
@@ -45,10 +47,11 @@ public:
         playerState = getComponent<PlayerState>();
 
         if (levelSystem) {
-            levelSystem->onDestroyBrick.addListener([this](const Brick& brick) {
+            levelSystem->onDestroyBrick.addListener([this](const Brick &brick) {
                 int rnd = std::rand() % 100;
-                if(rnd < 50) {
-                    createPowerUp(brick.getBounds().x + 10, brick.getBounds().y + 5, getRandomPowerUpType());
+                if (rnd < 50) {
+                    createPowerUp(brick.getBounds().x + 10, brick.getBounds().y + 5,
+                                  getRandomPowerUpType());
                 }
             });
 
@@ -66,11 +69,10 @@ public:
     }
 
     void onUpdate() override {
-        for (auto& powerup : powerUps) {
+        for (auto &powerup: powerUps) {
             powerup.bounds.y -= 5;
 
-            if(paddle->getBounds().overlaps(powerup.bounds))
-            {
+            if (paddle->getBounds().overlaps(powerup.bounds)) {
                 ApplyEffect(powerup.powerUpType);
                 onPickup.invoke();
                 removePowerUp(powerup);
@@ -82,28 +84,29 @@ public:
         powerUps.emplace_back(x, y, powerUpType);
     }
 
-    void removePowerUp(const PowerUp& powerUpRef) {
+    void removePowerUp(const PowerUp &powerUpRef) {
         auto target = std::find_if(powerUps.begin(), powerUps.end(),
-            [&](const PowerUp& b) {
-                return &b == &powerUpRef;
-            });
+                                   [&](const PowerUp &b) {
+                                       return &b == &powerUpRef;
+                                   });
 
         if (target != powerUps.end()) {
             powerUps.erase(target);
         }
     }
 
-    void ApplyEffect(PowerUp::PowerUpType powerUpType)
-    {
+    void ApplyEffect(PowerUp::PowerUpType powerUpType) {
         switch (powerUpType) {
-                case PowerUp::PowerUpType::MultiBall:
-                    for (const auto &ball: ballSystem->getBalls()) {
-                        auto v = ball.velocity;
+            case PowerUp::PowerUpType::MultiBall:
+                for (const auto &ball: ballSystem->getBalls()) {
+                    auto v = ball.velocity;
 
-                        ballSystem->createBall(ball.bounds.x, ball.bounds.y, ball.bounds.w, v.rotate( 0.2f));
-                        ballSystem->createBall(ball.bounds.x, ball.bounds.y, ball.bounds.w, v.rotate(-0.2f));
-                    }
-                    break;
+                    ballSystem->createBall(ball.bounds.x, ball.bounds.y, ball.bounds.w,
+                                           v.rotate(0.2f));
+                    ballSystem->createBall(ball.bounds.x, ball.bounds.y, ball.bounds.w,
+                                           v.rotate(-0.2f));
+                }
+                break;
 
             case PowerUp::PowerUpType::StrongBall:
                 ballSystem->setBallType(BallSystem::BallsType::Strong);
@@ -159,7 +162,7 @@ public:
         }
     }
 
-    const std::vector<PowerUp>& getPowerUps() {
+    const std::vector<PowerUp> &getPowerUps() {
         return powerUps;
     }
 
@@ -182,3 +185,5 @@ private:
         return static_cast<PowerUp::PowerUpType>(r);
     }
 };
+
+}

@@ -3,9 +3,13 @@
 #include <android/asset_manager_jni.h>
 #include <thread>
 
+namespace Breakout {
+
 struct AppContext {
     ANativeWindow* window = nullptr;
     std::thread thread;
     std::atomic<bool> running{false};
     AAssetManager* assetManager = nullptr;
 };
+
+}

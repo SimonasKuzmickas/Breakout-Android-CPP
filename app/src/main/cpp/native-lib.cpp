@@ -34,7 +34,7 @@ namespace Breakout {
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_nordcurrent_breakout_GameView_nativeStart(JNIEnv* env, jobject, jobject surface, jobject assetManager) {
-    auto* context = new AppContext();
+    auto* context = new Breakout::AppContext();
     context->window = ANativeWindow_fromSurface(env, surface);
     context->running = true;
     context->thread = std::thread(Breakout::gameLoop, context);
@@ -44,7 +44,7 @@ Java_com_nordcurrent_breakout_GameView_nativeStart(JNIEnv* env, jobject, jobject
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_nordcurrent_breakout_GameView_nativeStop(JNIEnv*, jobject, jlong handle) {
-    auto* context = reinterpret_cast<AppContext*>(handle);
+    auto* context = reinterpret_cast<Breakout::AppContext*>(handle);
     if (!context) return;
 
     context->running = false;
@@ -61,11 +61,11 @@ Java_com_nordcurrent_breakout_GameView_nativeStop(JNIEnv*, jobject, jlong handle
 extern "C" JNIEXPORT void JNICALL
 Java_com_nordcurrent_breakout_GameView_nativeOnTouch(JNIEnv* env, jobject thiz,
                                                      jint pointerId, jfloat x, jfloat y, jint action) {
-    if (g_playerInput) {
-        g_playerInput->onTouch(pointerId, x, y, action);
+    if (Breakout::g_playerInput) {
+        Breakout::g_playerInput->onTouch(pointerId, x, y, action);
     }
 
-    if (g_layoutHandler) {
-        g_layoutHandler->onTouch(x, y, action);
+    if (Breakout::g_layoutHandler) {
+        Breakout::g_layoutHandler->onTouch(x, y, action);
     }
 }

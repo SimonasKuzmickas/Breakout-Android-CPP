@@ -1,9 +1,11 @@
 #pragma once
 #include "../GraphicsManager.h"
 
+namespace Breakout {
+
 class UILayoutGameOver : public UILayoutHandler {
 public:
-    UILayoutGameOver(AppContext* context) : UILayoutHandler(context) {}
+    UILayoutGameOver(AppContext *context) : UILayoutHandler(context) {}
 
     Event<> onRetryPressed;
     Event<> onMenuPressed;
@@ -19,18 +21,16 @@ public:
         inputHandler = getComponent<UILayoutHandler>();
     }
 
-    void onUpdate () override {
+    void onUpdate() override {
         drawImage(resourceBackground, 0, 0, 1920, 1080);
         drawImage(resourceBlock, 580, 0, 680, 1080);
         drawImage(resourcesTitle, 600, 540, 650, 660);
 
-        if(drawButton(resourceStartButton, 700, 440, 440, 200))
-        {
+        if (drawButton(resourceStartButton, 700, 440, 440, 200)) {
             onMenuPressed.invoke();
         }
 
-        if(drawButton(resourceStartButton, 700, 220, 440, 200))
-        {
+        if (drawButton(resourceStartButton, 700, 220, 440, 200)) {
             onMenuPressed.invoke();
         }
 
@@ -45,3 +45,5 @@ private:
 
     std::shared_ptr<UILayoutHandler> inputHandler;
 };
+
+}

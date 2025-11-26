@@ -14,36 +14,38 @@
 #include "SceneId.h"
 
 namespace Breakout::Scenes {
-    // GameScene: Core gameplay scene
-    // transitions to GameOverScene when the player dies
-    class GameScene : public IScene {
-    public:
-        explicit GameScene(AppContext *context)
-                : appContext(context) {}
 
-        void onStart() override {
-            auto playerState = std::make_shared<PlayerState>();
+// GameScene: Core gameplay scene
+// transitions to GameOverScene when the player dies
+class GameScene : public IScene {
+public:
+    explicit GameScene(AppContext *context)
+            : appContext(context) {}
 
-            playerState->onDeath.addListener([this]() {
-                sceneManager->requestChange(SceneId::GameOver);
-            });
+    void onStart() override {
+        auto playerState = std::make_shared<PlayerState>();
 
-            addComponent(std::make_shared<GraphicsManager>(appContext));
-            addComponent(std::make_shared<SoundsManager>(appContext));
-            addComponent(std::make_shared<PlayerInput>(appContext));
-            addComponent(std::make_shared<LevelSystem>());
-            addComponent(std::make_shared<PowerUpSystem>());
-            addComponent(std::make_shared<BallSystem>());
-            addComponent(std::make_shared<Paddle>());
-            addComponent(std::make_shared<LaserShooter>());
-            addComponent(playerState);
-        }
+        playerState->onDeath.addListener([this]() {
+            sceneManager->requestChange(SceneId::GameOver);
+        });
 
-        void onUpdate() override {}
+        addComponent(std::make_shared<GraphicsManager>(appContext));
+        addComponent(std::make_shared<SoundsManager>(appContext));
+        addComponent(std::make_shared<PlayerInput>(appContext));
+        addComponent(std::make_shared<LevelSystem>());
+        addComponent(std::make_shared<PowerUpSystem>());
+        addComponent(std::make_shared<BallSystem>());
+        addComponent(std::make_shared<Paddle>());
+        addComponent(std::make_shared<LaserShooter>());
+        addComponent(playerState);
+    }
 
-        void onDestroy() override {}
+    void onUpdate() override {}
 
-    private:
-        AppContext *appContext;
-    };
+    void onDestroy() override {}
+
+private:
+    AppContext *appContext;
+};
+
 }

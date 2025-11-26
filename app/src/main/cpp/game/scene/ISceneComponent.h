@@ -2,6 +2,8 @@
 
 #include "Blackboard.h"
 
+namespace Breakout {
+
 class ISceneComponent {
 public:
     virtual ~ISceneComponent() = default;
@@ -24,3 +26,5 @@ public:
 private:
     Blackboard *blackboard = nullptr;
 };
+
+}

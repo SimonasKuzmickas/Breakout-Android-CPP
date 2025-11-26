@@ -1,6 +1,8 @@
 #pragma once
 #include "IScene.h"
 
+namespace Breakout {
+
 class ISceneManager {
 public:
     virtual std::unique_ptr<IScene> createScene(int id) = 0;
@@ -36,3 +38,5 @@ private:
     std::unique_ptr<IScene> currentScene;
     int pendingScene = -1;
 };
+
+}

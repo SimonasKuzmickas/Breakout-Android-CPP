@@ -5,9 +5,13 @@
 #include "../helpers/Event.h"
 #include "../scene/ISceneComponent.h"
 
+namespace Breakout {
+
 class Paddle : public ISceneComponent {
 public:
-    enum class Direction : int { Left = -1, None = 0, Right = 1 };
+    enum class Direction : int {
+        Left = -1, None = 0, Right = 1
+    };
 
     Event<> onHit;
 
@@ -15,7 +19,7 @@ public:
             : bounds(DEFAULT_BOUNDS),
               direction(Direction::None),
               speed(DEFAULT_SPEED),
-              transitionWidth(DEFAULT_BOUNDS.w){}
+              transitionWidth(DEFAULT_BOUNDS.w) {}
 
     void onAwake() override {
 
@@ -39,7 +43,7 @@ public:
         bounds.x -= difference * 0.5f;
         bounds.w += difference;
 
-        if(bounds.w < 120) {
+        if (bounds.w < 120) {
             bounds.w = 120;
         }
     }
@@ -48,14 +52,12 @@ public:
         direction = dir;
     }
 
-    void start()
-    {
+    void start() {
         bounds = DEFAULT_BOUNDS;
         transitionWidth = bounds.w;
     }
 
-    void expand(float increase)
-    {
+    void expand(float increase) {
         transitionWidth += increase;
     }
 
@@ -71,3 +73,5 @@ private:
     float speed;
     float transitionWidth = 0;
 };
+
+}
