@@ -4,6 +4,7 @@
 #include "GraphicsManager.h"
 #include "SoundsManager.h"
 #include "PlayerInput.h"
+#include "PlayerState.h"
 #include "LevelSystem.h"
 #include "PowerUpSystem.h"
 #include "BallSystem.h"
@@ -21,6 +22,7 @@ public:
         addComponent(std::make_shared<GraphicsManager>(appContext));
         addComponent(std::make_shared<SoundsManager>(appContext));
         addComponent(std::make_shared<PlayerInput>(appContext));
+        addComponent(std::make_shared<PlayerState>());
         addComponent(std::make_shared<LevelSystem>());
         addComponent(std::make_shared<PowerUpSystem>());
         addComponent(std::make_shared<BallSystem>());

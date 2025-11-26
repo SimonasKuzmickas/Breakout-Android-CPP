@@ -95,6 +95,10 @@ public:
 
                 if(balls.empty())
                 {
+                    onLost.invoke();
+
+                    globalSpeedMultiplier = 1;
+                    ballsType = BallsType::Normal;
                     createBall(1000, 200, 30, Vector2(7.0f, 7.0f));
                 }
             }
