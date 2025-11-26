@@ -9,13 +9,6 @@ namespace Breakout {
 class ISceneManager;
 
 class IScene {
-protected:
-    virtual void onStart() = 0;
-
-    virtual void onUpdate() = 0;
-
-    virtual void onDestroy() = 0;
-
 public:
     virtual ~IScene() = default;
 
@@ -50,11 +43,16 @@ public:
 
     void setManager(ISceneManager *manager) { sceneManager = manager; }
 
+protected:
+    // TODO: perhaps I could use empty implementations to reduce some code
+    virtual void onStart() { };
+    virtual void onUpdate() { };
+    virtual void onDestroy() { };
+
+    ISceneManager *sceneManager = nullptr;
+
 private:
     std::vector<std::shared_ptr<ISceneComponent>> components;
-
-protected:
-    ISceneManager *sceneManager = nullptr;
 };
 
 }

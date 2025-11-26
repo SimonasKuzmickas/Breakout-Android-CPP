@@ -21,14 +21,6 @@ public:
               speed(DEFAULT_SPEED),
               transitionWidth(DEFAULT_BOUNDS.w) {}
 
-    void onAwake() override {
-
-    }
-
-    void onDestroy() override {
-
-    }
-
     void onUpdate() override {
         bounds.x += static_cast<float>(direction) * speed;
 

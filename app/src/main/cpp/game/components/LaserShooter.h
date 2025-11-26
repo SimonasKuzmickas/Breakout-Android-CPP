@@ -23,11 +23,9 @@ public:
 
         levelSystem->onlevelStart.addListener([this]() {
             setActive(false);
+
+            lasers.clear();
         });
-    }
-
-    void onDestroy() override {
-
     }
 
     void onUpdate() override {

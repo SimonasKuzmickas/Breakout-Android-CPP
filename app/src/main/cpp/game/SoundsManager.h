@@ -68,12 +68,6 @@ public:
                 soundBrick->play();
             });
         }
-
-
-    }
-
-    void onUpdate() override {
-
     }
 
     void onDestroy() override {

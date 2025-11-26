@@ -14,14 +14,12 @@ public:
         levelSystem = getComponent<LevelSystem>();
         ballSystem = getComponent<BallSystem>();
 
-        auto levelSystem = getComponent<LevelSystem>();
         if (levelSystem) {
             levelSystem->onDestroyBrick.addListener([this](const Brick& brick) {
-                increaseScore(50);
+                increaseScore(BRICK_SCORE_VALUE);
             });
         }
 
-        auto ballSystem = getComponent<BallSystem>();
         if (ballSystem) {
             ballSystem->onLost.addListener([this]() {
                 increaseLives(-1);
@@ -29,44 +27,30 @@ public:
         }
     }
 
-    void onDestroy() override {
-
-    }
-
-    void onUpdate() override {
-
-    }
-
-    void increaseLives(int amount)
-    {
+    void increaseLives(int amount) {
         lives += amount;
-
-        if(lives <= 0)
-        {
+        if(lives <= 0) {
             lives = 0;
             onDeath.invoke();
         }
     }
 
-    void increaseScore(int amount)
-    {
-        score += amount;
+    void increaseScore(int amount) {
+        score = std::max(0, score + amount);
     }
 
-    int getScore() {
-        return score;
-    }
-
-    int getLives(){
-        return lives;
-    }
+    int getScore() const { return score; }
+    int getLives() const { return lives; }
 
 private:
     std::shared_ptr<LevelSystem> levelSystem;
     std::shared_ptr<BallSystem> ballSystem;
 
     int score = 0;
-    int lives = 3;
+    int lives = INITIAL_LIVES;
+
+    static constexpr int INITIAL_LIVES = 3;
+    static constexpr int BRICK_SCORE_VALUE = 50;
 };
 
 }

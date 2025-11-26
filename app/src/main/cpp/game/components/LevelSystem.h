@@ -32,14 +32,6 @@ public:
         createLevel();
     }
 
-    void onDestroy() override {
-
-    }
-
-    void onUpdate() override {
-
-    }
-
     void createLevel() {
         const int rows = 6;
         const int cols = 14;

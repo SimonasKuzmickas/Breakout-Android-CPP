@@ -7,9 +7,9 @@ namespace Breakout {
 class ISceneComponent {
 public:
     virtual ~ISceneComponent() = default;
-    virtual void onAwake() = 0;
-    virtual void onDestroy() = 0;
-    virtual void onUpdate() = 0;
+    virtual void onAwake() {};
+    virtual void onDestroy() {};
+    virtual void onUpdate() {};
 
     void setComponents(std::vector<std::shared_ptr<ISceneComponent>>* comp) {
         componentsRef = comp;
