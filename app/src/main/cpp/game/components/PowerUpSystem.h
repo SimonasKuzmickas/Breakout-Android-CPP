@@ -45,18 +45,18 @@ public:
         playerState = getComponent<PlayerState>();
 
         if (levelSystem) {
-            levelSystem->onDestroyBrick.subscribe([this](const Brick& brick) {
+            levelSystem->onDestroyBrick.addListener([this](const Brick& brick) {
                 int rnd = std::rand() % 100;
                 if(rnd < 50) {
                     createPowerUp(brick.getBounds().x + 10, brick.getBounds().y + 5, getRandomPowerUpType());
                 }
             });
 
-            levelSystem->onlevelStart.subscribe([this]() {
+            levelSystem->onlevelStart.addListener([this]() {
                 powerUps.clear();
             });
 
-            ballSystem->onLost.subscribe([this]() {
+            ballSystem->onLost.addListener([this]() {
                 powerUps.clear();
             });
         }

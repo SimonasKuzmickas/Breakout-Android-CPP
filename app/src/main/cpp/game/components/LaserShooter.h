@@ -15,11 +15,11 @@ public:
         levelSystem = getComponent<LevelSystem>();
         ballSystem = getComponent<BallSystem>();
 
-        ballSystem->onLost.subscribe([this]() {
+        ballSystem->onLost.addListener([this]() {
             setActive(false);
         });
 
-        levelSystem->onlevelStart.subscribe([this]() {
+        levelSystem->onlevelStart.addListener([this]() {
             setActive(false);
         });
     }

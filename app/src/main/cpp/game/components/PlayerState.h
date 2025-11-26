@@ -14,14 +14,14 @@ public:
 
         auto levelSystem = getComponent<LevelSystem>();
         if (levelSystem) {
-            levelSystem->onDestroyBrick.subscribe([this](const Brick& brick) {
+            levelSystem->onDestroyBrick.addListener([this](const Brick& brick) {
                 increaseScore(50);
             });
         }
 
         auto ballSystem = getComponent<BallSystem>();
         if (ballSystem) {
-            ballSystem->onLost.subscribe([this]() {
+            ballSystem->onLost.addListener([this]() {
                 increaseLives(-1);
             });
         }

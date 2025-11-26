@@ -8,26 +8,28 @@
 #include "game/scenes/MenuScene.h"
 #include "game/scenes/SceneId.h"
 
-void gameLoop(AppContext* appContext) {
-    const double deltaTime = 1.0 / 60.0;
-    auto lastTick = std::chrono::steady_clock::now();
+namespace Breakout {
+    void gameLoop(AppContext* appContext) {
+        const double deltaTime = 1.0 / 60.0;
+        auto lastTick = std::chrono::steady_clock::now();
 
-    auto sceneManager = SceneManager(appContext);
-    sceneManager.requestChange((int)SceneId::Menu);
+        auto sceneManager = Scenes::SceneManager(appContext);
+        sceneManager.requestChange((int)Scenes::SceneId::Menu);
 
-    while (appContext->running) {
-        auto now = std::chrono::steady_clock::now();
-        auto next = lastTick + std::chrono::duration<double>(deltaTime);
+        while (appContext->running) {
+            auto now = std::chrono::steady_clock::now();
+            auto next = lastTick + std::chrono::duration<double>(deltaTime);
 
-        if (now >= next) {
-            lastTick = now;
-            sceneManager.update();
+            if (now >= next) {
+                lastTick = now;
+                sceneManager.update();
+            }
+
+            std::this_thread::sleep_until(next);
         }
 
-        std::this_thread::sleep_until(next);
+       sceneManager.destroy();
     }
-
-   // sceneManager.destroy();
 }
 
 extern "C" JNIEXPORT jlong JNICALL
@@ -35,7 +37,7 @@ Java_com_nordcurrent_breakout_GameView_nativeStart(JNIEnv* env, jobject, jobject
     auto* context = new AppContext();
     context->window = ANativeWindow_fromSurface(env, surface);
     context->running = true;
-    context->thread = std::thread(gameLoop, context);
+    context->thread = std::thread(Breakout::gameLoop, context);
     context->assetManager = AAssetManager_fromJava(env, assetManager);
     return reinterpret_cast<jlong>(context);
 }

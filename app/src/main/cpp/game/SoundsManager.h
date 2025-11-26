@@ -30,39 +30,39 @@ public:
 
         auto paddle = getComponent<Paddle>();
         if (paddle) {
-            paddle->onHit.subscribe([this]() {
+            paddle->onHit.addListener([this]() {
                 soundPaddle->play();
             });
         }
 
         auto laserShooter = getComponent<LaserShooter>();
         if (laserShooter) {
-            laserShooter->onLaserShoot.subscribe([this]() {
+            laserShooter->onLaserShoot.addListener([this]() {
                 soundLaser->play();
             });
         }
 
         auto ballSystem = getComponent<BallSystem>();
-        ballSystem->onHitWall.subscribe([this]() {
+        ballSystem->onHitWall.addListener([this]() {
             soundWall->play();
         });
 
-        ballSystem->onLost.subscribe([this]() {
+        ballSystem->onLost.addListener([this]() {
             lifeLost->play();
         });
 
-        ballSystem->onExplosion.subscribe([this]() {
+        ballSystem->onExplosion.addListener([this]() {
             soundExplosion->play();
         });
 
         auto powerUpManager = getComponent<PowerUpSystem>();
-        powerUpManager->onPickup.subscribe([this]() {
+        powerUpManager->onPickup.addListener([this]() {
             soundPowerUp->play();
         });
 
         auto levelSystem = getComponent<LevelSystem>();
         if (levelSystem) {
-            levelSystem->onDestroyBrick.subscribe([this](const Brick& brick) {
+            levelSystem->onDestroyBrick.addListener([this](const Brick& brick) {
                 soundBrick->play();
             });
         }
