@@ -24,9 +24,9 @@ public:
         drawBalls();
 
         drawImage(resourceBlock, 580, 0, 680, 1080);
-        drawImage(resourcesTitle, 600, 540, 650, 660);
+        drawImage(resourcesTitle, 600, 480, 650, 660);
 
-        if (drawButton(resourceStartButton, 700, 440, 440, 160)) {
+        if (drawButton(resourceStartButton, 700, 300, 440, 160)) {
             onStartPressed.invoke();
         }
 

@@ -49,7 +49,7 @@ public:
         if (levelSystem) {
             levelSystem->onDestroyBrick.addListener([this](const Brick &brick) {
                 int rnd = std::rand() % 100;
-                if (rnd < 50) {
+                if (rnd < 50 && powerUps.size() < 5) {
                     createPowerUp(brick.getBounds().x + 10, brick.getBounds().y + 5,
                                   getRandomPowerUpType());
                 }

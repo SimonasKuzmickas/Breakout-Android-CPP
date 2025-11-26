@@ -1,5 +1,6 @@
 #pragma once
 #include "../GraphicsManager.h"
+#include "../ui/UILayoutHandler.h"
 
 namespace Breakout {
 
@@ -27,12 +28,13 @@ public:
         drawImage(resourceBlock, 580, 0, 680, 1080);
         drawImage(resourcesGameOver, 580, 650, 650, 360);
 
-        if (drawButton(resourcesMenuButton, 700, 440, 440, 160)) {
-            onMenuPressed.invoke();
+
+        if (drawButton(resourcesRetryButton, 700, 440, 440, 160)) {
+            onRetryPressed.invoke();
         }
 
-        if (drawButton(resourcesRetryButton, 700, 220, 440, 160)) {
-            onRetryPressed.invoke();
+        if (drawButton(resourcesMenuButton, 700, 220, 440, 160)) {
+            onMenuPressed.invoke();
         }
 
         graphicsAPI.flip();

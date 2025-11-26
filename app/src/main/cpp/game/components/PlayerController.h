@@ -47,16 +47,20 @@ public:
             return;
         }
 
-        float center = screenBounds.w * 0.5f;
+        float ratio = screenBounds.w / 1920;
+
+        float center = paddle->getBounds().center().x * ratio;
         float offset = position.x - center;
 
-        if (offset < 0.0f) {
-            paddle->move(Paddle::Direction::Left);
-        } else if (offset > 0.0f) {
-            paddle->move(Paddle::Direction::Right);
+        if(std::abs(offset) > paddle->getBounds().w * 0.25f) {
+            if (offset < 0.0f) {
+                paddle->move(Paddle::Direction::Left);
+            } else if (offset > 0.0f) {
+                paddle->move(Paddle::Direction::Right);
+            }
         } else {
             paddle->move(Paddle::Direction::None);
-        };
+        }
     }
 
     void onTouch(int pointerId, float x, float y, int action) {
