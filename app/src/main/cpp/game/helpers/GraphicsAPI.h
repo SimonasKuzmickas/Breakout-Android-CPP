@@ -62,13 +62,13 @@ public:
         float y1 = (2.0f * (y + h) / VIRTUAL_HEIGHT) - 1.0f;
 
         GLfloat verts[] = {
-                x0, y0, 0.0f, 1.0f,   // bottom-left
-                x1, y0, 1.0f, 1.0f,   // bottom-right
-                x1, y1, 1.0f, 0.0f,   // top-right
+                x0, y0, 0.0f, 1.0f,
+                x1, y0, 1.0f, 1.0f,
+                x1, y1, 1.0f, 0.0f,
 
-                x0, y0, 0.0f, 1.0f,   // bottom-left
-                x1, y1, 1.0f, 0.0f,   // top-right
-                x0, y1, 0.0f, 0.0f    // top-left
+                x0, y0, 0.0f, 1.0f,
+                x1, y1, 1.0f, 0.0f,
+                x0, y1, 0.0f, 0.0f
         };
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -90,6 +90,68 @@ public:
         glEnableVertexAttribArray(uvAttrib);
         glVertexAttribPointer(uvAttrib, 2, GL_FLOAT, GL_FALSE,
                               4 * sizeof(GLfloat), (void *) (2 * sizeof(GLfloat)));
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glDisableVertexAttribArray(posAttrib);
+        glDisableVertexAttribArray(uvAttrib);
+    }
+
+    void drawTextureAnim(GLuint texture,
+                         float x, float y, float w, float h,
+                         int frameId,
+                         int frameWidth, int frameHeight,
+                         int sheetWidth, int sheetHeight) const {
+        x += offsetX;
+        y += offsetY;
+
+        // Convert screen coords to NDC
+        float x0 = (2.0f * x / VIRTUAL_WIDTH) - 1.0f;
+        float y0 = (2.0f * y / VIRTUAL_HEIGHT) - 1.0f;
+        float x1 = (2.0f * (x + w) / VIRTUAL_WIDTH) - 1.0f;
+        float y1 = (2.0f * (y + h) / VIRTUAL_HEIGHT) - 1.0f;
+
+        // Compute frame position in sheet
+        int framesPerRow = sheetWidth / frameWidth;
+        int frameX = (frameId % framesPerRow) * frameWidth;
+        int frameY = (frameId / framesPerRow) * frameHeight;
+
+        // Normalize to UVs (0–1)
+        float u0 = static_cast<float>(frameX) / sheetWidth;
+        float v0 = static_cast<float>(frameY) / sheetHeight;
+        float u1 = static_cast<float>(frameX + frameWidth) / sheetWidth;
+        float v1 = static_cast<float>(frameY + frameHeight) / sheetHeight;
+
+        // Build interleaved vertex + UV array
+        GLfloat verts[] = {
+                x0, y0, u0, v1,   // bottom-left
+                x1, y0, u1, v1,   // bottom-right
+                x1, y1, u1, v0,   // top-right
+
+                x0, y0, u0, v1,   // bottom-left
+                x1, y1, u1, v0,   // top-right
+                x0, y1, u0, v0    // top-left
+        };
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_DYNAMIC_DRAW);
+
+        glUseProgram(program);
+
+        GLint colorLoc = glGetUniformLocation(program, "uColor");
+        glUniform4f(colorLoc, colorR, colorG, colorB, colorA);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glUniform1i(texUniform, 0);
+
+        glEnableVertexAttribArray(posAttrib);
+        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE,
+                              4 * sizeof(GLfloat), (void*)0);
+
+        glEnableVertexAttribArray(uvAttrib);
+        glVertexAttribPointer(uvAttrib, 2, GL_FLOAT, GL_FALSE,
+                              4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -312,31 +374,5 @@ private:
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 };
-
-
-//    void drawRectangle(float x, float y, float w, float h,
-//                       float r, float g, float b, float a) const {
-//
-//        float x0 = (2.0f * x / VIRTUAL_WIDTH) - 1.0f;
-//        float y0 = (2.0f * y / VIRTUAL_HEIGHT) - 1.0f;
-//        float x1 = (2.0f * (x + w) / VIRTUAL_WIDTH) - 1.0f;
-//        float y1 = (2.0f * (y + h) / VIRTUAL_HEIGHT) - 1.0f;
-//
-//        GLfloat vertices[] = {
-//                x0, y0, x1, y0, x1, y1,
-//                x0, y0, x1, y1, x0, y1
-//        };
-//
-//        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-//        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
-//
-//        glUseProgram(program);
-//        glUniform4f(colUniform, r, g, b, a);
-//
-//        glEnableVertexAttribArray(posAttrib);
-//        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
-//
-//        glDrawArrays(GL_TRIANGLES, 0, 6);
-//    }
 
 }

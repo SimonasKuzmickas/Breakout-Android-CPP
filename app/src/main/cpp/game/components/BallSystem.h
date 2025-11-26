@@ -118,7 +118,7 @@ public:
                 ball.velocity.x = -ball.velocity.x;
 
                 onHitWall.invoke();
-                // RIGHT
+            // RIGHT
             } else if (ball.bounds.x + ball.bounds.w > levelBounds.right()) {
                 ball.bounds.x = levelBounds.right() - ball.bounds.w;
                 ball.velocity.x = -ball.velocity.x;
@@ -164,9 +164,9 @@ public:
 
     void removeBall(const Ball &ballRef) {
         auto target = std::find_if(balls.begin(), balls.end(),
-                                   [&](const Ball &b) {
-                                       return &b == &ballRef;
-                                   });
+               [&](const Ball &b) {
+                   return &b == &ballRef;
+               });
 
         if (target != balls.end()) {
             balls.erase(target);

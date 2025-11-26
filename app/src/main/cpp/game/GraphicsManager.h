@@ -21,11 +21,6 @@ public:
         laserShooter = getComponent<LaserShooter>();
         playerState = getComponent<PlayerState>();
 
-        for (int i = 0; i <= 9; ++i) {
-            std::string filename = "num" + std::to_string(i) + ".png";
-            numbers[i] = loadImage(filename.c_str());
-        }
-
         for (int i = 1; i <= 12; ++i) {
             std::string filename = "powerup" + std::to_string(i) + ".png";
             resourcePowerUps[i - 1] = loadImage(filename.c_str());
@@ -48,6 +43,7 @@ public:
         resourceShooterLeft = loadImage("shooter_left.png");
         resourceShooterRight = loadImage("shooter_right.png");
         resourceLife = loadImage("life.png");
+        resourceNumbers = loadImage("numbers.png");
     }
 
     void onDestroy() override {
@@ -66,6 +62,15 @@ public:
         graphicsAPI.drawTexture(textureId, x, y, w, h);
     }
 
+    void drawImageAnim(GLuint textureId,
+                       float x, float y, float w, float h,
+                       int frameId,
+                       int frameWidth, int frameHeight,
+                       int sheetWidth, int sheetHeight) {
+        graphicsAPI.drawTextureAnim(textureId, x, y, w, h,
+                                    frameId, frameWidth, frameHeight, sheetWidth, sheetHeight);
+    }
+
     void drawNumber(int value, int x, int y, int digitWidth, int digitHeight, int spacing) {
         std::string str = std::to_string(value);
 
@@ -82,7 +87,7 @@ public:
             int digit = str[i] - '0';
             int xpos = xposStart + static_cast<int>(i) * (digitWidth + spacing);
 
-            drawImage(numbers[digit], xpos, y, digitWidth, digitHeight);
+            drawImageAnim(resourceNumbers, xpos, y, digitWidth, digitHeight, digit, 7, 10, 70, 10);
         }
     }
 
@@ -104,7 +109,6 @@ private:
     std::array<GLuint, 12> resourcePowerUps;
     std::array<GLuint, 3> resourcePaddles;
     std::array<GLuint, 3> resourceBalls;
-    std::array<GLuint, 10> numbers;
 
     GLuint resourceShooterLeft;
     GLuint resourceShooterRight;
@@ -113,6 +117,7 @@ private:
     GLuint resourceBackground;
     GLuint resourceBrick1;
     GLuint resourceLife;
+    GLuint resourceNumbers;
 
     float paddleAnimation = 0;
 
