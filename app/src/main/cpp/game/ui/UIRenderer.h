@@ -5,7 +5,7 @@
 #include "../scene/ISceneComponent.h"
 #include "../scene/ISceneComponentRender.h"
 
-class UIRenderer : public ISceneComponent, public ISceneComponentRender {
+class UIRenderer : public GraphicsManager {
 public:
     enum class TouchAction {
         Down = 0,
@@ -16,34 +16,36 @@ public:
         PointerUp = 6
     };
 
-    explicit UIRenderer(AppContext* context) : graphicsAPI(context) {}
+    UIRenderer(AppContext* context) : GraphicsManager(context) {}
 
     void onAwake() override {
-
-    }
-
-    void onDestroy() override {
-
+        inputHandler = getComponent<UIInputHandler>();
     }
 
     void onRender() override {
         graphicsAPI.flip();
     }
 
-    GLuint loadImage(const char* path) {
-        return graphicsAPI.loadTextureFromAssets("background.png");
-    }
-
-    void drawImage(GLuint textureId, float x, float y, float w, float h) {
-        graphicsAPI.drawTexture(textureId, x, y, w, h);
-    }
-
     bool drawButton(GLuint textureId, float x, float y, float w, float h) {
-        graphicsAPI.drawTexture(textureId, x, y, w, h);
 
-        return true;
+        drawImage(textureId, x, y, w, h);
+
+        if(inputHandler->isPressed())
+        {
+            auto touchPosition = inputHandler->getPosition();
+            auto imageBounds = Rect(x, y, w, h);
+            auto inputBounds = Rect(touchPosition.x, touchPosition.y, 1, 1);
+
+            if(imageBounds.overlaps(inputBounds))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 private:
-    GraphicsAPI graphicsAPI;
+
+    std::shared_ptr<UIInputHandler> inputHandler;
 };

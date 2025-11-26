@@ -115,6 +115,41 @@ public:
         return texId;
     }
 
+    void shutdown() {
+        if (!graphicsContext) return;
+
+        // Delete GL resources you own
+        if (program) {
+            glDeleteProgram(program);
+            program = 0;
+        }
+        if (vbo) {
+            glDeleteBuffers(1, &vbo);
+            vbo = 0;
+        }
+
+        // Detach context
+        eglMakeCurrent(graphicsContext->display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+
+        // Destroy EGL objects
+        if (graphicsContext->surface != EGL_NO_SURFACE) {
+            eglDestroySurface(graphicsContext->display, graphicsContext->surface);
+            graphicsContext->surface = EGL_NO_SURFACE;
+        }
+        if (graphicsContext->context != EGL_NO_CONTEXT) {
+            eglDestroyContext(graphicsContext->display, graphicsContext->context);
+            graphicsContext->context = EGL_NO_CONTEXT;
+        }
+        if (graphicsContext->display != EGL_NO_DISPLAY) {
+            eglTerminate(graphicsContext->display);
+            graphicsContext->display = EGL_NO_DISPLAY;
+        }
+
+        // Free context memory
+        delete graphicsContext;
+        graphicsContext = nullptr;
+    }
+
 private:
     GraphicsContext *graphicsContext;
     AppContext *appContext;

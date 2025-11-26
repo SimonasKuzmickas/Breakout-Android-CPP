@@ -15,11 +15,19 @@ public:
     void onStart() override {
         addComponent(std::make_shared<UIInputHandler>(appContext));
         addComponent(std::make_shared<UIRenderer>(appContext));
-        addComponent(std::make_shared<UIMenuLayout>());
+ 
+        auto menuLayout = std::make_shared<UIMenuLayout>();
+        addComponent(menuLayout);
+
+        if (menuLayout) {
+            menuLayout->onStartPressed.subscribe([this]() {
+                sceneManager->requestChange(std::make_unique<GameScene>(appContext));
+            });
+        }
     }
 
     void onUpdate() override {
-       sceneManager->requestChange(std::make_unique<GameScene>(appContext));
+
     }
 
     void onDestroy() override {

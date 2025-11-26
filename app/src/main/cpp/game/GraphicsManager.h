@@ -19,28 +19,30 @@ public:
 
         for (int i = 1; i <= 12; ++i) {
             std::string filename = "powerup" + std::to_string(i) + ".png";
-            resourcePowerUps[i - 1] = graphicsAPI.loadTextureFromAssets(filename.c_str());
+            resourcePowerUps[i - 1] = loadImage(filename.c_str());
         }
 
         for (int i = 1; i <= 3; ++i) {
             std::string filename = "paddle" + std::to_string(i) + ".png";
-            resourcePaddles[i - 1] = graphicsAPI.loadTextureFromAssets(filename.c_str());
+            resourcePaddles[i - 1] = loadImage(filename.c_str());
         }
 
         for (int i = 1; i <= 3; ++i) {
             std::string filename = "ball" + std::to_string(i) + ".png";
-            resourceBalls[i - 1] = graphicsAPI.loadTextureFromAssets(filename.c_str());
+            resourceBalls[i - 1] = loadImage(filename.c_str());
         }
 
-        resourceBackground = graphicsAPI.loadTextureFromAssets("background.png");
-        resourceBrick1 = graphicsAPI.loadTextureFromAssets("brick1.png");
-        resourcePaddleLeft = graphicsAPI.loadTextureFromAssets("paddleleft.png");
-        resourcePaddleRight = graphicsAPI.loadTextureFromAssets("paddleright.png");
-        resourceShooterLeft = graphicsAPI.loadTextureFromAssets("shooter_left.png");
-        resourceShooterRight = graphicsAPI.loadTextureFromAssets("shooter_right.png");
+        resourceBackground = loadImage("background.png");
+        resourceBrick1 = loadImage("brick1.png");
+        resourcePaddleLeft = loadImage("paddleleft.png");
+        resourcePaddleRight = loadImage("paddleright.png");
+        resourceShooterLeft = loadImage("shooter_left.png");
+        resourceShooterRight = loadImage("shooter_right.png");
     }
 
-    void onDestroy() override {}
+    void onDestroy() override {
+        graphicsAPI.shutdown();
+    }
 
     void onRender() override {
         drawLevel();
@@ -56,9 +58,14 @@ public:
         graphicsAPI.drawTexture(textureId, x, y, w, h);
     }
 
-private:
+    GLuint loadImage(const char* path) {
+        return graphicsAPI.loadTextureFromAssets(path);
+    }
+
+protected:
     GraphicsAPI graphicsAPI;
 
+private:
     std::shared_ptr<Paddle> paddle;
     std::shared_ptr<BallSystem> ballSystem;
     std::shared_ptr<LevelSystem> levelManager;
@@ -77,6 +84,8 @@ private:
     GLuint resourceBrick1;
 
     float paddleAnimation = 0;
+
+protected:
 
     void drawPowerUps() {
         for (auto& powerup : powerUpManager->getPowerUps()) {
