@@ -21,11 +21,6 @@ public:
         laserShooter = getComponent<LaserShooter>();
         playerState = getComponent<PlayerState>();
 
-        for (int i = 1; i <= 12; ++i) {
-            std::string filename = "powerup" + std::to_string(i) + ".png";
-            resourcePowerUps[i - 1] = loadImage(filename.c_str());
-        }
-
         for (int i = 1; i <= 3; ++i) {
             std::string filename = "paddle" + std::to_string(i) + ".png";
             resourcePaddles[i - 1] = loadImage(filename.c_str());
@@ -40,6 +35,7 @@ public:
         resourceLife = loadImage("life.png");
         resourceNumbers = loadImage("numbers.png");
         resourceBalls = loadImage("balls.png");
+        resourcePowerUps = loadImage("powerups.png");
     }
 
     void onDestroy() override {
@@ -101,8 +97,6 @@ private:
     std::shared_ptr<PowerUpSystem> powerUpManager;
     std::shared_ptr<LaserShooter> laserShooter;
     std::shared_ptr<PlayerState> playerState;
-
-    std::array<GLuint, 12> resourcePowerUps;
     std::array<GLuint, 3> resourcePaddles;
 
     GLuint resourceShooterLeft;
@@ -114,6 +108,7 @@ private:
     GLuint resourceLife;
     GLuint resourceNumbers;
     GLuint resourceBalls;
+    GLuint resourcePowerUps;
 
     float paddleAnimation = 0;
 
@@ -163,7 +158,8 @@ protected:
         for (auto &powerup: powerUpManager->getPowerUps()) {
             auto bounds = powerup.bounds;
             int index = static_cast<int>(powerup.powerUpType);
-            drawImage(resourcePowerUps[index], bounds.x, bounds.y, bounds.w, bounds.h);
+            drawImageAnim(resourcePowerUps, bounds.x, bounds.y, bounds.w, bounds.h,
+                          index, 250, 68, 250, 952);
         }
     }
 
