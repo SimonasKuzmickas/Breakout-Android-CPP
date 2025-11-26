@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Blackboard.h"
+#include "IScene.h"
 
 namespace Breakout {
 
@@ -11,20 +11,25 @@ public:
     virtual void onDestroy() = 0;
     virtual void onUpdate() = 0;
 
-    void setBlackboard(Blackboard* board) {
-         blackboard = board;
+    void setComponents(std::vector<std::shared_ptr<ISceneComponent>>* comp) {
+        componentsRef = comp;
     }
 
     template<typename T>
     std::shared_ptr<T> getComponent() const {
-        if (!blackboard) {
+        if (!componentsRef) {
             return nullptr;
         }
-        return blackboard->getComponent<T>();
+        for (auto& m : *componentsRef) {
+            if (auto casted = std::dynamic_pointer_cast<T>(m)) {
+                return casted;
+            }
+        }
+        return nullptr;
     }
 
 private:
-    Blackboard *blackboard = nullptr;
+    std::vector<std::shared_ptr<ISceneComponent>>* componentsRef = nullptr;
 };
 
 }

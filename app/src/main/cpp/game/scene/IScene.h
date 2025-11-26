@@ -19,12 +19,9 @@ protected:
 public:
     virtual ~IScene() = default;
 
-    IScene()
-            : blackboard(components) {}
-
     void addComponent(std::shared_ptr<ISceneComponent> component) {
         components.push_back(component);
-        component->setBlackboard(&blackboard);
+        component->setComponents(&components);
     }
 
     void start() {
@@ -55,7 +52,6 @@ public:
 
 private:
     std::vector<std::shared_ptr<ISceneComponent>> components;
-    Blackboard blackboard;
 
 protected:
     ISceneManager *sceneManager = nullptr;
