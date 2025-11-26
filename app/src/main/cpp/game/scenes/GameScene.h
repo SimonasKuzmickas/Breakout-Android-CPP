@@ -3,7 +3,7 @@
 #include "../scene/IScene.h"
 #include "../GraphicsManager.h"
 #include "../SoundsManager.h"
-#include "../components/PlayerInput.h"
+#include "../components/PlayerController.h"
 #include "../components/PlayerState.h"
 #include "../components/LevelSystem.h"
 #include "../components/PowerUpSystem.h"
@@ -31,7 +31,7 @@ public:
 
         addComponent(std::make_shared<GraphicsManager>(appContext));
         addComponent(std::make_shared<SoundsManager>(appContext));
-        addComponent(std::make_shared<PlayerInput>(appContext));
+        addComponent(std::make_shared<PlayerController>(appContext));
         addComponent(std::make_shared<LevelSystem>());
         addComponent(std::make_shared<PowerUpSystem>());
         addComponent(std::make_shared<BallSystem>());

@@ -61,8 +61,8 @@ Java_com_nordcurrent_breakout_GameView_nativeStop(JNIEnv*, jobject, jlong handle
 extern "C" JNIEXPORT void JNICALL
 Java_com_nordcurrent_breakout_GameView_nativeOnTouch(JNIEnv* env, jobject thiz,
                                                      jint pointerId, jfloat x, jfloat y, jint action) {
-    if (Breakout::g_playerInput) {
-        Breakout::g_playerInput->onTouch(pointerId, x, y, action);
+    if (Breakout::g_playerController) {
+        Breakout::g_playerController->onTouch(pointerId, x, y, action);
     }
 
     if (Breakout::g_layoutHandler) {

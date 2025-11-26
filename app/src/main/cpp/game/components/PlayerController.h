@@ -4,12 +4,12 @@
 
 namespace Breakout {
 
-// Global pointer to the active PlayerInput instance
+// Global pointer to the active PlayerController instance
 // Used by callbacks to call touch events into C++
-class PlayerInput;
-static PlayerInput* g_playerInput = nullptr;
+class PlayerController;
+static PlayerController* g_playerController = nullptr;
 
-class PlayerInput : public ISceneComponent {
+class PlayerController : public ISceneComponent {
 public:
     enum class TouchAction {
         Down = 0,
@@ -20,7 +20,7 @@ public:
         PointerUp = 6
     };
 
-    explicit PlayerInput(AppContext* context)
+    explicit PlayerController(AppContext* context)
     {
         int width = ANativeWindow_getWidth(context->window);
         int height = ANativeWindow_getHeight(context->window);
@@ -30,7 +30,7 @@ public:
     }
 
     void onAwake() override {
-        g_playerInput = this;
+        g_playerController = this;
 
         paddle = getComponent<Paddle>();
         position = Vector2(0, 0);
@@ -38,7 +38,7 @@ public:
     }
 
     void onDestroy() override {
-        g_playerInput = nullptr;
+        g_playerController = nullptr;
     }
 
     void onUpdate() override {
