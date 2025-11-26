@@ -37,15 +37,15 @@ public:
     Event<> onPickup;
 
     void onAwake() override {
-        levelManager = getComponent<LevelSystem>();
+        levelSystem = getComponent<LevelSystem>();
         paddle = getComponent<Paddle>();
         laserShooter = getComponent<LaserShooter>();
         ballSystem = getComponent<BallSystem>();
 
-        if (levelManager) {
-            levelManager->onDestroyBrick.subscribe([this](const Brick& brick) {
-                int rnd = std::rand() % 10;
-                if(rnd < 4) {
+        if (levelSystem) {
+            levelSystem->onDestroyBrick.subscribe([this](const Brick& brick) {
+                int rnd = std::rand() % 100;
+                if(rnd < 50) {
                     createPowerUp(brick.getBounds().x + 10, brick.getBounds().y + 5, getRandomPowerUpType());
                 }
             });
@@ -135,7 +135,7 @@ public:
 private:
     std::vector<PowerUp> powerUps;
 
-    std::shared_ptr<LevelSystem> levelManager;
+    std::shared_ptr<LevelSystem> levelSystem;
     std::shared_ptr<BallSystem> ballSystem;
     std::shared_ptr<Paddle> paddle;
     std::shared_ptr<LaserShooter> laserShooter;

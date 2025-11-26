@@ -18,14 +18,12 @@ public:
         resourceBlock = renderer->loadImage("block.png");
         resourceStartButton = renderer->loadImage("startbutton.png");
         resourcesTitle = renderer->loadImage("title.png");
-
     }
 
     void onDestroy() override { }
 
     void onRender() override {
-        renderer->drawImage(resourceBackground, 0, 0, 1920, 1080);
-        renderer->drawImage(resourceBlock, 620, 340, 600, 400);
+        renderer->drawImage(resourceBlock, 580, 0, 680, 1080);
         renderer->drawImage(resourcesTitle, 600, 540, 650, 660);
 
         if(renderer->drawButton(resourceStartButton, 700, 440, 440, 200))

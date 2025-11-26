@@ -39,9 +39,9 @@ public:
             soundsAPI.play("powerup");
         });
 
-        auto levelManager = getComponent<LevelSystem>();
-        if (levelManager) {
-            levelManager->onDestroyBrick.subscribe([this](const Brick& brick) {
+        auto levelSystem = getComponent<LevelSystem>();
+        if (levelSystem) {
+            levelSystem->onDestroyBrick.subscribe([this](const Brick& brick) {
                 soundsAPI.play("brick");
             });
         }

@@ -43,8 +43,7 @@ public:
         bounds.x -= increase * 0.5f;
         bounds.w += increase;
 
-        if(bounds.w < 120)
-        {
+        if(bounds.w < 120) {
             bounds.w = 120;
         }
     }

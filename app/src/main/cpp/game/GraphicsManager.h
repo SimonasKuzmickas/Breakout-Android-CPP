@@ -13,7 +13,7 @@ public:
     void onAwake() override {
         paddle = getComponent<Paddle>();
         ballSystem = getComponent<BallSystem>();
-        levelManager = getComponent<LevelSystem>();
+        levelSystem = getComponent<LevelSystem>();
         powerUpManager = getComponent<PowerUpSystem>();
         laserShooter = getComponent<LaserShooter>();
 
@@ -68,7 +68,7 @@ protected:
 private:
     std::shared_ptr<Paddle> paddle;
     std::shared_ptr<BallSystem> ballSystem;
-    std::shared_ptr<LevelSystem> levelManager;
+    std::shared_ptr<LevelSystem> levelSystem;
     std::shared_ptr<PowerUpSystem> powerUpManager;
     std::shared_ptr<LaserShooter> laserShooter;
 
@@ -130,10 +130,10 @@ protected:
     }
 
     void drawLevel() {
-        auto levelBounds = levelManager->getLevelBounds();
+        auto levelBounds = levelSystem->getLevelBounds();
         drawImage(resourceBackground, levelBounds.x, levelBounds.y, levelBounds.w, levelBounds.h);
 
-        for (auto& brick : levelManager->getBricks()) {
+        for (auto& brick : levelSystem->getBricks()) {
             auto bounds = brick.getBounds();
             drawImage(resourceBrick1, bounds.x, bounds.y, bounds.w, bounds.h);
         }

@@ -19,11 +19,17 @@ public:
     UIRenderer(AppContext* context) : GraphicsManager(context) {}
 
     void onAwake() override {
+        GraphicsManager::onAwake();
         inputHandler = getComponent<UIInputHandler>();
     }
 
     void onRender() override {
+
         graphicsAPI.flip();
+        drawLevel();
+        drawPaddle();
+        drawPowerUps();
+        drawBalls();
     }
 
     bool drawButton(GLuint textureId, float x, float y, float w, float h) {

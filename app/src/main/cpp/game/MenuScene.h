@@ -5,6 +5,7 @@
 #include "ui/UIInputHandler.h"
 #include "ui/UIRenderer.h"
 #include "ui/UIMenuLayout.h"
+#include "ui/UIAutoPlayer.h"
 
 class MenuScene : public IScene {
 public:
@@ -15,7 +16,14 @@ public:
     void onStart() override {
         addComponent(std::make_shared<UIInputHandler>(appContext));
         addComponent(std::make_shared<UIRenderer>(appContext));
- 
+
+        addComponent(std::make_shared<UIAutoPlayer>());
+        addComponent(std::make_shared<LevelSystem>());
+        addComponent(std::make_shared<PowerUpSystem>());
+        addComponent(std::make_shared<BallSystem>());
+        addComponent(std::make_shared<Paddle>());
+        addComponent(std::make_shared<LaserShooter>());
+
         auto menuLayout = std::make_shared<UIMenuLayout>();
         addComponent(menuLayout);
 
