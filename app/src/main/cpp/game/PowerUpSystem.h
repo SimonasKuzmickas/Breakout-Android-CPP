@@ -6,6 +6,7 @@
 #include "Paddle.h"
 #include "LaserShooter.h"
 #include "BallSystem.h"
+#include "PlayerState.h"
 
 struct PowerUp {
     enum class PowerUpType {
@@ -41,6 +42,7 @@ public:
         paddle = getComponent<Paddle>();
         laserShooter = getComponent<LaserShooter>();
         ballSystem = getComponent<BallSystem>();
+        playerState = getComponent<PlayerState>();
 
         if (levelSystem) {
             levelSystem->onDestroyBrick.subscribe([this](const Brick& brick) {
@@ -108,7 +110,7 @@ public:
                 break;
 
             case PowerUp::PowerUpType::Laser:
-                laserShooter->activate(true);
+                laserShooter->setActive(true);
                 break;
 
             case PowerUp::PowerUpType::ExpandPaddle:
@@ -127,6 +129,27 @@ public:
                 ballSystem->increaseGlobalSpeed(0.75f);
                 break;
 
+            case PowerUp::PowerUpType::Score50:
+                playerState->increaseScore(50);
+                break;
+
+            case PowerUp::PowerUpType::Score100:
+                playerState->increaseScore(100);
+                break;
+
+            case PowerUp::PowerUpType::Score250:
+                playerState->increaseScore(250);
+                break;
+
+            case PowerUp::PowerUpType::Score500:
+                playerState->increaseScore(500);
+                break;
+
+            case PowerUp::PowerUpType::ExtraLife
+                playerState->increaseLives(1);
+                break;
+
+
             default:
                 break;
         }
@@ -143,6 +166,7 @@ private:
     std::shared_ptr<BallSystem> ballSystem;
     std::shared_ptr<Paddle> paddle;
     std::shared_ptr<LaserShooter> laserShooter;
+    std::shared_ptr<PlayerState> playerState;
 
     PowerUp::PowerUpType getRandomPowerUpType() {
         static bool seeded = false;

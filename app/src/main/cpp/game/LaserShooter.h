@@ -3,8 +3,7 @@
 struct Laser {
     Rect bounds;
 
-    Laser(float x, float y)
-            : bounds{x, y, 10, 40} {}
+    Laser(float x, float y) : bounds{x, y, 10, 40} {}
 };
 
 class LaserShooter : public ISceneComponent {
@@ -14,6 +13,15 @@ public:
     void onAwake() override {
         paddle = getComponent<Paddle>();
         levelSystem = getComponent<LevelSystem>();
+        ballSystem = getComponent<BallSystem>();
+
+        ballSystem->onLost.subscribe([this]() {
+            setActive(false);
+        });
+
+        levelSystem->onlevelStart.subscribe([this]() {
+            setActive(false);
+        });
     }
 
     void onDestroy() override {
@@ -21,7 +29,6 @@ public:
     }
 
     void onUpdate() override {
-
         for (auto& laser : lasers) {
             laser.bounds.y += 10;
 
@@ -39,7 +46,6 @@ public:
 
         if(getIsActive())
         {
-            activeTime -= 0.05f;
             shootTime -= 0.05f;
             if(shootTime < 0)
             {
@@ -62,12 +68,12 @@ public:
         return lasers;
     }
 
-    void activate(bool active) {
-        activeTime = 20;
+    void setActive(bool active) {
+        isActive = active;
     }
 
     bool getIsActive() const {
-        return activeTime > 0;
+        return isActive;
     }
 
     void removeLaser(const Laser& laserRef) {
@@ -84,9 +90,10 @@ public:
 private:
     std::shared_ptr<Paddle> paddle;
     std::shared_ptr<LevelSystem> levelSystem;
+    std::shared_ptr<BallSystem> ballSystem;
 
     std::vector<Laser> lasers;
 
     float shootTime = 0;
-    float activeTime = 0;
+    bool isActive = false;
 };
