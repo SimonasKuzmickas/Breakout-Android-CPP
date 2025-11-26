@@ -10,6 +10,12 @@ struct Sound {
     size_t readIndex = 0;
     bool playing = false;
     float gain = 1.0f;
+
+    void play(float g = 1.0f) {
+        readIndex = 0;
+        playing = true;
+        gain = g;
+    }
 };
 
 class SoundsAPI : public oboe::AudioStreamCallback {
@@ -27,14 +33,27 @@ public:
 
         for (int i = 0; i < samplesNeeded; i++) out[i] = 0.0f;
 
-        for (auto& [name, s] : sounds) {
-            if (!s.playing) continue;
+//        for (auto& [name, s] : sounds) {
+//            if (!s.playing) continue;
+//
+//            for (int i = 0; i < samplesNeeded; i++) {
+//                if (s.readIndex < s.samples.size()) {
+//                    out[i] += s.samples[s.readIndex++] * s.gain;
+//                } else {
+//                    s.playing = false; // finished
+//                    break;
+//                }
+//            }
+//        }
+
+        for (Sound* s : sounds) {
+            if (!s || !s->playing) continue;
 
             for (int i = 0; i < samplesNeeded; i++) {
-                if (s.readIndex < s.samples.size()) {
-                    out[i] += s.samples[s.readIndex++] * s.gain;
+                if (s->readIndex < s->samples.size()) {
+                    out[i] += s->samples[s->readIndex++] * s->gain;
                 } else {
-                    s.playing = false; // finished
+                    s->playing = false; // finished
                     break;
                 }
             }
@@ -43,16 +62,32 @@ public:
         return oboe::DataCallbackResult::Continue;
     }
 
+    Sound* include(const std::string& name) {
+        uint32_t sr = 0;
+        uint16_t ch = 0;
+
+        std::string fullName = name + ".wav";
+        auto data = loadWavFromAssets(appContext->assetManager, fullName.c_str(), sr, ch);
+
+        Sound* s = new Sound{ std::move(data) };
+        sounds.emplace_back(s);
+        return sounds.back();
+    }
+
+//    uint32_t sr = 0;
+//    uint16_t ch = 0;
+//
+//    std::string fullName = name + ".wav";
+//    auto data = loadWavFromAssets(appContext->assetManager, fullName.c_str(), sr, ch);
+//
+//    sounds.emplace_back(Sound{ std::move(data), sr, ch });
+//    return sounds.back(); // reference to the stored Sound
+
     void initialize()
     {
         uint32_t sr; uint16_t ch;
 
-        sounds["paddle"] = { loadWavFromAssets(appContext->assetManager, "paddlehit.wav", sr, ch) };
-        sounds["wall"]   = { loadWavFromAssets(appContext->assetManager, "wallhit.wav", sr, ch) };
-        sounds["brick"]   = { loadWavFromAssets(appContext->assetManager, "brickdestroy.wav", sr, ch) };
-        sounds["powerup"]   = { loadWavFromAssets(appContext->assetManager, "powerup.wav", sr, ch) };
-        sounds["explosion"]   = { loadWavFromAssets(appContext->assetManager, "explosion.wav", sr, ch) };
-        sounds["laser"]   = { loadWavFromAssets(appContext->assetManager, "laser.wav", sr, ch) };
+        Sound sound = { loadWavFromAssets(appContext->assetManager, "sample.wav", sr, ch) };
 
         oboe::AudioStreamBuilder builder;
         builder.setDirection(oboe::Direction::Output)
@@ -65,6 +100,20 @@ public:
 
         builder.openStream(mStream);
         mStream->requestStart();
+
+//        include("paddle");
+//        include("wall");
+//        include("brick");
+//        include("powerup");
+//        include("explosion");
+//        include("laser");
+
+//        sounds["paddle"] = { loadWavFromAssets(appContext->assetManager, "paddlehit.wav", sr, ch) };
+//        sounds["wall"]   = { loadWavFromAssets(appContext->assetManager, "wallhit.wav", sr, ch) };
+//        sounds["brick"]   = { loadWavFromAssets(appContext->assetManager, "brickdestroy.wav", sr, ch) };
+//        sounds["powerup"]   = { loadWavFromAssets(appContext->assetManager, "powerup.wav", sr, ch) };
+//        sounds["explosion"]   = { loadWavFromAssets(appContext->assetManager, "explosion.wav", sr, ch) };
+//        sounds["laser"]   = { loadWavFromAssets(appContext->assetManager, "laser.wav", sr, ch) };
     }
 
     void destroy() {
@@ -75,12 +124,10 @@ public:
         }
     }
 
-    void play(const std::string& name, float gain = 1.0f) {
-        auto& s = sounds[name];
-        s.readIndex = 0;
-        s.playing = true;
-        s.gain = gain;
-    }
+//    void play(const std::string& name, float gain = 1.0f) {
+//        auto& s = sounds[name];
+//        s.play();
+//    }
 
     std::vector<float> loadWavFromAssets(AAssetManager* mgr, const char* filename,
                                          uint32_t& sampleRate,
@@ -109,7 +156,7 @@ public:
     }
 
 private:
-    std::unordered_map<std::string, Sound> sounds;
+    std::vector<Sound*> sounds;
     std::shared_ptr<oboe::AudioStream> mStream;
     AppContext* appContext;
 

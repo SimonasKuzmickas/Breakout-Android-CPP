@@ -8,41 +8,56 @@ class SoundsManager : public ISceneComponent {
 public:
     SoundsManager(AppContext* context) : soundsAPI(context) {}
 
+    Sound* soundPaddle;
+    Sound* soundWall;
+    Sound* soundBrick;
+    Sound* soundPowerUp;
+    Sound* soundExplosion;
+    Sound* soundLaser;
+
+
     void onAwake() override {
         soundsAPI.initialize();
+
+        soundPaddle = soundsAPI.include("paddlehit");
+        soundWall = soundsAPI.include("wallhit");
+        soundBrick = soundsAPI.include("brickdestroy");
+        soundPowerUp = soundsAPI.include("powerup");
+        soundExplosion = soundsAPI.include("explosion");
+        soundLaser = soundsAPI.include("laser");
 
         auto paddle = getComponent<Paddle>();
         if (paddle) {
             paddle->onHit.subscribe([this]() {
-                soundsAPI.play("paddle");
+                soundPaddle->play();
             });
         }
 
         auto laserShooter = getComponent<LaserShooter>();
         if (laserShooter) {
             laserShooter->onLaserShoot.subscribe([this]() {
-                soundsAPI.play("laser");
+                soundLaser->play();
             });
         }
 
         auto ballSystem = getComponent<BallSystem>();
         ballSystem->onHitWall.subscribe([this]() {
-            soundsAPI.play("wall");
+            soundWall->play();
         });
 
         ballSystem->onExplosion.subscribe([this]() {
-            soundsAPI.play("explosion");
+            soundExplosion->play();
         });
 
         auto powerUpManager = getComponent<PowerUpSystem>();
         powerUpManager->onPickup.subscribe([this]() {
-            soundsAPI.play("powerup");
+            soundPowerUp->play();
         });
 
         auto levelSystem = getComponent<LevelSystem>();
         if (levelSystem) {
             levelSystem->onDestroyBrick.subscribe([this](const Brick& brick) {
-                soundsAPI.play("brick");
+                soundBrick->play();
             });
         }
     }

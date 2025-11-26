@@ -21,6 +21,7 @@ public:
         addComponent(std::make_shared<BallSystem>());
         addComponent(std::make_shared<Paddle>());
         addComponent(std::make_shared<LaserShooter>());
+        addComponent(std::make_shared<SoundsManager>(appContext));
 
         auto menuLayout = std::make_shared<UIMenuLayout>(appContext);
         addComponent(menuLayout);

@@ -33,7 +33,7 @@ public:
         graphicsAPI.flip();
     }
 
-    bool drawButton(GLuint textureId, float x, float y, float w, float h) {s
+    bool drawButton(GLuint textureId, float x, float y, float w, float h) {
         drawImage(textureId, x, y, w, h);
 
         if(inputHandler->isPressed())
