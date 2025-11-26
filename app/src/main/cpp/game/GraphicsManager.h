@@ -31,11 +31,6 @@ public:
             resourcePaddles[i - 1] = loadImage(filename.c_str());
         }
 
-        for (int i = 1; i <= 3; ++i) {
-            std::string filename = "ball" + std::to_string(i) + ".png";
-            resourceBalls[i - 1] = loadImage(filename.c_str());
-        }
-
         resourceBackground = loadImage("background.png");
         resourceBrick1 = loadImage("brick1.png");
         resourcePaddleLeft = loadImage("paddleleft.png");
@@ -44,6 +39,7 @@ public:
         resourceShooterRight = loadImage("shooter_right.png");
         resourceLife = loadImage("life.png");
         resourceNumbers = loadImage("numbers.png");
+        resourceBalls = loadImage("balls.png");
     }
 
     void onDestroy() override {
@@ -108,7 +104,6 @@ private:
 
     std::array<GLuint, 12> resourcePowerUps;
     std::array<GLuint, 3> resourcePaddles;
-    std::array<GLuint, 3> resourceBalls;
 
     GLuint resourceShooterLeft;
     GLuint resourceShooterRight;
@@ -118,6 +113,7 @@ private:
     GLuint resourceBrick1;
     GLuint resourceLife;
     GLuint resourceNumbers;
+    GLuint resourceBalls;
 
     float paddleAnimation = 0;
 
@@ -174,7 +170,8 @@ protected:
     void drawLaserShooter() {
         for (auto &laser: laserShooter->getLasers()) {
             auto bounds = laser.bounds;
-            drawImage(resourceBalls[0], bounds.x, bounds.y, bounds.w, bounds.h);
+            drawImageAnim(resourceBalls, bounds.x, bounds.y, bounds.w, bounds.h,
+                          0, 50, 50, 150, 50);
         }
 
         if (laserShooter->getIsActive()) {
@@ -204,8 +201,8 @@ protected:
         int index = static_cast<int>(ballSystem->getBallsType());
 
         for (auto &ball: ballSystem->getBalls()) {
-            drawImage(resourceBalls[index], ball.bounds.x, ball.bounds.y, ball.bounds.w,
-                      ball.bounds.h);
+            drawImageAnim(resourceBalls, ball.bounds.x, ball.bounds.y, ball.bounds.w, ball.bounds.h,
+                          index, 50, 50, 150, 50);
         }
     }
 
