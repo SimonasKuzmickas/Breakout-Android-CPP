@@ -19,6 +19,8 @@ public:
 
         ballSystem->onLost.addListener([this]() {
             setActive(false);
+
+            lasers.clear();
         });
 
         levelSystem->onlevelStart.addListener([this]() {

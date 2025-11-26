@@ -53,6 +53,12 @@ public:
         onlevelStart.invoke();
     }
 
+    void onUpdate() override {
+        if (bricks.empty()) {
+            createLevel();
+        }
+    }
+
     void createBrick(float x, float y) {
         bricks.emplace_back(x, y);
     }
@@ -67,10 +73,6 @@ public:
 
         if (target != bricks.end()) {
             bricks.erase(target);
-        }
-
-        if (bricks.empty()) {
-            createLevel();
         }
     }
 
