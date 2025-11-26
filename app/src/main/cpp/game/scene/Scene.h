@@ -12,12 +12,19 @@ public:
             : blackboard(components)
     {}
 
+    virtual ~Scene() = default;
+    virtual void onStart() = 0;
+    virtual void onUpdate() = 0;
+    virtual void onDestroy() = 0;
+
     void addComponent(std::shared_ptr<ISceneComponent> component) {
         components.push_back(component);
         component->setBlackboard(&blackboard);
     }
 
     void start() {
+        onStart();
+
         for (auto &m: components)
         {
             m->onAwake();
@@ -25,6 +32,8 @@ public:
     }
 
     void update() {
+        onUpdate();
+
         for (auto &m: components) {
             if (auto *updatable = dynamic_cast<ISceneUpdate *>(m.get())) {
                 updatable->onUpdate();
@@ -41,6 +50,8 @@ public:
     }
 
     void destroy() {
+        onDestroy();
+
         for (auto &m: components) {
             m->onDestroy();
         }
