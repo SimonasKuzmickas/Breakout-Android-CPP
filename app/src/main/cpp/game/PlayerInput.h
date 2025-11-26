@@ -7,7 +7,7 @@
 class PlayerInput;
 static PlayerInput* g_playerInput = nullptr;
 
-class PlayerInput : public ISceneComponent, public ISceneComponentUpdate {
+class PlayerInput : public ISceneComponent {
 public:
     enum class TouchAction {
         Down = 0,

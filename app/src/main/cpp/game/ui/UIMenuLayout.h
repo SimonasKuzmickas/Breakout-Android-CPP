@@ -2,13 +2,9 @@
 
 #include <GLES2/gl2.h>
 #include "../scene/ISceneComponent.h"
-#include "../scene/ISceneComponentRender.h"
 #include "../helpers/Event.h"
 
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
-
-class UIMenuLayout : public ISceneComponent, public ISceneComponentRender {
+class UIMenuLayout : public ISceneComponent {
 public:
     Event<> onStartPressed;
 
@@ -22,7 +18,7 @@ public:
 
     void onDestroy() override { }
 
-    void onRender() override {
+    void onUpdate () override {
         renderer->drawImage(resourceBlock, 580, 0, 680, 1080);
         renderer->drawImage(resourcesTitle, 600, 540, 650, 660);
 

@@ -6,7 +6,7 @@
 #include "PowerUpSystem.h"
 #include "LaserShooter.h"
 
-class GraphicsManager : public ISceneComponent, public ISceneComponentRender {
+class GraphicsManager : public ISceneComponent {
 public:
     GraphicsManager(AppContext* context) : graphicsAPI(context) {}
 
@@ -44,7 +44,7 @@ public:
         graphicsAPI.shutdown();
     }
 
-    void onRender() override {
+    void onUpdate() override {
         drawLevel();
         drawPaddle();
         drawBalls();
@@ -86,7 +86,6 @@ private:
     float paddleAnimation = 0;
 
 protected:
-
     void drawPowerUps() {
         for (auto& powerup : powerUpManager->getPowerUps()) {
             auto bounds = powerup.bounds;

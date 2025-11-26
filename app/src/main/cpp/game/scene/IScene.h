@@ -3,8 +3,6 @@
 #include <vector>
 #include <memory>
 #include "ISceneComponent.h"
-#include "ISceneComponentUpdate.h"
-#include "ISceneComponentRender.h"
 
 class SceneManager;
 
@@ -28,8 +26,7 @@ public:
     void start() {
         onStart();
 
-        for (auto &c: components)
-        {
+        for (auto &c: components) {
             c->onAwake();
         }
     }
@@ -38,17 +35,7 @@ public:
         onUpdate();
 
         for (auto &c: components) {
-            if (auto *updatable = dynamic_cast<ISceneComponentUpdate *>(c.get())) {
-                updatable->onUpdate();
-            }
-        }
-    }
-
-    void render() {
-        for (auto &c: components) {
-            if (auto *renderable = dynamic_cast<ISceneComponentRender *>(c.get())) {
-                renderable->onRender();
-            }
+            c->onUpdate();
         }
     }
 

@@ -3,7 +3,6 @@
 #include "../helpers/Math.h"
 #include "../helpers/AppContext.h"
 #include "../scene/ISceneComponent.h"
-#include "../scene/ISceneComponentRender.h"
 
 class UIRenderer : public GraphicsManager {
 public:
@@ -23,7 +22,7 @@ public:
         inputHandler = getComponent<UIInputHandler>();
     }
 
-    void onRender() override {
+    void onUpdate() override {
 
         graphicsAPI.flip();
         drawLevel();

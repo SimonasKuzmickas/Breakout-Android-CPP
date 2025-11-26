@@ -25,6 +25,19 @@ public:
     }
 
     void onAwake() override {
+        createLevel();
+    }
+
+    void onDestroy() override {
+
+    }
+
+    void onUpdate() override {
+
+    }
+
+    void createLevel()
+    {
         const int rows = 6;
         const int cols = 14;
         const int brickWidth  = 100;
@@ -43,10 +56,6 @@ public:
         }
     }
 
-    void onDestroy() override {
-
-    }
-
     void createBrick(float x, float y) {
         bricks.emplace_back(x, y);
     }
@@ -61,6 +70,10 @@ public:
 
         if (target != bricks.end()) {
             bricks.erase(target);
+        }
+
+        if(bricks.empty()) {
+            createLevel();
         }
     }
 

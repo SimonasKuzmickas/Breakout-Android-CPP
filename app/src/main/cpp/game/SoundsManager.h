@@ -47,6 +47,10 @@ public:
         }
     }
 
+    void onUpdate() override {
+
+    }
+
     void onDestroy() override {
         soundsAPI.destroy();
     }

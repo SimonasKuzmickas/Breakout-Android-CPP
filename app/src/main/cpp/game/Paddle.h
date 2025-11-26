@@ -4,10 +4,8 @@
 #include "helpers/Math.h"
 #include "helpers/Event.h"
 #include "scene/ISceneComponent.h"
-#include "scene/ISceneComponentRender.h"
-#include "scene/ISceneComponentUpdate.h"
 
-class Paddle : public ISceneComponent, public ISceneComponentUpdate {
+class Paddle : public ISceneComponent {
 public:
     enum class Direction : int { Left = -1, None = 0, Right = 1 };
 

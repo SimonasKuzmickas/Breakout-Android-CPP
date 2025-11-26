@@ -3,7 +3,6 @@
 #include "../helpers/Math.h"
 #include "../helpers/AppContext.h"
 #include "../scene/ISceneComponent.h"
-#include "../scene/ISceneComponentUpdate.h"
 
 class UIInputHandler;
 static UIInputHandler* g_inputHandler = nullptr;
@@ -32,6 +31,10 @@ public:
 
     void onDestroy() override {
         g_inputHandler = nullptr;
+    }
+
+    void onUpdate() override {
+
     }
 
     Vector2 getPosition() {

@@ -12,7 +12,7 @@ struct Ball {
             : bounds{x, y, radius, radius}, velocity(v) {}
 };
 
-class BallSystem : public ISceneComponent, public ISceneComponentUpdate {
+class BallSystem : public ISceneComponent {
 public:
     enum class BallsType {
         Normal,
@@ -22,6 +22,7 @@ public:
 
     Event<> onHitWall;
     Event<> onExplosion;
+    Event<> onLost;
 
     void onAwake() override {
         paddle = getComponent<Paddle>();
@@ -30,7 +31,7 @@ public:
         globalSpeedMultiplier = 1;
         ballsType = BallsType::Normal;
 
-        createBall(1000, 30, 30, Vector2(7.0f, 7.0f));
+        createBall(1000, 200, 30, Vector2(7.0f, 7.0f));
     }
 
     void onDestroy() override {
@@ -91,6 +92,11 @@ public:
             if (!ball.bounds.overlaps(levelSystem->getLevelBounds())) {
                 // TODO: Game Over
                 removeBall(ball);
+
+                if(balls.empty())
+                {
+                    createBall(1000, 200, 30, Vector2(7.0f, 7.0f));
+                }
             }
 
             // ---- WALL COLLISIONS ----

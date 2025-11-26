@@ -2,9 +2,8 @@
 
 #include <GLES2/gl2.h>
 #include "../scene/ISceneComponent.h"
-#include "../scene/ISceneComponentUpdate.h"
 
-class UIAutoPlayer : public ISceneComponent, public ISceneComponentUpdate {
+class UIAutoPlayer : public ISceneComponent {
 public:
 
     void onAwake() override {

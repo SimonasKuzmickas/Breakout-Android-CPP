@@ -10,7 +10,6 @@ public:
     void update() {
         if (currentScene) {
             currentScene->update();
-            currentScene->render();
         }
         if (pendingScene) {
             changeState(std::move(pendingScene));
