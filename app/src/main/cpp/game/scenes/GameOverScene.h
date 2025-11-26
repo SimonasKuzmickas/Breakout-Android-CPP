@@ -23,7 +23,7 @@ public:
         });
 
         layout->onRetryPressed.addListener([this]() {
-            sceneManager->requestChange((int)SceneId::GameOver);
+            sceneManager->requestChange((int)SceneId::Game);
         });
     }
 

@@ -26,7 +26,7 @@ public:
         drawImage(resourceBlock, 580, 0, 680, 1080);
         drawImage(resourcesTitle, 600, 540, 650, 660);
 
-        if (drawButton(resourceStartButton, 700, 440, 440, 200)) {
+        if (drawButton(resourceStartButton, 700, 440, 440, 160)) {
             onStartPressed.invoke();
         }
 

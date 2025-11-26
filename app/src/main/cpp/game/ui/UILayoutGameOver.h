@@ -14,9 +14,10 @@ public:
         UILayoutHandler::onAwake();
 
         resourceBackground = loadImage("background.png");
-        resourceStartButton = loadImage("startbutton.png");
+        resourcesRetryButton = loadImage("retry.png");
+        resourcesMenuButton = loadImage("menu.png");
         resourceBlock = loadImage("block.png");
-        resourcesTitle = loadImage("title.png");
+        resourcesGameOver = loadImage("gameover.png");
 
         inputHandler = getComponent<UILayoutHandler>();
     }
@@ -24,13 +25,13 @@ public:
     void onUpdate() override {
         drawImage(resourceBackground, 0, 0, 1920, 1080);
         drawImage(resourceBlock, 580, 0, 680, 1080);
-        drawImage(resourcesTitle, 600, 540, 650, 660);
+        drawImage(resourcesGameOver, 580, 650, 650, 360);
 
-        if (drawButton(resourceStartButton, 700, 440, 440, 200)) {
+        if (drawButton(resourcesMenuButton, 700, 440, 440, 160)) {
             onMenuPressed.invoke();
         }
 
-        if (drawButton(resourceStartButton, 700, 220, 440, 200)) {
+        if (drawButton(resourcesRetryButton, 700, 220, 440, 160)) {
             onRetryPressed.invoke();
         }
 
@@ -39,9 +40,10 @@ public:
 
 private:
     GLuint resourceBackground;
-    GLuint resourceStartButton;
+    GLuint resourcesRetryButton;
+    GLuint resourcesMenuButton;
     GLuint resourceBlock;
-    GLuint resourcesTitle;
+    GLuint resourcesGameOver;
 
     std::shared_ptr<UILayoutHandler> inputHandler;
 };
