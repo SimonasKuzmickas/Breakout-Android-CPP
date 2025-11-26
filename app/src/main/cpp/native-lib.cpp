@@ -61,4 +61,8 @@ Java_com_nordcurrent_breakout_GameView_nativeOnTouch(JNIEnv* env, jobject thiz,
     if (g_playerInput) {
         g_playerInput->onTouch(pointerId, x, y, action);
     }
+
+    if (g_inputHandler) {
+        g_inputHandler->onTouch(pointerId, x, y, action);
+    }
 }

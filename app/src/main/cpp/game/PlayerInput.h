@@ -2,15 +2,6 @@
 
 #include "helpers/Math.h"
 
-enum class TouchAction {
-    Down = 0,
-    Up = 1,
-    Move = 2,
-    Cancel = 3,
-    PointerDown = 5,
-    PointerUp = 6
-};
-
 // Global pointer to the active PlayerInput instance
 // Used by callbacks to call touch events into C++
 class PlayerInput;
@@ -18,6 +9,15 @@ static PlayerInput* g_playerInput = nullptr;
 
 class PlayerInput : public ISceneComponent, public ISceneComponentUpdate {
 public:
+    enum class TouchAction {
+        Down = 0,
+        Up = 1,
+        Move = 2,
+        Cancel = 3,
+        PointerDown = 5,
+        PointerUp = 6
+    };
+
     explicit PlayerInput(AppContext* context)
     {
         int width = ANativeWindow_getWidth(context->window);

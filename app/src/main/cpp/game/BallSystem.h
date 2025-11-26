@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include "helpers/Math.h"
 #include "Paddle.h"
 #include "LevelSystem.h"
