@@ -67,7 +67,7 @@ public:
         uint32_t sr;
         uint16_t ch;
 
-        Sound sound = {loadWavFromAssets(appContext->assetManager, "sample.wav", sr, ch)};
+        loadWavFromAssets(appContext->assetManager, "sample.wav", sr, ch);
 
         oboe::AudioStreamBuilder builder;
         builder.setDirection(oboe::Direction::Output)
@@ -88,7 +88,14 @@ public:
             mStream->close();
             mStream.reset();
         }
+
+        sounds.clear();
     }
+
+private:
+    std::vector<Sound *> sounds;
+    std::shared_ptr<oboe::AudioStream> mStream;
+    AppContext *appContext;
 
     std::vector<float> loadWavFromAssets(AAssetManager *mgr, const char *filename,
                                          uint32_t &sampleRate,
@@ -115,15 +122,6 @@ public:
         drwav_uninit(&wav);
         return samples;
     }
-
-private:
-    std::vector<Sound *> sounds;
-    std::shared_ptr<oboe::AudioStream> mStream;
-    AppContext *appContext;
-
-    std::vector<float> samples;
-    size_t readIndex = 0;
-    bool playing = false;
 };
 
 }

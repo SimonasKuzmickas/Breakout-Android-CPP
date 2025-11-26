@@ -44,7 +44,6 @@ public:
     void setManager(ISceneManager *manager) { sceneManager = manager; }
 
 protected:
-    // TODO: perhaps I could use empty implementations to reduce some code
     virtual void onStart() { };
     virtual void onUpdate() { };
     virtual void onDestroy() { };
