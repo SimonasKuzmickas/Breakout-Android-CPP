@@ -16,7 +16,7 @@ enum class TouchAction {
 class PlayerInput;
 static PlayerInput* g_playerInput = nullptr;
 
-class PlayerInput : public ISceneComponent, public ISceneUpdate {
+class PlayerInput : public ISceneComponent, public ISceneComponentUpdate {
 public:
     explicit PlayerInput(AppContext* context)
     {

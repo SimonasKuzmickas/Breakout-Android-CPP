@@ -4,7 +4,7 @@
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 
-#include "game/scene/Scene.h"
+#include "game/scene/SceneManager.h"
 #include "game/GameScene.h"
 
 #include <android/log.h>
@@ -16,8 +16,8 @@ void gameLoop(AppContext* appContext) {
     const double deltaTime = 1.0 / 60.0;
     auto lastTick = std::chrono::steady_clock::now();
 
-    auto scene = GameScene(appContext);
-    scene.start();
+    auto sceneManager = SceneManager();
+    sceneManager.changeState(std::make_unique<GameScene>(appContext));
 
     while (appContext->running) {
         auto now = std::chrono::steady_clock::now();
@@ -25,14 +25,13 @@ void gameLoop(AppContext* appContext) {
 
         if (now >= next) {
             lastTick = now;
-            scene.update();
-            scene.render();
+            sceneManager.update();
         }
 
         std::this_thread::sleep_until(next);
     }
 
-    scene.destroy();
+    sceneManager.destroy();
 }
 
 extern "C" JNIEXPORT jlong JNICALL

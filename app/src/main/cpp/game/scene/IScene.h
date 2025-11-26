@@ -3,19 +3,22 @@
 #include <vector>
 #include <memory>
 #include "ISceneComponent.h"
-#include "ISceneUpdate.h"
-#include "ISceneRender.h"
+#include "ISceneComponentUpdate.h"
+#include "ISceneComponentRender.h"
 
-class Scene {
-public:
-    Scene()
-            : blackboard(components)
-    {}
+class SceneManager;
 
-    virtual ~Scene() = default;
+class IScene {
+protected:
     virtual void onStart() = 0;
     virtual void onUpdate() = 0;
     virtual void onDestroy() = 0;
+
+public:
+    virtual ~IScene() = default;
+    IScene()
+            : blackboard(components)
+    {}
 
     void addComponent(std::shared_ptr<ISceneComponent> component) {
         components.push_back(component);
@@ -25,25 +28,25 @@ public:
     void start() {
         onStart();
 
-        for (auto &m: components)
+        for (auto &c: components)
         {
-            m->onAwake();
+            c->onAwake();
         }
     }
 
     void update() {
         onUpdate();
 
-        for (auto &m: components) {
-            if (auto *updatable = dynamic_cast<ISceneUpdate *>(m.get())) {
+        for (auto &c: components) {
+            if (auto *updatable = dynamic_cast<ISceneComponentUpdate *>(c.get())) {
                 updatable->onUpdate();
             }
         }
     }
 
     void render() {
-        for (auto &m: components) {
-            if (auto *renderable = dynamic_cast<ISceneRender *>(m.get())) {
+        for (auto &c: components) {
+            if (auto *renderable = dynamic_cast<ISceneComponentRender *>(c.get())) {
                 renderable->onRender();
             }
         }
@@ -52,12 +55,17 @@ public:
     void destroy() {
         onDestroy();
 
-        for (auto &m: components) {
-            m->onDestroy();
+        for (auto &c: components) {
+            c->onDestroy();
         }
     }
+
+    void setManager(SceneManager* mgr) { manager = mgr; }
 
 private:
     std::vector<std::shared_ptr<ISceneComponent>> components;
     Blackboard blackboard;
+
+protected:
+    SceneManager* manager = nullptr;
 };

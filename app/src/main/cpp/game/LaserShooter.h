@@ -7,7 +7,7 @@ struct Laser {
             : bounds{x, y, 10, 40} {}
 };
 
-class LaserShooter : public ISceneComponent, public ISceneUpdate {
+class LaserShooter : public ISceneComponent, public ISceneComponentUpdate {
 public:
     Event<> onLaserShoot;
 

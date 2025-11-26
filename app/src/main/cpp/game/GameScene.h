@@ -1,6 +1,6 @@
 #pragma once
 
-#include "scene/Scene.h"
+#include "scene/IScene.h"
 #include "GraphicsManager.h"
 #include "SoundsManager.h"
 #include "PlayerInput.h"
@@ -10,11 +10,11 @@
 #include "Paddle.h"
 #include "LaserShooter.h"
 
-class GameScene : public Scene {
+class GameScene : public IScene {
 public:
-    explicit GameScene(AppContext* ctx)
+    explicit GameScene(AppContext* context)
     {
-        appContext = ctx;
+        appContext = context;
     }
 
     void onStart() override {

@@ -5,13 +5,13 @@
 #include "helpers/Math.h"
 #include "helpers/Event.h"
 #include "scene/ISceneComponent.h"
-#include "scene/ISceneRender.h"
-#include "scene/ISceneUpdate.h"
+#include "scene/ISceneComponentRender.h"
+#include "scene/ISceneComponentUpdate.h"
 
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
 
-class Paddle : public ISceneComponent, public ISceneUpdate {
+class Paddle : public ISceneComponent, public ISceneComponentUpdate {
 public:
     enum class Direction : int { Left = -1, None = 0, Right = 1 };
 

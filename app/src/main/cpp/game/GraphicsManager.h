@@ -6,7 +6,7 @@
 #include "PowerUpSystem.h"
 #include "LaserShooter.h"
 
-class GraphicsManager : public ISceneComponent, public ISceneRender {
+class GraphicsManager : public ISceneComponent, public ISceneComponentRender {
 public:
     GraphicsManager(AppContext* context) : graphicsAPI(context) {}
 

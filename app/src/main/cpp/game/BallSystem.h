@@ -13,7 +13,7 @@ struct Ball {
             : bounds{x, y, radius, radius}, velocity(v) {}
 };
 
-class BallSystem : public ISceneComponent, public ISceneUpdate {
+class BallSystem : public ISceneComponent, public ISceneComponentUpdate {
 public:
     enum class BallsType {
         Normal,

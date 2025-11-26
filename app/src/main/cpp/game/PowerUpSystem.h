@@ -36,7 +36,7 @@ struct PowerUp {
     PowerUpType powerUpType;
 };
 
-class PowerUpSystem : public ISceneComponent, public ISceneUpdate {
+class PowerUpSystem : public ISceneComponent, public ISceneComponentUpdate {
 public:
     Event<> onPickup;
 
