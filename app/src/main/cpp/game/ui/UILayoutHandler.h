@@ -66,7 +66,6 @@ public:
 
     bool isPressed() {
         bool result = pressed;
-        pressed = false;
 
         return result;
     }

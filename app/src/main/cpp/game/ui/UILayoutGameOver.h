@@ -31,7 +31,7 @@ public:
         }
 
         if (drawButton(resourceStartButton, 700, 220, 440, 200)) {
-            onMenuPressed.invoke();
+            onRetryPressed.invoke();
         }
 
         graphicsAPI.flip();
