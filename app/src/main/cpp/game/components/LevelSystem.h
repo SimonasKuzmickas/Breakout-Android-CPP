@@ -1,8 +1,8 @@
 #pragma once
 
-#include "helpers/Math.h"
-#include "helpers/Event.h"
-#include "scene/ISceneComponent.h"
+#include "../helpers/Math.h"
+#include "../helpers/Event.h"
+#include "../scene/ISceneComponent.h"
 
 struct Brick {
 public:

@@ -5,7 +5,7 @@
 #include <android/native_window_jni.h>
 
 #include "game/scene/SceneManager.h"
-#include "game/MenuScene.h"
+#include "game/scenes/MenuScene.h"
 
 void gameLoop(AppContext* appContext) {
     const double deltaTime = 1.0 / 60.0;

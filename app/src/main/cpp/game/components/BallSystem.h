@@ -1,6 +1,6 @@
 #pragma once
 
-#include "helpers/Math.h"
+#include "../helpers/Math.h"
 #include "Paddle.h"
 #include "LevelSystem.h"
 

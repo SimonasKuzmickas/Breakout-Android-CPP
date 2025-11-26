@@ -1,11 +1,11 @@
 #pragma once
 
 #include "helpers/GraphicsAPI.h"
-#include "Paddle.h"
-#include "BallSystem.h"
-#include "PowerUpSystem.h"
-#include "LaserShooter.h"
-#include "PlayerState.h"
+#include "components/Paddle.h"
+#include "components/BallSystem.h"
+#include "components/PowerUpSystem.h"
+#include "components/LaserShooter.h"
+#include "components/PlayerState.h"
 
 class GraphicsManager : public ISceneComponent {
 public:

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <algorithm>
-#include "helpers/Math.h"
-#include "helpers/Event.h"
-#include "scene/ISceneComponent.h"
+#include "../helpers/Math.h"
+#include "../helpers/Event.h"
+#include "../scene/ISceneComponent.h"
 
 class Paddle : public ISceneComponent {
 public:
@@ -32,6 +32,7 @@ public:
         const float maxX = WORLD_WIDTH - bounds.w;
         bounds.x = std::clamp(bounds.x, 0.0f, maxX);
 
+        // paddle resize animation
         float difference = transitionWidth - bounds.w;
         difference *= 0.3f;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "helpers/Math.h"
+#include "../helpers/Math.h"
 
 // Global pointer to the active PlayerInput instance
 // Used by callbacks to call touch events into C++

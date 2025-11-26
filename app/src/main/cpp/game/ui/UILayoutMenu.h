@@ -1,8 +1,8 @@
 #pragma once
 
-class UIMenuLayout : public UILayoutHandler {
+class UILayoutMenu : public UILayoutHandler {
 public:
-    UIMenuLayout(AppContext* context) : UILayoutHandler(context) {}
+    UILayoutMenu(AppContext* context) : UILayoutHandler(context) {}
 
     Event<> onStartPressed;
 

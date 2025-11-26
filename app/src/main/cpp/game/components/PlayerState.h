@@ -1,7 +1,7 @@
 #pragma once
 
-#include "helpers/Math.h"
-#include "scene/ISceneComponent.h"
+#include "../helpers/Math.h"
+#include "../scene/ISceneComponent.h"
 #include "LevelSystem.h"
 
 class PlayerState : public ISceneComponent {

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "scene/IScene.h"
-#include "GraphicsManager.h"
-#include "ui/UILayoutHandler.h"
-#include "ui/UIMenuLayout.h"
-#include "ui/UIGameOverLayout.h"
+#include "../scene/IScene.h"
+#include "../GraphicsManager.h"
+#include "../ui/UILayoutHandler.h"
+#include "../ui/UILayoutMenu.h"
+#include "../ui/UILayoutGameOver.h"
 //#include "MenuScene.h"
 
 class GameOverScene : public IScene {
@@ -18,7 +18,7 @@ public:
     }
 
     void onStart() override {
-        auto layout = std::make_shared<UIGameOverLayout>(appContext);
+        auto layout = std::make_shared<UILayoutGameOver>(appContext);
         addComponent(layout);
 
         layout->onMenuPressed.subscribe([this]() {

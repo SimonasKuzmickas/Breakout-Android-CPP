@@ -1,8 +1,8 @@
 #pragma once
 
-#include "helpers/Math.h"
-#include "helpers/Event.h"
-#include "scene/ISceneComponent.h"
+#include "../helpers/Math.h"
+#include "../helpers/Event.h"
+#include "../scene/ISceneComponent.h"
 #include "Paddle.h"
 #include "LaserShooter.h"
 #include "BallSystem.h"
@@ -53,6 +53,10 @@ public:
             });
 
             levelSystem->onlevelStart.subscribe([this]() {
+                powerUps.clear();
+            });
+
+            ballSystem->onLost.subscribe([this]() {
                 powerUps.clear();
             });
         }
@@ -145,7 +149,7 @@ public:
                 playerState->increaseScore(500);
                 break;
 
-            case PowerUp::PowerUpType::ExtraLife
+            case PowerUp::PowerUpType::ExtraLife:
                 playerState->increaseLives(1);
                 break;
 

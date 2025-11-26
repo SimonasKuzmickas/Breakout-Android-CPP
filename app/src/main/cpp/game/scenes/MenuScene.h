@@ -1,10 +1,10 @@
 #pragma once
 
-#include "scene/IScene.h"
+#include "../scene/IScene.h"
 #include "GameScene.h"
-#include "ui/UILayoutHandler.h"
-#include "ui/UIMenuLayout.h"
-#include "ui/UIAutoPlayer.h"
+#include "../ui/UILayoutHandler.h"
+#include "../ui/UILayoutMenu.h"
+#include "../ui/UIAutoPlayer.h"
 
 class MenuScene : public IScene {
 public:
@@ -22,7 +22,7 @@ public:
         addComponent(std::make_shared<SoundsManager>(appContext));
         addComponent(std::make_shared<PlayerState>());
 
-        auto layout = std::make_shared<UIMenuLayout>(appContext);
+        auto layout = std::make_shared<UILayoutMenu>(appContext);
         addComponent(layout);
 
         if (layout) {

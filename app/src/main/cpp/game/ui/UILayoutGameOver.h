@@ -1,9 +1,9 @@
 #pragma once
 #include "../GraphicsManager.h"
 
-class UIGameOverLayout : public UILayoutHandler {
+class UILayoutGameOver : public UILayoutHandler {
 public:
-    UIGameOverLayout(AppContext* context) : UILayoutHandler(context) {}
+    UILayoutGameOver(AppContext* context) : UILayoutHandler(context) {}
 
     Event<> onRetryPressed;
     Event<> onMenuPressed;

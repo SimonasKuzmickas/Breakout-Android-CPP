@@ -1,15 +1,15 @@
 #pragma once
 
-#include "scene/IScene.h"
-#include "GraphicsManager.h"
-#include "SoundsManager.h"
-#include "PlayerInput.h"
-#include "PlayerState.h"
-#include "LevelSystem.h"
-#include "PowerUpSystem.h"
-#include "BallSystem.h"
-#include "Paddle.h"
-#include "LaserShooter.h"
+#include "../scene/IScene.h"
+#include "../GraphicsManager.h"
+#include "../SoundsManager.h"
+#include "../components/PlayerInput.h"
+#include "../components/PlayerState.h"
+#include "../components/LevelSystem.h"
+#include "../components/PowerUpSystem.h"
+#include "../components/BallSystem.h"
+#include "../components/Paddle.h"
+#include "../components/LaserShooter.h"
 #include "GameOverScene.h"
 
 class GameScene : public IScene {
