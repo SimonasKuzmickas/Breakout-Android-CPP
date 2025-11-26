@@ -60,12 +60,12 @@ public:
         }
     }
 
-    void setManager(SceneManager* mgr) { manager = mgr; }
+    void setManager(SceneManager* manager) { sceneManager = manager; }
 
 private:
     std::vector<std::shared_ptr<ISceneComponent>> components;
     Blackboard blackboard;
 
 protected:
-    SceneManager* manager = nullptr;
+    SceneManager* sceneManager = nullptr;
 };

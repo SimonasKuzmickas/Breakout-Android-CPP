@@ -1,15 +1,11 @@
 #pragma once
 
 #include <algorithm>
-#include <android/log.h>
 #include "helpers/Math.h"
 #include "helpers/Event.h"
 #include "scene/ISceneComponent.h"
 #include "scene/ISceneComponentRender.h"
 #include "scene/ISceneComponentUpdate.h"
-
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
 
 class Paddle : public ISceneComponent, public ISceneComponentUpdate {
 public:

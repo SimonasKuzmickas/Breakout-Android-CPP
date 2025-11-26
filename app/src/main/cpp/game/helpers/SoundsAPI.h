@@ -2,12 +2,8 @@
 
 #define DR_WAV_IMPLEMENTATION
 #include "../thirdparty/dr_wav.h"
-#include <android/log.h>
 #include <oboe/Oboe.h>
 #include "AppContext.h"
-
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
 
 struct Sound {
     std::vector<float> samples;
@@ -76,7 +72,6 @@ public:
             mStream->stop();
             mStream->close();
             mStream.reset();
-            LOGI("Audio stream stopped");
         }
     }
 

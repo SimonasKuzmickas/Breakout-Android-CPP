@@ -1,12 +1,8 @@
 #pragma once
 
-#include <android/log.h>
 #include "helpers/Math.h"
 #include "helpers/Event.h"
 #include "scene/ISceneComponent.h"
-
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
 
 struct Brick {
 public:
@@ -58,9 +54,9 @@ public:
 
     void removeBrick(const Brick& brickRef) {
         auto target = std::find_if(bricks.begin(), bricks.end(),
-                                   [&](const Brick& b) {
-                                       return &b == &brickRef;
-                                   });
+           [&](const Brick& b) {
+               return &b == &brickRef;
+           });
 
         onDestroyBrick.invoke(brickRef);
 

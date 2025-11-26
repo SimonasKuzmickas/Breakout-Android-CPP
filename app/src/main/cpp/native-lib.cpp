@@ -5,19 +5,14 @@
 #include <android/native_window_jni.h>
 
 #include "game/scene/SceneManager.h"
-#include "game/GameScene.h"
-
-#include <android/log.h>
-
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
+#include "game/MenuScene.h"
 
 void gameLoop(AppContext* appContext) {
     const double deltaTime = 1.0 / 60.0;
     auto lastTick = std::chrono::steady_clock::now();
 
     auto sceneManager = SceneManager();
-    sceneManager.changeState(std::make_unique<GameScene>(appContext));
+    sceneManager.requestChange(std::make_unique<MenuScene>(appContext));
 
     while (appContext->running) {
         auto now = std::chrono::steady_clock::now();

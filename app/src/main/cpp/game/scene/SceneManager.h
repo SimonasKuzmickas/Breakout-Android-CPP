@@ -3,19 +3,17 @@
 
 class SceneManager {
 public:
-    void changeState(std::unique_ptr<IScene> newScene) {
-        if (currentScene) {
-            currentScene->destroy();
-        }
-        currentScene = std::move(newScene);
-        currentScene->setManager(this);
-        currentScene->start();
+    void requestChange(std::unique_ptr<IScene> newScene) {
+        pendingScene = std::move(newScene);
     }
 
     void update() {
         if (currentScene) {
             currentScene->update();
             currentScene->render();
+        }
+        if (pendingScene) {
+            changeState(std::move(pendingScene));
         }
     }
 
@@ -27,5 +25,13 @@ public:
     }
 
 private:
+    void changeState(std::unique_ptr<IScene> newScene) {
+        if (currentScene) currentScene->destroy();
+        currentScene = std::move(newScene);
+        currentScene->setManager(this);
+        currentScene->start();
+    }
+
     std::unique_ptr<IScene> currentScene;
+    std::unique_ptr<IScene> pendingScene;
 };

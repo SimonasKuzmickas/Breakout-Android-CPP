@@ -1,12 +1,8 @@
 #pragma once
 
-#include <android/log.h>
 #include "helpers/Math.h"
 #include "scene/ISceneComponent.h"
 #include "helpers/SoundsAPI.h"
-
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "Breakout", __VA_ARGS__)
 
 class SoundsManager : public ISceneComponent {
 public:
