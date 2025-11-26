@@ -3,7 +3,6 @@
 #include "scene/IScene.h"
 #include "GameScene.h"
 #include "ui/UIInputHandler.h"
-#include "ui/UIRenderer.h"
 #include "ui/UIMenuLayout.h"
 #include "ui/UIAutoPlayer.h"
 
@@ -15,7 +14,6 @@ public:
 
     void onStart() override {
         addComponent(std::make_shared<UIInputHandler>(appContext));
-        addComponent(std::make_shared<UIRenderer>(appContext));
 
         addComponent(std::make_shared<UIAutoPlayer>());
         addComponent(std::make_shared<LevelSystem>());
@@ -24,7 +22,7 @@ public:
         addComponent(std::make_shared<Paddle>());
         addComponent(std::make_shared<LaserShooter>());
 
-        auto menuLayout = std::make_shared<UIMenuLayout>();
+        auto menuLayout = std::make_shared<UIMenuLayout>(appContext);
         addComponent(menuLayout);
 
         if (menuLayout) {

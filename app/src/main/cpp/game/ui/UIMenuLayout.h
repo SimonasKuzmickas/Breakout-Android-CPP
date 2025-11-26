@@ -1,31 +1,54 @@
 #pragma once
 
-#include <GLES2/gl2.h>
-#include "../scene/ISceneComponent.h"
-#include "../helpers/Event.h"
-
-class UIMenuLayout : public ISceneComponent {
+class UIMenuLayout : public GraphicsManager {
 public:
+    UIMenuLayout(AppContext* context) : GraphicsManager(context) {}
+
     Event<> onStartPressed;
 
     void onAwake() override {
-        renderer = getComponent<UIRenderer>();
-        resourceBackground = renderer->loadImage("background.png");
-        resourceBlock = renderer->loadImage("block.png");
-        resourceStartButton = renderer->loadImage("startbutton.png");
-        resourcesTitle = renderer->loadImage("title.png");
+        GraphicsManager::onAwake();
+        inputHandler = getComponent<UIInputHandler>();
+
+        resourceBackground = loadImage("background.png");
+        resourceBlock = loadImage("block.png");
+        resourceStartButton = loadImage("startbutton.png");
+        resourcesTitle = loadImage("title.png");
     }
 
-    void onDestroy() override { }
-
     void onUpdate () override {
-        renderer->drawImage(resourceBlock, 580, 0, 680, 1080);
-        renderer->drawImage(resourcesTitle, 600, 540, 650, 660);
+        drawLevel();
+        drawPaddle();
+        drawPowerUps();
+        drawBalls();
 
-        if(renderer->drawButton(resourceStartButton, 700, 440, 440, 200))
+        drawImage(resourceBlock, 580, 0, 680, 1080);
+        drawImage(resourcesTitle, 600, 540, 650, 660);
+
+        if(drawButton(resourceStartButton, 700, 440, 440, 200))
         {
             onStartPressed.invoke();
         }
+
+        graphicsAPI.flip();
+    }
+
+    bool drawButton(GLuint textureId, float x, float y, float w, float h) {s
+        drawImage(textureId, x, y, w, h);
+
+        if(inputHandler->isPressed())
+        {
+            auto touchPosition = inputHandler->getPosition();
+            auto imageBounds = Rect(x, y, w, h);
+            auto inputBounds = Rect(touchPosition.x, touchPosition.y, 1, 1);
+
+            if(imageBounds.overlaps(inputBounds))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 private:
@@ -33,5 +56,5 @@ private:
     GLuint resourceBlock;
     GLuint resourceStartButton;
     GLuint resourcesTitle;
-    std::shared_ptr<UIRenderer> renderer;
+    std::shared_ptr<UIInputHandler> inputHandler;
 };
