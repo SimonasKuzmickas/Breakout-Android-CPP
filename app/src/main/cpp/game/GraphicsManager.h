@@ -62,9 +62,6 @@ public:
     void drawNumber(int value, int x, int y, int digitWidth, int digitHeight, int spacing) {
         std::string str = std::to_string(value);
 
-        int totalWidth = static_cast<int>(str.size()) * digitWidth +
-                         (static_cast<int>(str.size()) - 1) * spacing;
-
         int xposStart = x;
         for (size_t i = 0; i < str.size(); ++i) {
             int digit = str[i] - '0';
@@ -81,50 +78,28 @@ public:
 protected:
     GraphicsCore graphicsAPI;
 
-private:
-    std::shared_ptr<Paddle> paddle;
-    std::shared_ptr<BallSystem> ballSystem;
-    std::shared_ptr<LevelSystem> levelSystem;
-    std::shared_ptr<PowerUpSystem> powerUpManager;
-    std::shared_ptr<LaserShooter> laserShooter;
-    std::shared_ptr<PlayerState> playerState;
-
-    GLuint resourceShooterLeft;
-    GLuint resourceShooterRight;
-    GLuint resourcePaddleLeft;
-    GLuint resourcePaddleRight;
-    GLuint resourceBackground;
-    GLuint resourceLife;
-    GLuint resourceNumbers;
-    GLuint resourceBalls;
-    GLuint resourcePowerUps;
-    GLuint resourcePaddle;
-    GLuint resourceBricks;
-
-    float paddleAnimation = 0;
-
-protected:
     void drawGame() {
         drawBackground();
+        drawScene(true);
 
-        graphicsAPI.setColor(0, 0, 0, 0.4f);
-        graphicsAPI.setOffset(20, -20);
-        // draw shadows
+        drawScene(false);
+    }
 
+    void drawScene(bool shadow) {
+        if (shadow) {
+            graphicsAPI.setColor(0,0,0,0.4f);
+            graphicsAPI.setOffset(20,-20);
+        } else {
+            graphicsAPI.setColor(1,1,1,1);
+            graphicsAPI.setOffset(0,0);
+        }
         drawLevel();
         drawPaddle();
         drawBalls();
         drawPowerUps();
         drawLaserShooter();
 
-        graphicsAPI.setColor(1, 1, 1, 1);
-        graphicsAPI.setOffset(0, 0);
-
-        drawLevel();
-        drawPaddle();
-        drawBalls();
-        drawPowerUps();
-        drawLaserShooter();
+        graphicsAPI.setColor(1,1,1,1);
     }
 
     void drawHUD() {
@@ -134,14 +109,14 @@ protected:
         int digitWidth = 60, digitHeight = 100, spacing = 20;
         int totalWidth = numDigits * (digitWidth + spacing) - spacing;
 
-        int x = 1920 - 50 - totalWidth;
-        int y = 1080 - 50 - digitHeight;
+        int x = SCREEN_WIDTH - HUD_MARGIN - totalWidth;
+        int y = SCREEN_HEIGHT - HUD_MARGIN - digitHeight;
 
         drawNumber(score, x, y, digitWidth, digitHeight, spacing);
 
         int lives = playerState->getLives();
         for (int i = 0; i < lives; ++i) {
-            drawImage(resourceLife, 50 + i * 90, 1080 - 50 - 90, 90, 90);
+            drawImage(resourceLife, HUD_MARGIN + i * 90, SCREEN_WIDTH   - HUD_MARGIN - 90, 90, 90);
         }
     }
 
@@ -208,6 +183,32 @@ protected:
                                         brick.getType(), 384, 128, 384, 896);
         }
     }
+
+private:
+    std::shared_ptr<Paddle> paddle;
+    std::shared_ptr<BallSystem> ballSystem;
+    std::shared_ptr<LevelSystem> levelSystem;
+    std::shared_ptr<PowerUpSystem> powerUpManager;
+    std::shared_ptr<LaserShooter> laserShooter;
+    std::shared_ptr<PlayerState> playerState;
+
+    GLuint resourceShooterLeft;
+    GLuint resourceShooterRight;
+    GLuint resourcePaddleLeft;
+    GLuint resourcePaddleRight;
+    GLuint resourceBackground;
+    GLuint resourceLife;
+    GLuint resourceNumbers;
+    GLuint resourceBalls;
+    GLuint resourcePowerUps;
+    GLuint resourcePaddle;
+    GLuint resourceBricks;
+
+    float paddleAnimation = 0;
+
+    static constexpr int SCREEN_WIDTH = 1920;
+    static constexpr int SCREEN_HEIGHT = 1080;
+    static constexpr int HUD_MARGIN = 50;
 };
 
 }
