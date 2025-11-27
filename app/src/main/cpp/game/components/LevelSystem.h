@@ -36,7 +36,6 @@ public:
     }
 
     void onAwake() override {
-
         createLevel(currentLevel);
     }
 
@@ -51,7 +50,8 @@ public:
         for (auto& b : j["bricks"]) {
             int x = b["x"].get<int>();
             int y = b["y"].get<int>();
-            createBrick(x, y, 0);
+            int type = b["type"].get<int>();
+            createBrick(x, y, type);
         }
 
         onlevelStart.invoke();
