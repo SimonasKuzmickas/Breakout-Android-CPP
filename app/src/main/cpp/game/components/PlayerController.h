@@ -42,7 +42,7 @@ public:
         }
 
         auto paddleBounds = paddle->getBounds();
-        float ratio = screenBounds.w / REFERENCE_WIDTH;
+        float ratio = screenBounds.w / VIRTUAL_WIDTH;
         float center = paddleBounds.center().x * ratio;
         float offset = position.x - center;
 
@@ -85,7 +85,7 @@ public:
     }
 
 private:
-    static constexpr float REFERENCE_WIDTH = 1920.0f;
+    static constexpr float VIRTUAL_WIDTH = 1920.0f;
     static constexpr float MOVE_THRESHOLD  = 0.25f;
 
     Rect screenBounds;

@@ -7,8 +7,9 @@ namespace Breakout {
 
 struct Brick {
 public:
-    Brick(float x, float y)
-            : bounds{x, y, 100, 50} {}
+    Brick(float x, float y, int type)
+            : bounds{x, y, 160, 60},
+            type(type){}
 
     [[nodiscard]] const Rect &getBounds() const {
         return bounds;
@@ -16,6 +17,7 @@ public:
 
 private:
     Rect bounds;
+    int type;
 };
 
 class LevelSystem : public ISceneComponent {
@@ -32,20 +34,14 @@ public:
     }
 
     void createLevel() {
-        const int rows = 6;
+        const int rows = 18;
         const int cols = 14;
-        const int brickWidth = 100;
-        const int brickHeight = 50;
-        const int startX = 220;
-        const int startY = 600;
-        const int spacingX = 10;
-        const int spacingY = 10;
+        const int brickWidth = 160;
+        const int brickHeight = 60;
 
-        for (int row = 0; row < rows; ++row) {
+        for (int row = 10; row < rows; ++row) {
             for (int col = 0; col < cols; ++col) {
-                int x = startX + col * (brickWidth + spacingX);
-                int y = startY + row * (brickHeight + spacingY);
-                createBrick(x, y);
+                createBrick(col, row, 0);
             }
         }
 
@@ -58,8 +54,8 @@ public:
         }
     }
 
-    void createBrick(float x, float y) {
-        bricks.emplace_back(x, y);
+    void createBrick(int gridX, int gridY, int type) {
+        bricks.emplace_back(gridX * 160, gridY * 60, type);
     }
 
     void removeBrick(const Brick &brickRef) {
