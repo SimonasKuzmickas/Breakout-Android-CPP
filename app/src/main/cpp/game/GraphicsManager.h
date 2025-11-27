@@ -62,12 +62,11 @@ public:
     void drawNumber(int value, int x, int y, int digitWidth, int digitHeight, int spacing) {
         std::string str = std::to_string(value);
 
-        int xposStart = x;
         for (size_t i = 0; i < str.size(); ++i) {
             int digit = str[i] - '0';
-            int xpos = xposStart + static_cast<int>(i) * (digitWidth + spacing);
+            float offset = (float)x + (float)i * (float)(digitWidth + spacing);
 
-            drawImageAnim(resourceNumbers, xpos, y, digitWidth, digitHeight, digit, 7, 10, 70, 10);
+            drawImageAnim(resourceNumbers, offset, (float)y, (float)digitWidth, (float)digitHeight, digit, 7, 10, 70, 10);
         }
     }
 
@@ -116,7 +115,7 @@ protected:
 
         int lives = playerState->getLives();
         for (int i = 0; i < lives; ++i) {
-            drawImage(resourceLife, HUD_MARGIN + i * 90, SCREEN_WIDTH   - HUD_MARGIN - 90, 90, 90);
+            drawImage(resourceLife, HUD_MARGIN + i * 90, SCREEN_HEIGHT  - HUD_MARGIN - 90, 90, 90);
         }
     }
 
