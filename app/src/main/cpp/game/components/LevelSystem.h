@@ -10,6 +10,8 @@ using json = nlohmann::json;
 
 namespace Breakout {
 
+class LevelSystem;
+
 struct Brick {
 public:
     enum class BrickType {
@@ -22,34 +24,36 @@ public:
         StaticGray // 6
     };
 
+    Event<> onDamaged;
+
     static constexpr float BRICK_WIDTH = 160.0f;
     static constexpr float BRICK_HEIGHT = 60.0f;
 
-    Brick(int gridX, int gridY, int type)
+    Brick(int gridX, int gridY, BrickType type)
             : bounds{gridX * BRICK_WIDTH, gridY * BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT},
-            type(type),
-            gridX(gridX),
-            gridY(gridY),
-            isDestroyed(false),
-            damaged(false){}
+              type(type),
+              gridX(gridX),
+              gridY(gridY),
+              isDestroyed(false),
+              damaged(false) {}
 
     const Rect &getBounds() const { return bounds; }
-    int getType() const { return type; }
+    BrickType getType() const { return type; }
     int getGridX() const { return gridX; }
     int getGridY() const { return gridY; }
     bool getIsDestroyed() { return isDestroyed; }
     bool getIsDynamic() const {
-        return type == (int)(BrickType::DynamicBlue) || type == static_cast<int>(BrickType::DynamicGreen);
+        return type == BrickType::DynamicBlue || type == BrickType::DynamicGreen;
     }
     bool getIsDamaged() const {
         return damaged;
     }
 
     void update() {
-        switch (static_cast<BrickType>(type)) {
+        switch (type) {
             case BrickType::DynamicBlue: {
                 float amplitude = 80.0f;   // max offset in pixels
-                float speed     = 2.0f;    // oscillations per second
+                float speed = 2.0f;    // oscillations per second
 
                 // Compute offset using sine wave
                 float t = GameTime::realtimeSinceStartup();
@@ -73,22 +77,19 @@ public:
                 break;
             }
 
-            case BrickType::NormalOrange:
-            case BrickType::HardPurple:
-            case BrickType::HardBrown:
             case BrickType::ExplodingYellow:
-            case BrickType::StaticGray:
-                // Static bricks don’t update
+
                 break;
         }
     }
 
     void hit() {
-        switch (static_cast<BrickType>(type)) {
+        switch (type) {
             case BrickType::HardPurple:
             case BrickType::HardBrown:
                 if(!damaged) {
                     damaged = true;
+                    onDamaged.invoke();
                     return;
                 }
                 break;
@@ -100,7 +101,7 @@ public:
 private:
     Rect bounds;
     int gridX, gridY;
-    int type;
+    BrickType type;
     bool isDestroyed;
     bool damaged;
 };
@@ -108,6 +109,7 @@ private:
 class LevelSystem : public ISceneComponent {
 public:
     Event<Brick> onDestroyBrick;
+    Event<> onDamageBrick;
     Event<> onLevelStart;
 
     LevelSystem(AppContext* context)
@@ -131,13 +133,13 @@ public:
         dynamicBricks.clear();
         allBricks.clear();
         // TODO: clear array?
-        // todo clear dynamic
 
         for (auto& b : json["bricks"]) {
             int x = b["x"].get<int>();
             int y = b["y"].get<int>();
             int type = b["type"].get<int>();
-            createBrick(x, y, type);
+
+            createBrick(x, y, static_cast<Brick::BrickType>(type));
         }
 
         onLevelStart.invoke();
@@ -245,7 +247,7 @@ private:
         }
     }
 
-    void createBrick(int gridX, int gridY, int type) {
+    void createBrick(int gridX, int gridY, Brick::BrickType type) {
         allBricks.emplace_back(gridX, gridY, type);
 
         auto brick = &allBricks.back();
@@ -255,6 +257,10 @@ private:
         } else {
             staticBricks[gridX][gridY] = brick;
         }
+
+        brick->onDamaged.addListener([this]() {
+            onDamageBrick.invoke();
+        });
     }
 };
 

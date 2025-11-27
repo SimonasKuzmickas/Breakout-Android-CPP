@@ -180,7 +180,7 @@ protected:
             auto bounds = brick.getBounds();
 
             graphicsAPI.drawTextureAnim(resourceBricks, bounds.x, bounds.y, bounds.w, bounds.h,
-                                        brick.getType(), 384, 128, 384, 896);
+                                        (int)brick.getType(), 384, 128, 384, 896);
 
             if(brick.getIsDamaged()) {
                 graphicsAPI.drawTexture(resourceDamaged, bounds.x, bounds.y, bounds.w, bounds.h);
