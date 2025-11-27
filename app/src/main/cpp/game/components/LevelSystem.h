@@ -3,6 +3,8 @@
 #include "../helpers/Event.h"
 #include "../scene/ISceneComponent.h"
 #include "../thirdparty/json.hpp"
+#include "../helpers/AssetLoader.h"
+
 using json = nlohmann::json;
 
 namespace Breakout {
@@ -39,7 +41,7 @@ public:
 
     void createLevel(int levelId) {
         std::string filename = "level" + std::to_string(levelId) + ".json";
-        std::string jsonText = loadAssetFile(appContext->assetManager, filename.c_str());
+        std::string jsonText = AssetLoader::load(appContext->assetManager, filename.c_str());
 
         if (jsonText.empty()) {
             return;
@@ -102,17 +104,6 @@ private:
     std::vector<Brick> bricks;
     AppContext* appContext;
     int currentLevel = 1;
-
-    std::string loadAssetFile(AAssetManager* mgr, const char* filename) {
-        AAsset* asset = AAssetManager_open(mgr, filename, AASSET_MODE_BUFFER);
-        if (!asset) return {};
-
-        size_t size = AAsset_getLength(asset);
-        std::string buffer(size, '\0');
-        AAsset_read(asset, buffer.data(), size);
-        AAsset_close(asset);
-        return buffer;
-    }
 };
 
 }
