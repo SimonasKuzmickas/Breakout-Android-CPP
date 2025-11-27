@@ -18,17 +18,16 @@ public:
     Sound *soundLaser;
     Sound *lifeLost;
 
-
     void onAwake() override {
         soundsAPI.initialize();
 
-        soundPaddle = soundsAPI.include("sfx_paddlehit");
-        soundWall = soundsAPI.include("sfx_wallhit");
-        soundBrick = soundsAPI.include("sfx_brickdestroy");
-        soundPowerUp = soundsAPI.include("sfx_powerup");
-        soundExplosion = soundsAPI.include("sfx_explosion");
-        soundLaser = soundsAPI.include("sfx_laser");
-        lifeLost = soundsAPI.include("sfx_lifelost");
+        soundPaddle = soundsAPI.loadSound("sfx_paddlehit");
+        soundWall = soundsAPI.loadSound("sfx_wallhit");
+        soundBrick = soundsAPI.loadSound("sfx_brickdestroy");
+        soundPowerUp = soundsAPI.loadSound("sfx_powerup");
+        soundExplosion = soundsAPI.loadSound("sfx_explosion");
+        soundLaser = soundsAPI.loadSound("sfx_laser");
+        lifeLost = soundsAPI.loadSound("sfx_lifelost");
 
         auto paddle = getComponent<Paddle>();
         if (paddle) {

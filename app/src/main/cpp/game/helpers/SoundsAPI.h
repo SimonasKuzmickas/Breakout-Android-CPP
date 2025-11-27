@@ -51,7 +51,7 @@ public:
         return oboe::DataCallbackResult::Continue;
     }
 
-    Sound *include(const std::string &name) {
+    Sound *loadSound(const std::string &name) {
         uint32_t sr = 0;
         uint16_t ch = 0;
 
