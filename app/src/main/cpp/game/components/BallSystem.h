@@ -42,8 +42,12 @@ public:
         globalSpeedMultiplier = 1;
         ballsType = BallsType::Normal;
 
-        createBall(1000, 200, 30, Vector2(7.0f, 7.0f));
+        std::srand(static_cast<unsigned>(std::time(nullptr)));
 
+        float vx = static_cast<float>((std::rand() % 200) - 100) / 10.0f; // -10..+10
+        float vy = static_cast<float>((std::rand() % 50) + 50) / 10.0f;  // -5..-10 (always upward)
+
+        createBall(1920 * 0.5f, 200, 30, Vector2(vx, vy));
         paddle->start();
     }
 
