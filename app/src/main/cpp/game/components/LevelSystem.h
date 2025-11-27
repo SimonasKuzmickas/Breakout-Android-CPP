@@ -11,8 +11,12 @@ public:
             : bounds{x, y, 160, 60},
             type(type){}
 
-    [[nodiscard]] const Rect &getBounds() const {
+    const Rect &getBounds() const {
         return bounds;
+    }
+
+    int getType() const {
+        return type;
     }
 
 private:

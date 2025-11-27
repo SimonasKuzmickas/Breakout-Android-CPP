@@ -22,7 +22,6 @@ public:
         playerState = getComponent<PlayerState>();
 
         resourceBackground = loadImage("bg_space.png");
-        resourceBrick1 = loadImage("brick1.png");
         resourcePaddleLeft = loadImage("tex_paddleleft.png");
         resourcePaddleRight = loadImage("tex_paddleright.png");
         resourceShooterLeft = loadImage("tex_shooter_left.png");
@@ -32,6 +31,7 @@ public:
         resourceBalls = loadImage("tex_balls.png");
         resourcePowerUps = loadImage("tex_powerups.png");
         resourcePaddle = loadImage("tex_paddle.png");
+        resourceBricks = loadImage("tex_bricks.png");
     }
 
     void onDestroy() override {
@@ -94,12 +94,12 @@ private:
     GLuint resourcePaddleLeft;
     GLuint resourcePaddleRight;
     GLuint resourceBackground;
-    GLuint resourceBrick1;
     GLuint resourceLife;
     GLuint resourceNumbers;
     GLuint resourceBalls;
     GLuint resourcePowerUps;
     GLuint resourcePaddle;
+    GLuint resourceBricks;
 
     float paddleAnimation = 0;
 
@@ -203,7 +203,9 @@ protected:
     void drawLevel() {
         for (auto &brick: levelSystem->getBricks()) {
             auto bounds = brick.getBounds();
-            drawImage(resourceBrick1, bounds.x, bounds.y, bounds.w, bounds.h);
+
+            graphicsAPI.drawTextureAnim(resourceBricks, bounds.x, bounds.y, bounds.w, bounds.h,
+                                        brick.getType(), 384, 128, 384, 896);
         }
     }
 };
