@@ -9,10 +9,11 @@ class PlayerState : public ISceneComponent {
 public:
     Event<> onDeath;
 
-    void onAwake() override {
-        levelSystem = getComponent<LevelSystem>();
-        ballSystem = getComponent<BallSystem>();
+    PlayerState(std::shared_ptr<LevelSystem> levelSystem, std::shared_ptr<BallSystem> ballSystem)
+    : levelSystem(levelSystem), ballSystem(ballSystem)
+    {}
 
+    void onAwake() override {
         if (levelSystem) {
             levelSystem->onBrickDestroy.addListener([this](const Brick* brick) {
                 increaseScore(BRICK_SCORE_VALUE);

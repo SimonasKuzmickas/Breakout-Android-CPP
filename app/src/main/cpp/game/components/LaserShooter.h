@@ -14,11 +14,11 @@ class LaserShooter : public ISceneComponent {
 public:
     Event<> onLaserShoot;
 
-    void onAwake() override {
-        paddle = getComponent<Paddle>();
-        levelSystem = getComponent<LevelSystem>();
-        ballSystem = getComponent<BallSystem>();
+    LaserShooter(std::shared_ptr<Paddle> paddle, std::shared_ptr<LevelSystem>  levelSystem, std::shared_ptr<BallSystem> ballSystem)
+                : paddle(paddle), levelSystem(levelSystem), ballSystem(ballSystem)
+        {}
 
+    void onAwake() override {
         ballSystem->onLost.addListener([this]() {
             setActive(false);
             lasers.clear();

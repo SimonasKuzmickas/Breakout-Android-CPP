@@ -18,18 +18,30 @@ public:
             : appContext(context) {}
 
     void onStart() override {
-        addComponent(std::make_shared<UIAutoPlayer>());
-        addComponent(std::make_shared<LevelSystem>(appContext));
-        addComponent(std::make_shared<PowerUpSystem>());
-        addComponent(std::make_shared<BallSystem>());
-        addComponent(std::make_shared<Paddle>());
-        addComponent(std::make_shared<LaserShooter>());
-        addComponent(std::make_shared<SoundsManager>(appContext));
-        addComponent(std::make_shared<PlayerState>());
+        // Core game systems dependencies
+        auto paddle       = std::make_shared<Paddle>();
+        auto levelSystem  = std::make_shared<LevelSystem>(appContext);
+        auto ballSystem   = std::make_shared<BallSystem>(paddle, levelSystem);
+        auto playerState  = std::make_shared<PlayerState>(levelSystem, ballSystem);
+        auto laserShooter = std::make_shared<LaserShooter>(paddle, levelSystem, ballSystem);
+        auto powerUpSystem= std::make_shared<PowerUpSystem>(levelSystem, paddle, laserShooter, ballSystem, playerState);
 
+        addComponent(paddle);
+        addComponent(levelSystem);
+        addComponent(ballSystem);
+        addComponent(playerState);
+        addComponent(laserShooter);
+        addComponent(powerUpSystem);
+
+        // UI and audio systems
+        addComponent(std::make_shared<UIAutoPlayer>());
+        addComponent(std::make_shared<SoundsManager>(appContext));
+
+        // Menu layout
         auto layout = std::make_shared<UILayoutMenu>(appContext);
         addComponent(layout);
 
+        // Scene transition
         layout->onStartPressed.addListener([this]() {
             sceneManager->requestChange(SceneId::Game);
         });

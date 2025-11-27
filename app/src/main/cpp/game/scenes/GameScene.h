@@ -23,21 +23,32 @@ public:
             : appContext(context) {}
 
     void onStart() override {
-        auto playerState = std::make_shared<PlayerState>();
+        // Core game systems dependencies
+        auto levelSystem   = std::make_shared<LevelSystem>(appContext);
+        auto paddle        = std::make_shared<Paddle>();
+        auto ballSystem    = std::make_shared<BallSystem>(paddle, levelSystem);
+        auto playerState   = std::make_shared<PlayerState>(levelSystem, ballSystem);
+        auto laserShooter  = std::make_shared<LaserShooter>(paddle, levelSystem, ballSystem);
+        auto powerUpSystem = std::make_shared<PowerUpSystem>(levelSystem, paddle, laserShooter, ballSystem, playerState);
 
+
+        addComponent(levelSystem);
+        addComponent(paddle);
+        addComponent(ballSystem);
+        addComponent(playerState);
+        addComponent(laserShooter);
+        addComponent(powerUpSystem);
+
+        addComponent(std::make_shared<PlayerController>(appContext));
+
+        // fx and audio systems
+        addComponent(std::make_shared<SoundsManager>(appContext));
+        addComponent(std::make_shared<GraphicsManager>(appContext));
+
+        // Scene transition
         playerState->onDeath.addListener([this]() {
             sceneManager->requestChange(SceneId::GameOver);
         });
-
-        addComponent(std::make_shared<GraphicsManager>(appContext));
-        addComponent(std::make_shared<SoundsManager>(appContext));
-        addComponent(std::make_shared<PlayerController>(appContext));
-        addComponent(std::make_shared<LevelSystem>(appContext));
-        addComponent(std::make_shared<PowerUpSystem>());
-        addComponent(std::make_shared<BallSystem>());
-        addComponent(std::make_shared<Paddle>());
-        addComponent(std::make_shared<LaserShooter>());
-        addComponent(playerState);
     }
 
 private:

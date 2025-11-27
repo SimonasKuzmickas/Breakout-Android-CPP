@@ -41,30 +41,35 @@ class PowerUpSystem : public ISceneComponent {
 public:
     Event<> onPickup;
 
+    PowerUpSystem(std::shared_ptr<LevelSystem> levelSystem,
+                  std::shared_ptr<Paddle> paddle,
+                  std::shared_ptr<LaserShooter> laserShooter,
+                  std::shared_ptr<BallSystem> ballSystem,
+                  std::shared_ptr<PlayerState> playerState)
+            : levelSystem(std::move(levelSystem)),
+              paddle(std::move(paddle)),
+              laserShooter(std::move(laserShooter)),
+              ballSystem(std::move(ballSystem)),
+              playerState(std::move(playerState))
+    {
+        // any initialization or event wiring can go here
+    }
     void onAwake() override {
-        levelSystem = getComponent<LevelSystem>();
-        paddle = getComponent<Paddle>();
-        laserShooter = getComponent<LaserShooter>();
-        ballSystem = getComponent<BallSystem>();
-        playerState = getComponent<PlayerState>();
+        levelSystem->onBrickDestroy.addListener([this](const Brick* brick) {
+            int rnd = std::rand() % 100;
+            if (rnd < DROP_CHANCE && powerUps.size() < MAX_ACTIVE_POWERUPS) {
+                createPowerUp(brick->getBounds().x + 10, brick->getBounds().y + 5,
+                              getRandomPowerUpType());
+            }
+        });
 
-        if (levelSystem) {
-            levelSystem->onBrickDestroy.addListener([this](const Brick* brick) {
-                int rnd = std::rand() % 100;
-                if (rnd < DROP_CHANCE && powerUps.size() < MAX_ACTIVE_POWERUPS) {
-                    createPowerUp(brick->getBounds().x + 10, brick->getBounds().y + 5,
-                                  getRandomPowerUpType());
-                }
-            });
+        levelSystem->onLevelStart.addListener([this]() {
+            powerUps.clear();
+        });
 
-            levelSystem->onLevelStart.addListener([this]() {
-                powerUps.clear();
-            });
-
-            ballSystem->onLost.addListener([this]() {
-                powerUps.clear();
-            });
-        }
+        ballSystem->onLost.addListener([this]() {
+            powerUps.clear();
+        });
     }
 
     void onUpdate() override {

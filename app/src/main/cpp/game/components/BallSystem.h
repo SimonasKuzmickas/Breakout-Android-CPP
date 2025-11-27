@@ -27,9 +27,11 @@ public:
     Event<> onHitWall;
     Event<> onLost;
 
+    BallSystem(std::shared_ptr<Paddle>  paddle, std::shared_ptr<LevelSystem>  levelSystem)
+            : paddle(paddle), levelSystem(levelSystem)
+    {}
+
     void onAwake() override {
-        paddle = getComponent<Paddle>();
-        levelSystem = getComponent<LevelSystem>();
         levelSystem->onLevelStart.addListener([this]() {
             start();
         });
