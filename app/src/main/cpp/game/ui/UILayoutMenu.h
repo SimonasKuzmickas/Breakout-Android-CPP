@@ -13,8 +13,8 @@ public:
 
         resourceBackground = loadImage("bg_space.png");
         resourceBlock = loadImage("ui_block.png");
-        resourceStartButton = loadImage("startbutton.png");
-        resourcesTitle = loadImage("title.png");
+        resourceStartButton = loadImage("ui_startbutton.png");
+        resourcesTitle = loadImage("ui_title.png");
     }
 
     void onUpdate() override {

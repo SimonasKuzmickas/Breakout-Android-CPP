@@ -28,14 +28,14 @@ public:
 
         resourceBackground = loadImage("bg_space.png");
         resourceBrick1 = loadImage("brick1.png");
-        resourcePaddleLeft = loadImage("paddleleft.png");
-        resourcePaddleRight = loadImage("paddleright.png");
-        resourceShooterLeft = loadImage("shooter_left.png");
-        resourceShooterRight = loadImage("shooter_right.png");
-        resourceLife = loadImage("life.png");
-        resourceNumbers = loadImage("numbers.png");
+        resourcePaddleLeft = loadImage("tex_paddleleft.png");
+        resourcePaddleRight = loadImage("tex_paddleright.png");
+        resourceShooterLeft = loadImage("tex_shooter_left.png");
+        resourceShooterRight = loadImage("tex_shooter_right.png");
+        resourceLife = loadImage("tex_life.png");
+        resourceNumbers = loadImage("tex_numbers.png");
         resourceBalls = loadImage("tex_balls.png");
-        resourcePowerUps = loadImage("powerups.png");
+        resourcePowerUps = loadImage("tex_powerups.png");
     }
 
     void onDestroy() override {

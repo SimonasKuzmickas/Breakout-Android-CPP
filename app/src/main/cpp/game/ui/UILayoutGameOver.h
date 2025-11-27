@@ -15,10 +15,10 @@ public:
         UILayoutHandler::onAwake();
 
         resourceBackground = loadImage("bg_space.png");
-        resourcesRetryButton = loadImage("retry.png");
-        resourcesMenuButton = loadImage("menu.png");
+        resourcesRetryButton = loadImage("ui_retry.png");
+        resourcesMenuButton = loadImage("ui_menu.png");
         resourceBlock = loadImage("ui_block.png");
-        resourcesGameOver = loadImage("gameover.png");
+        resourcesGameOver = loadImage("ui_gameover.png");
 
         inputHandler = getComponent<UILayoutHandler>();
     }
