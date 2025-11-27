@@ -32,7 +32,7 @@ public:
         addComponent(std::make_shared<GraphicsManager>(appContext));
         addComponent(std::make_shared<SoundsManager>(appContext));
         addComponent(std::make_shared<PlayerController>(appContext));
-        addComponent(std::make_shared<LevelSystem>());
+        addComponent(std::make_shared<LevelSystem>(appContext));
         addComponent(std::make_shared<PowerUpSystem>());
         addComponent(std::make_shared<BallSystem>());
         addComponent(std::make_shared<Paddle>());

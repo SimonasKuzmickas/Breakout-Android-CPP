@@ -2,6 +2,8 @@
 
 #include "../helpers/Event.h"
 #include "../scene/ISceneComponent.h"
+#include "../thirdparty/json.hpp"
+using json = nlohmann::json;
 
 namespace Breakout {
 
@@ -29,24 +31,27 @@ public:
     Event<Brick> onDestroyBrick;
     Event<> onlevelStart;
 
-    explicit LevelSystem() {
+    LevelSystem(AppContext *context) : appContext(context) {
         levelBounds = Rect(0, 0, 1920.0f, 1080.0f);
     }
 
     void onAwake() override {
-        createLevel();
+
+        createLevel(currentLevel);
     }
 
-    void createLevel() {
-        const int rows = 18;
-        const int cols = 14;
-        const int brickWidth = 160;
-        const int brickHeight = 60;
+    void createLevel(int levelId) {
+        std::string filename = "level" + std::to_string(levelId) + ".json";
+        std::string jsonText = loadAssetFile(appContext->assetManager, filename.c_str());
 
-        for (int row = 10; row < rows; ++row) {
-            for (int col = 0; col < cols; ++col) {
-                createBrick(col, row, 0);
-            }
+        json j = json::parse(jsonText);
+
+        bricks.clear();
+
+        for (auto& b : j["bricks"]) {
+            int x = b["x"].get<int>();
+            int y = b["y"].get<int>();
+            createBrick(x, y, 0);
         }
 
         onlevelStart.invoke();
@@ -54,7 +59,8 @@ public:
 
     void onUpdate() override {
         if (bricks.empty()) {
-            createLevel();
+            createLevel(currentLevel);
+            currentLevel++;
         }
     }
 
@@ -83,6 +89,17 @@ public:
         return bricks;
     }
 
+    std::string loadAssetFile(AAssetManager* mgr, const char* filename) {
+        AAsset* asset = AAssetManager_open(mgr, filename, AASSET_MODE_BUFFER);
+        if (!asset) return {};
+
+        size_t size = AAsset_getLength(asset);
+        std::string buffer(size, '\0');
+        AAsset_read(asset, buffer.data(), size);
+        AAsset_close(asset);
+        return buffer;
+    }
+
     Brick *checkBrickCollision(Rect bounds) {
         for (auto &brick: bricks) {
             if (bounds.overlaps(brick.getBounds())) {
@@ -95,6 +112,8 @@ public:
 private:
     Rect levelBounds;
     std::vector<Brick> bricks;
+    AppContext* appContext;
+    int currentLevel = 1;
 };
 
 }
