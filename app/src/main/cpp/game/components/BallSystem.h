@@ -25,7 +25,6 @@ public:
     enum class BallsType { Normal, Piercing, Explode };
 
     Event<> onHitWall;
-    Event<> onExplosion;
     Event<> onLost;
 
     void onAwake() override {

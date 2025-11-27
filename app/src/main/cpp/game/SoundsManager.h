@@ -51,10 +51,6 @@ public:
             lifeLost->play();
         });
 
-        ballSystem->onExplosion.addListener([this]() {
-            soundExplosion->play();
-        });
-
         auto powerUpManager = getComponent<PowerUpSystem>();
         powerUpManager->onPickup.addListener([this]() {
             soundPowerUp->play();
@@ -68,6 +64,10 @@ public:
 
             levelSystem->onBrickDamage.addListener([this]() {
                 soundBrick->play();
+            });
+
+            levelSystem->onBrickExplosion.addListener([this]() {
+                soundExplosion->play();
             });
         }
     }

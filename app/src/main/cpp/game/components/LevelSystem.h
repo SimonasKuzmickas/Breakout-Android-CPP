@@ -15,6 +15,7 @@ class LevelSystem : public ISceneComponent {
 public:
     Event<Brick*> onBrickDestroy;
     Event<> onBrickDamage;
+    Event<> onBrickExplosion;
     Event<> onLevelStart;
 
     LevelSystem(AppContext* context)
@@ -203,6 +204,7 @@ private:
 
         brick->onExplode.addListener([this](Brick* b) {
             explode(b->getGridX(), b->getGridY());
+            onBrickExplosion.invoke();
         });
     }
 };
