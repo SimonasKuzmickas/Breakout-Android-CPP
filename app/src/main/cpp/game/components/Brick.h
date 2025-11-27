@@ -50,8 +50,8 @@ public:
         return damaged;
     }
 
-    bool getIsStatic() const {
-        return type == BrickType::StaticGray;
+    bool getIsDestructible() const {
+        return type != BrickType::StaticGray;
     }
 
     void update() {

@@ -119,7 +119,6 @@ public:
             }
         }
 
-        // check dynamic bricks collisions
         return nullptr;
     }
 
@@ -158,21 +157,20 @@ private:
 
     void removeBrick(const Brick &brickRef) {
         // Remove from static grid if present
-        if (!brickRef.getIsDynamic()) {
+        if (brickRef.getIsDynamic()) {
+            auto dynIt = std::remove_if(dynamicBricks.begin(), dynamicBricks.end(),
+                                        [&](Brick* b) { return b == &brickRef; });
+            dynamicBricks.erase(dynIt, dynamicBricks.end());
+        } else {
             int gx = brickRef.getGridX();
             int gy = brickRef.getGridY();
             if (gx >= 0 && gx < GRID_WIDTH &&
                 gy >= 0 && gy < GRID_HEIGHT) {
                 staticBricks[gx][gy] = nullptr;
             }
-        } else {
-            // Remove from dynamic list
-            auto dynIt = std::remove_if(dynamicBricks.begin(), dynamicBricks.end(),
-                                        [&](Brick* b) { return b == &brickRef; });
-            dynamicBricks.erase(dynIt, dynamicBricks.end());
         }
 
-        if(!brickRef.getIsStatic())
+        if(brickRef.getIsDestructible())
         {
             auto dynIt = std::remove_if(destroyableBricks.begin(), destroyableBricks.end(),
                                         [&](Brick* b) { return b == &brickRef; });
@@ -190,15 +188,14 @@ private:
         allBricks.emplace_back(gridX, gridY, type);
 
         auto brick = &allBricks.back();
+        if(brick->getIsDestructible()) {
+            destroyableBricks.push_back(brick);
+        }
+
         if(brick->getIsDynamic()) {
             dynamicBricks.push_back(brick);
         } else {
             staticBricks[gridX][gridY] = brick;
-        }
-
-        if(!brick->getIsStatic())
-        {
-            destroyableBricks.push_back(brick);
         }
 
         brick->onDamaged.addListener([this]() {

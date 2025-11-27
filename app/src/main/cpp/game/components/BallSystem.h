@@ -70,17 +70,6 @@ public:
 
                     break;
 
-                case BallsType::Strong:
-                    // --- MOVE XY ---
-                    // collide with static ones!
-                    ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
-                    ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
-
-                    if (Brick *brick = levelSystem->checkBrickCollision(ball.bounds)) {
-                        brick->hit();
-                    }
-                    break;
-
                 case BallsType::Explode:
                     // --- MOVE X ---
                     ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
@@ -91,13 +80,48 @@ public:
 
                     // --- MOVE Y ---
                     ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (Brick* brick = handleCollision(ball, ball.bounds.x, ball.velocity.x)) {
+                    if (Brick* brick = handleCollision(ball, ball.bounds.y, ball.velocity.y)) {
                         levelSystem->explode(brick->getGridX(), brick->getGridY());
                         continue;
                     }
                     break;
 
+                case BallsType::Strong:
+                    // --- MOVE X ---
+                    ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
+                    if (Brick* brick = levelSystem->checkBrickCollision(ball.bounds)) {
+                        if (brick->getIsDestructible()) {
+                            brick->hit(); // destroyable → take damage
+                        } else {
+                            // bounce on X
+                            auto brickBounds = brick->getBounds();
+                            if (ball.velocity.x > 0)
+                                ball.bounds.x = brickBounds.x - ball.bounds.w;
+                            else
+                                ball.bounds.x = brickBounds.x + brickBounds.w;
+
+                            ball.velocity.x = -ball.velocity.x;
+                        }
+                    }
+
+                    // --- MOVE Y ---
+                    ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
+                    if (Brick* brick = levelSystem->checkBrickCollision(ball.bounds)) {
+                        if (brick->getIsDestructible()) {
+                            brick->hit(); // destroyable → take damage
+                        } else {
+                            // bounce on Y
+                            auto brickBounds = brick->getBounds();
+                            if (ball.velocity.y > 0)
+                                ball.bounds.y = brickBounds.y - ball.bounds.h;
+                            else
+                                ball.bounds.y = brickBounds.y + brickBounds.h;
+
+                            ball.velocity.y = -ball.velocity.y;
+                        }
+                    }
                     break;
+
             }
 
             // ---- OUT OF BOUNDS
