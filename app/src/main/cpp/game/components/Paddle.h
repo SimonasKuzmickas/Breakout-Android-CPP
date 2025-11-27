@@ -22,7 +22,7 @@ public:
               transitionWidth(DEFAULT_BOUNDS.w) {}
 
     void onUpdate() override {
-        bounds.x += static_cast<float>(direction) * speed;
+        bounds.x += static_cast<float>(direction) * speed * GameTime::deltaTime();
 
         // paddle to wall collision
         const float maxX = WORLD_WIDTH - bounds.w;
@@ -30,7 +30,7 @@ public:
 
         // paddle resize animation
         float difference = transitionWidth - bounds.w;
-        difference *= 0.3f;
+        difference *= RESIZE_SPEED * GameTime::deltaTime();
 
         bounds.x -= difference * 0.5f;
         bounds.w += difference;
@@ -57,7 +57,8 @@ public:
 
 private:
     static constexpr float WORLD_WIDTH = 1920.0f;
-    static constexpr float DEFAULT_SPEED = 20.0f;
+    static constexpr float RESIZE_SPEED = 18.0f;
+    static constexpr float DEFAULT_SPEED = 1200.0f;
     inline static const Rect DEFAULT_BOUNDS{1920.0f / 2 - 250, 20, 300, 60};
 
     Rect bounds;

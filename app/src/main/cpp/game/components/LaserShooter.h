@@ -4,8 +4,10 @@ namespace Breakout {
 
 struct Laser {
     Rect bounds;
+    static constexpr float WIDTH = 10.0f;
+    static constexpr float HEIGHT = 40.0f;
 
-    Laser(float x, float y) : bounds{x, y, 10, 40} {}
+    Laser(float x, float y) : bounds{x, y, WIDTH, HEIGHT} {}
 };
 
 class LaserShooter : public ISceneComponent {
@@ -19,82 +21,68 @@ public:
 
         ballSystem->onLost.addListener([this]() {
             setActive(false);
-
             lasers.clear();
         });
 
         levelSystem->onlevelStart.addListener([this]() {
             setActive(false);
-
             lasers.clear();
         });
     }
 
     void onUpdate() override {
         for (auto &laser: lasers) {
-            laser.bounds.y += 10;
+            laser.bounds.y += LASER_SPEED * GameTime::deltaTime();
 
             if (Brick *hit = levelSystem->checkBrickCollision(laser.bounds)) {
                 levelSystem->removeBrick(*hit);
                 removeLaser(laser);
-            }
-
-            if (!laser.bounds.overlaps(levelSystem->getLevelBounds())) {
+            } else if (!laser.bounds.overlaps(levelSystem->getLevelBounds())) {
                 removeLaser(laser);
             }
         }
 
         if (getIsActive()) {
-            shootTime -= 0.05f;
+            shootTime -= GameTime::deltaTime();
             if (shootTime < 0) {
                 onLaserShoot.invoke();
+                shootTime = SHOOT_COOLDOWN;
 
-                shootTime = 3;
-
-                auto positionBounds = paddle->getBounds();
-                createLaser(positionBounds.x, positionBounds.y + positionBounds.h);
-                createLaser(positionBounds.x + positionBounds.w,
-                            positionBounds.y + positionBounds.h);
+                auto pb = paddle->getBounds();
+                createLaser(pb.x, pb.y + pb.h);
+                createLaser(pb.x + pb.w, pb.y + pb.h);
             }
         }
     }
 
-    void createLaser(float x, float y) {
-        lasers.emplace_back(x, y);
-    }
-
-    const std::vector<Laser> &getLasers() const {
-        return lasers;
-    }
-
-    void setActive(bool active) {
-        isActive = active;
-    }
-
-    bool getIsActive() const {
-        return isActive;
-    }
-
-    void removeLaser(const Laser &laserRef) {
-        auto target = std::find_if(lasers.begin(), lasers.end(),
-                                   [&](const Laser &b) {
-                                       return &b == &laserRef;
-                                   });
-
-        if (target != lasers.end()) {
-            lasers.erase(target);
-        }
-    }
+    std::vector<Laser> &getLasers() { return lasers; }
+    void setActive(bool active) { isActive = active; }
+    bool getIsActive() { return isActive; }
 
 private:
+    static constexpr float LASER_SPEED = 800.0f;
+    static constexpr float SHOOT_COOLDOWN = 1.0f;
+
     std::shared_ptr<Paddle> paddle;
     std::shared_ptr<LevelSystem> levelSystem;
     std::shared_ptr<BallSystem> ballSystem;
 
     std::vector<Laser> lasers;
-
-    float shootTime = 0;
+    float shootTime = SHOOT_COOLDOWN;
     bool isActive = false;
+
+    void createLaser(float x, float y) { lasers.emplace_back(x, y); }
+
+    void removeLaser(const Laser &laserRef) {
+        auto target = std::find_if(lasers.begin(), lasers.end(),
+           [&](const Laser &b) {
+               return &b == &laserRef;
+           });
+
+        if (target != lasers.end()) {
+            lasers.erase(target);
+        }
+    }
 };
 
 }

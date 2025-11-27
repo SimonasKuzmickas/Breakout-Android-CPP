@@ -4,13 +4,14 @@
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 
+#include "game/helpers/GameTime.h"
 #include "game/scenes/SceneManager.h"
 #include "game/scenes/MenuScene.h"
 #include "game/scenes/SceneId.h"
 
 namespace Breakout {
     void gameLoop(AppContext* appContext) {
-        const double deltaTime = 1.0 / 60.0;
+        const double deltaTimeTarget = 1.0 / 60.0;
         auto lastTick = std::chrono::steady_clock::now();
 
         auto sceneManager = Scenes::SceneManager(appContext);
@@ -18,7 +19,7 @@ namespace Breakout {
 
         while (appContext->running) {
             auto now = std::chrono::steady_clock::now();
-            auto next = lastTick + std::chrono::duration<double>(deltaTime);
+            auto next = lastTick + std::chrono::duration<double>(deltaTimeTarget);
 
             if (now >= next) {
                 lastTick = now;
