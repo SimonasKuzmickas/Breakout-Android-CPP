@@ -60,18 +60,19 @@ public:
                 case BallsType::Normal:
                     // --- MOVE X ---
                     ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (handleNormalCollision(ball, ball.bounds.x, ball.velocity.x))
+                    if (handleCollision(ball, ball.bounds.x, ball.velocity.x))
                         continue;
 
                     // --- MOVE Y ---
                     ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (handleNormalCollision(ball, ball.bounds.y, ball.velocity.y))
+                    if (handleCollision(ball, ball.bounds.y, ball.velocity.y))
                         continue;
 
                     break;
 
                 case BallsType::Strong:
                     // --- MOVE XY ---
+                    // collide with static ones!
                     ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
                     ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
 
@@ -83,13 +84,18 @@ public:
                 case BallsType::Explode:
                     // --- MOVE X ---
                     ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (handleExplosion(ball, ball.bounds.x, ball.velocity.x))
+                    if (Brick* brick = handleCollision(ball, ball.bounds.x, ball.velocity.x)) {
+                        levelSystem->explode(brick->getGridX(), brick->getGridY());
                         continue;
+                    }
 
                     // --- MOVE Y ---
                     ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (handleExplosion(ball, ball.bounds.y, ball.velocity.y))
+                    if (Brick* brick = handleCollision(ball, ball.bounds.x, ball.velocity.x)) {
+                        levelSystem->explode(brick->getGridX(), brick->getGridY());
                         continue;
+                    }
+                    break;
 
                     break;
             }
@@ -213,50 +219,30 @@ private:
         return {vx, vy};
     }
 
-    bool handleNormalCollision(Ball &ball, float &axisPos, float &axisVel) {
-        if (Brick *brick = levelSystem->checkBrickCollision(ball.bounds)) {
-            axisPos -= axisVel * GameTime::deltaTime();
-            axisVel = -axisVel;
+    Brick* handleCollision(Ball &ball, float &axisPos, float &axisVel) {
+        if (Brick* brick = levelSystem->checkBrickCollision(ball.bounds)) {
+            Rect brickBounds = brick->getBounds();
 
+            if (axisVel > 0) {
+                if (&axisPos == &ball.bounds.x)
+                    axisPos = brickBounds.x - ball.bounds.w;
+                else
+                    axisPos = brickBounds.y - ball.bounds.h;
+            } else {
+                if (&axisPos == &ball.bounds.x)
+                    axisPos = brickBounds.x + brickBounds.w;
+                else
+                    axisPos = brickBounds.y + brickBounds.h;
+            }
+
+            axisVel = -axisVel;
             ball.applySpeedMultiplier(SPEED_HITGROWTH);
             brick->hit();
 
-            return true;
-        }
-        return false;
-    }
-
-    bool handleExplosion(Ball &ball, float &axisPos, float &axisVel) {
-        if (Brick *brick = levelSystem->checkBrickCollision(ball.bounds)) {
-            onExplosion.invoke();
-
-            auto brickBounds = brick->getBounds();
-
-            axisPos -= axisVel * GameTime::deltaTime();
-            axisVel = -axisVel;
-
-            int x = brick->getGridX();
-            int y = brick->getGridY();
-
-            if (Brick* right = levelSystem->GetBrick(x + 1, y))
-                right->hit();
-
-            if (Brick* left = levelSystem->GetBrick(x + 1, y))
-                left->hit();
-
-            if (Brick* top = levelSystem->GetBrick(x, y + 1))
-                top->hit();
-
-            if (Brick* bottom = levelSystem->GetBrick(x, y - 1))
-                bottom->hit();
-
-            ball.applySpeedMultiplier(SPEED_HITGROWTH);
-            brick->hit();
-
-            return true;
+            return brick;
         }
 
-        return false;
+        return nullptr;
     }
 };
 

@@ -4,107 +4,12 @@
 #include "../scene/ISceneComponent.h"
 #include "../thirdparty/json.hpp"
 #include "../helpers/AssetLoader.h"
+#include "Brick.h"
 #include <list>
 
 using json = nlohmann::json;
 
 namespace Breakout {
-
-class LevelSystem;
-
-struct Brick {
-public:
-    enum class BrickType {
-        NormalOrange, // 0
-        HardPurple, // 1
-        HardBrown, // 2
-        DynamicBlue, // 3
-        DynamicGreen, // 4
-        ExplodingYellow, // 5
-        StaticGray // 6
-    };
-
-    Event<> onDamaged;
-
-    static constexpr float BRICK_WIDTH = 160.0f;
-    static constexpr float BRICK_HEIGHT = 60.0f;
-
-    Brick(int gridX, int gridY, BrickType type)
-            : bounds{gridX * BRICK_WIDTH, gridY * BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT},
-              type(type),
-              gridX(gridX),
-              gridY(gridY),
-              isDestroyed(false),
-              damaged(false) {}
-
-    const Rect &getBounds() const { return bounds; }
-    BrickType getType() const { return type; }
-    int getGridX() const { return gridX; }
-    int getGridY() const { return gridY; }
-    bool getIsDestroyed() { return isDestroyed; }
-    bool getIsDynamic() const {
-        return type == BrickType::DynamicBlue || type == BrickType::DynamicGreen;
-    }
-    bool getIsDamaged() const {
-        return damaged;
-    }
-
-    void update() {
-        switch (type) {
-            case BrickType::DynamicBlue: {
-                float amplitude = 80.0f;   // max offset in pixels
-                float speed = 2.0f;    // oscillations per second
-
-                // Compute offset using sine wave
-                float t = GameTime::realtimeSinceStartup();
-                float offsetX = amplitude * std::sin(speed * t);
-
-                // Update bounds.x relative to grid position
-                bounds.x = gridX * BRICK_WIDTH + offsetX;
-                bounds.y = gridY * BRICK_HEIGHT;
-                break;
-            }
-
-            case BrickType::DynamicGreen: {
-                float amplitude = 40.0f;
-                float speed     = 1.5f;
-
-                float t = GameTime::realtimeSinceStartup();
-                float offsetY = amplitude * std::sin(speed * t);
-
-                bounds.x = gridX * BRICK_WIDTH;
-                bounds.y = gridY * BRICK_HEIGHT + offsetY;
-                break;
-            }
-
-            case BrickType::ExplodingYellow:
-
-                break;
-        }
-    }
-
-    void hit() {
-        switch (type) {
-            case BrickType::HardPurple:
-            case BrickType::HardBrown:
-                if(!damaged) {
-                    damaged = true;
-                    onDamaged.invoke();
-                    return;
-                }
-                break;
-        }
-
-        isDestroyed = true;
-    }
-
-private:
-    Rect bounds;
-    int gridX, gridY;
-    BrickType type;
-    bool isDestroyed;
-    bool damaged;
-};
 
 class LevelSystem : public ISceneComponent {
 public:
@@ -132,7 +37,13 @@ public:
 
         dynamicBricks.clear();
         allBricks.clear();
-        // TODO: clear array?
+        destroyableBricks.clear();
+
+        for (auto& column : staticBricks) {
+            for (auto& brickPtr : column) {
+                brickPtr = nullptr;
+            }
+        }
 
         for (auto& b : json["bricks"]) {
             int x = b["x"].get<int>();
@@ -146,7 +57,7 @@ public:
     }
 
     void onUpdate() override {
-        if (allBricks.empty()) {
+        if (destroyableBricks.empty()) {
             currentLevel = (currentLevel + 1) % TOTAL_LEVELS;
             createLevel(currentLevel);
         }
@@ -163,6 +74,23 @@ public:
 
     Rect getLevelBounds() { return levelBounds; }
     std::list<Brick> &getBricks() { return allBricks; }
+
+    void explode(int gridX, int gridY) {
+        int x = gridX;
+        int y = gridY;
+
+        if (Brick* right = GetBrick(x + 1, y))
+            right->hit();
+
+        if (Brick* left = GetBrick(x - 1, y))
+            left->hit();
+
+        if (Brick* top = GetBrick(x, y + 1))
+            top->hit();
+
+        if (Brick* bottom = GetBrick(x, y - 1))
+            bottom->hit();
+    }
 
     Brick* checkBrickCollision(const Rect& bounds) {
         int minX = static_cast<int>(bounds.x / Brick::BRICK_WIDTH);
@@ -203,7 +131,12 @@ public:
         if(!isBrickInMap(gridX, gridY))
             return nullptr;
 
-        // get dynamic bricks
+        for (Brick* dyn : dynamicBricks) {
+            if (dyn->getGridX() == gridX &&
+                dyn->getGridY() == gridY) {
+                return dyn;
+            }
+        }
 
         return staticBricks[gridX][gridY];
     }
@@ -217,13 +150,13 @@ private:
 
     std::list<Brick> allBricks;
     std::list<Brick*> dynamicBricks;
+    std::list<Brick*> destroyableBricks;
     std::array<std::array<Brick*, GRID_HEIGHT>, GRID_WIDTH> staticBricks{};
     AppContext* appContext;
     Rect levelBounds;
     int currentLevel = 1;
 
     void removeBrick(const Brick &brickRef) {
-
         // Remove from static grid if present
         if (!brickRef.getIsDynamic()) {
             int gx = brickRef.getGridX();
@@ -239,7 +172,13 @@ private:
             dynamicBricks.erase(dynIt, dynamicBricks.end());
         }
 
-        // Finally erase from master list
+        if(!brickRef.getIsStatic())
+        {
+            auto dynIt = std::remove_if(destroyableBricks.begin(), destroyableBricks.end(),
+                                        [&](Brick* b) { return b == &brickRef; });
+            destroyableBricks.erase(dynIt, destroyableBricks.end());
+        }
+
         auto target = std::find_if(allBricks.begin(), allBricks.end(),
                                    [&](const Brick &b) { return &b == &brickRef; });
         if (target != allBricks.end()) {
@@ -251,15 +190,23 @@ private:
         allBricks.emplace_back(gridX, gridY, type);
 
         auto brick = &allBricks.back();
-        if(brick->getIsDynamic())
-        {
+        if(brick->getIsDynamic()) {
             dynamicBricks.push_back(brick);
         } else {
             staticBricks[gridX][gridY] = brick;
         }
 
+        if(!brick->getIsStatic())
+        {
+            destroyableBricks.push_back(brick);
+        }
+
         brick->onDamaged.addListener([this]() {
             onDamageBrick.invoke();
+        });
+
+        brick->onExplode.addListener([this](Brick* b) {
+            explode(b->getGridX(), b->getGridY());
         });
     }
 };
