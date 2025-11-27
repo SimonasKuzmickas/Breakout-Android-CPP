@@ -35,7 +35,7 @@ public:
             laser.bounds.y += LASER_SPEED * GameTime::deltaTime();
 
             if (Brick *hit = levelSystem->checkBrickCollision(laser.bounds)) {
-                levelSystem->removeBrick(*hit); // TODO: hit
+                hit->destroy();
                 removeLaser(laser);
             } else if (!laser.bounds.overlaps(levelSystem->getLevelBounds())) {
                 removeLaser(laser);

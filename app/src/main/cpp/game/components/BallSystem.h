@@ -60,12 +60,12 @@ public:
                 case BallsType::Normal:
                     // --- MOVE X ---
                     ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (handleAxisNormalCollision(ball, ball.bounds.x, ball.velocity.x))
+                    if (handleNormalCollision(ball, ball.bounds.x, ball.velocity.x))
                         continue;  // brick hit, done with this ball
 
                     // --- MOVE Y ---
                     ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (handleAxisNormalCollision(ball, ball.bounds.y, ball.velocity.y))
+                    if (handleNormalCollision(ball, ball.bounds.y, ball.velocity.y))
                         continue;
 
                     break;
@@ -76,19 +76,19 @@ public:
                     ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
 
                     if (Brick *hit = levelSystem->checkBrickCollision(ball.bounds)) {
-                        levelSystem->removeBrick(*hit); // TODO: hit
+                        hit->destroy();
                     }
                     break;
 
                 case BallsType::Explode:
                     // --- MOVE X ---
                     ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (handleAxisExplodeCollision(ball, ball.bounds.x, ball.velocity.x))
+                    if (handleExplosion(ball, ball.bounds.x, ball.velocity.x))
                         continue;
 
                     // --- MOVE Y ---
                     ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (handleAxisExplodeCollision(ball, ball.bounds.y, ball.velocity.y))
+                    if (handleExplosion(ball, ball.bounds.y, ball.velocity.y))
                         continue;
 
                     break;
@@ -213,20 +213,20 @@ private:
         return {vx, vy};
     }
 
-    bool handleAxisNormalCollision(Ball &ball, float &axisPos, float &axisVel) {
+    bool handleNormalCollision(Ball &ball, float &axisPos, float &axisVel) {
         if (Brick *hit = levelSystem->checkBrickCollision(ball.bounds)) {
             axisPos -= axisVel * GameTime::deltaTime();
             axisVel = -axisVel;
 
             ball.applySpeedMultiplier(SPEED_HITGROWTH);
-            levelSystem->removeBrick(*hit); // TODO: hit\
+            hit->destroy();
 
             return true;
         }
         return false;
     }
 
-    bool handleAxisExplodeCollision(Ball &ball, float &axisPos, float &axisVel) {
+    bool handleExplosion(Ball &ball, float &axisPos, float &axisVel) {
         if (Brick *hit = levelSystem->checkBrickCollision(ball.bounds)) {
             onExplosion.invoke();
 
@@ -238,24 +238,20 @@ private:
             int x = hit->getGridX();
             int y = hit->getGridY();
 
-            if (Brick* right = levelSystem->GetBrick(x + 1, y)) {
-                levelSystem->removeBrick(*right); // TODO: hit
-            }
+            if (Brick* right = levelSystem->GetBrick(x + 1, y))
+                right->destroy();
 
-            if (Brick* left = levelSystem->GetBrick(x + 1, y)) {
-                levelSystem->removeBrick(*left); // TODO: hit
-            }
+            if (Brick* left = levelSystem->GetBrick(x + 1, y))
+                left->destroy();
 
-            if (Brick* top = levelSystem->GetBrick(x, y + 1)) {
-                levelSystem->removeBrick(*top); // TODO: hit
-            }
+            if (Brick* top = levelSystem->GetBrick(x, y + 1))
+                top->destroy();
 
-            if (Brick* bottom = levelSystem->GetBrick(x, y - 1)) {
-                levelSystem->removeBrick(*bottom); // TODO: hit
-            }
+            if (Brick* bottom = levelSystem->GetBrick(x, y - 1))
+                bottom->destroy();
 
             ball.applySpeedMultiplier(SPEED_HITGROWTH);
-            levelSystem->removeBrick(*hit); // hit
+            hit->destroy();
 
             return true;
         }

@@ -19,17 +19,29 @@ public:
             : bounds{gridX * BRICK_WIDTH, gridY * BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT},
             type(type),
             gridX(gridX),
-            gridY(gridY){}
+            gridY(gridY),
+            isDestroyed(false){}
 
     const Rect &getBounds() const { return bounds; }
     int getType() const { return type; }
-    int getGridX() { return gridX ; }
-    int getGridY() { return gridY ; }
+    int getGridX() { return gridX; }
+    int getGridY() { return gridY; }
+    bool getIsDestroyed() { return isDestroyed; }
+
+    void update()
+    {
+
+    }
+
+    void destroy() {
+        isDestroyed = true;
+    }
 
 private:
     Rect bounds;
     int gridX, gridY;
     int type;
+    bool isDestroyed;
 };
 
 class LevelSystem : public ISceneComponent {
@@ -72,28 +84,18 @@ public:
             currentLevel = (currentLevel + 1) % TOTAL_LEVELS;
             createLevel(currentLevel);
         }
+
+        for (auto &brick: bricks) {
+            brick.update();
+
+            if(brick.getIsDestroyed()) {
+                removeBrick(brick);
+            }
+        }
     }
 
     Rect getLevelBounds() { return levelBounds; }
     std::list<Brick> &getBricks() { return bricks; }
-
-    void removeBrick(const Brick &brickRef) {
-        auto target = std::find_if(bricks.begin(), bricks.end(),
-                                   [&](const Brick &b) { return &b == &brickRef; });
-
-        onDestroyBrick.invoke(brickRef);
-
-        if (target != bricks.end()) {
-            bricksMap[target->getGridX()][target->getGridY()] = nullptr;
-            bricks.erase(target);
-        }
-    }
-
-    void createBrick(int gridX, int gridY, int type) {
-        bricks.emplace_back(gridX, gridY, type);
-
-        bricksMap[gridX][gridY] = &bricks.back();
-    }
 
     Brick* checkBrickCollision(const Rect& bounds) {
         int minX = static_cast<int>(bounds.x / Brick::BRICK_WIDTH);
@@ -140,6 +142,24 @@ private:
     std::array<std::array<Brick*, GRID_HEIGHT>, GRID_WIDTH> bricksMap{};
     AppContext* appContext;
     int currentLevel = 1;
+
+    void removeBrick(const Brick &brickRef) {
+        auto target = std::find_if(bricks.begin(), bricks.end(),
+                                   [&](const Brick &b) { return &b == &brickRef; });
+
+        onDestroyBrick.invoke(brickRef);
+
+        if (target != bricks.end()) {
+            bricksMap[target->getGridX()][target->getGridY()] = nullptr;
+            bricks.erase(target);
+        }
+    }
+
+    void createBrick(int gridX, int gridY, int type) {
+        bricks.emplace_back(gridX, gridY, type);
+
+        bricksMap[gridX][gridY] = &bricks.back();
+    }
 };
 
 }
