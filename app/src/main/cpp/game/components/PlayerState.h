@@ -39,8 +39,8 @@ public:
         score = std::max(0, score + amount);
     }
 
-    int getScore() const { return score; }
-    int getLives() const { return lives; }
+    int getScore() { return score; }
+    int getLives() { return lives; }
 
 private:
     std::shared_ptr<LevelSystem> levelSystem;

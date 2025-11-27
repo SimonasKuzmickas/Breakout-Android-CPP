@@ -65,9 +65,6 @@ public:
         }
     }
 
-    void onDestroy() override {
-    }
-
     void onUpdate() override {
         for (auto &powerup: powerUps) {
             powerup.bounds.y -= 5;
@@ -75,6 +72,8 @@ public:
             if (paddle->getBounds().overlaps(powerup.bounds)) {
                 ApplyEffect(powerup.powerUpType);
                 onPickup.invoke();
+                removePowerUp(powerup);
+            } else if (!levelSystem->getLevelBounds().overlaps(powerup.bounds)) {
                 removePowerUp(powerup);
             }
         }

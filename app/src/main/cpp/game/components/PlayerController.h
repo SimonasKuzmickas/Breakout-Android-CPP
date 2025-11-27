@@ -20,18 +20,14 @@ public:
         PointerUp = 6
     };
 
-    explicit PlayerController(AppContext* context)
-    {
+    PlayerController(AppContext* context) {
         int width = ANativeWindow_getWidth(context->window);
         int height = ANativeWindow_getHeight(context->window);
-
-        isMoving = false;
         screenBounds = Rect(0, 0, (float)width, (float)height);
     }
 
     void onAwake() override {
         g_playerController = this;
-
         paddle = getComponent<Paddle>();
         position = Vector2(0, 0);
         isMoving = false;
@@ -47,17 +43,13 @@ public:
             return;
         }
 
-        float ratio = screenBounds.w / 1920;
-
-        float center = paddle->getBounds().center().x * ratio;
+        auto paddleBounds = paddle->getBounds();
+        float ratio = screenBounds.w / REFERENCE_WIDTH;
+        float center = paddleBounds.center().x * ratio;
         float offset = position.x - center;
 
-        if(std::abs(offset) > paddle->getBounds().w * 0.25f) {
-            if (offset < 0.0f) {
-                paddle->move(Paddle::Direction::Left);
-            } else if (offset > 0.0f) {
-                paddle->move(Paddle::Direction::Right);
-            }
+        if (std::abs(offset) > paddleBounds.w * MOVE_THRESHOLD) {
+            paddle->move(offset < 0.0f ? Paddle::Direction::Left : Paddle::Direction::Right);
         } else {
             paddle->move(Paddle::Direction::None);
         }
@@ -95,9 +87,12 @@ public:
     }
 
 private:
+    static constexpr float REFERENCE_WIDTH = 1920.0f;
+    static constexpr float MOVE_THRESHOLD  = 0.25f;
+
     Rect screenBounds;
     Vector2 position;
-    bool isMoving;
+    bool isMoving = false;
     int activePointer = -1;
     std::shared_ptr<Paddle> paddle;
 };
