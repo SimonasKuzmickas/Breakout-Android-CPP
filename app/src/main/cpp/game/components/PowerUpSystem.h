@@ -108,7 +108,7 @@ public:
                 break;
 
             case PowerUp::PowerUpType::StrongBall:
-                ballSystem->setBallType(BallSystem::BallsType::Strong);
+                ballSystem->setBallType(BallSystem::BallsType::Piercing);
                 break;
 
             case PowerUp::PowerUpType::ExplodeBall:

@@ -22,7 +22,7 @@ struct Ball {
 
 class BallSystem : public ISceneComponent {
 public:
-    enum class BallsType { Normal, Strong, Explode };
+    enum class BallsType { Normal, Piercing, Explode };
 
     Event<> onHitWall;
     Event<> onExplosion;
@@ -74,53 +74,36 @@ public:
                     // --- MOVE X ---
                     ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
                     if (Brick* brick = handleCollision(ball, ball.bounds.x, ball.velocity.x)) {
-                        levelSystem->explode(brick->getGridX(), brick->getGridY());
+                        if(brick->getIsDestructible()) {
+                            levelSystem->explode(brick->getGridX(), brick->getGridY());
+                        }
                         continue;
                     }
 
                     // --- MOVE Y ---
                     ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
                     if (Brick* brick = handleCollision(ball, ball.bounds.y, ball.velocity.y)) {
-                        levelSystem->explode(brick->getGridX(), brick->getGridY());
+                        if(brick->getIsDestructible()) {
+                            levelSystem->explode(brick->getGridX(), brick->getGridY());
+                        }
                         continue;
                     }
                     break;
 
-                case BallsType::Strong:
+                case BallsType::Piercing:
                     // --- MOVE X ---
                     ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (Brick* brick = levelSystem->checkBrickCollision(ball.bounds)) {
-                        if (brick->getIsDestructible()) {
-                            brick->hit(); // destroyable → take damage
-                        } else {
-                            // bounce on X
-                            auto brickBounds = brick->getBounds();
-                            if (ball.velocity.x > 0)
-                                ball.bounds.x = brickBounds.x - ball.bounds.w;
-                            else
-                                ball.bounds.x = brickBounds.x + brickBounds.w;
-
-                            ball.velocity.x = -ball.velocity.x;
-                        }
-                    }
+                    handlePiercingCollision(ball,
+                                          levelSystem->checkBrickCollision(ball.bounds),
+                                          ball.bounds.x, ball.velocity.x,
+                                          true);
 
                     // --- MOVE Y ---
                     ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (Brick* brick = levelSystem->checkBrickCollision(ball.bounds)) {
-                        if (brick->getIsDestructible()) {
-                            brick->hit(); // destroyable → take damage
-                        } else {
-                            // bounce on Y
-                            auto brickBounds = brick->getBounds();
-                            if (ball.velocity.y > 0)
-                                ball.bounds.y = brickBounds.y - ball.bounds.h;
-                            else
-                                ball.bounds.y = brickBounds.y + brickBounds.h;
-
-                            ball.velocity.y = -ball.velocity.y;
-                        }
-                    }
-                    break;
+                    handlePiercingCollision(ball,
+                                          levelSystem->checkBrickCollision(ball.bounds),
+                                          ball.bounds.y, ball.velocity.y,
+                                          false);
 
             }
 
@@ -267,6 +250,30 @@ private:
         }
 
         return nullptr;
+    }
+
+    void handlePiercingCollision(Ball& ball, Brick* brick, float& axisPos, float& axisVel, bool isXAxis) {
+        if (!brick) return;
+
+        if (brick->getIsDestructible()) {
+            brick->hit();
+        } else {
+            auto brickBounds = brick->getBounds();
+
+            if (isXAxis) {
+                if (axisVel > 0)
+                    axisPos = brickBounds.x - ball.bounds.w;
+                else
+                    axisPos = brickBounds.x + brickBounds.w;
+            } else {
+                if (axisVel > 0)
+                    axisPos = brickBounds.y - ball.bounds.h;
+                else
+                    axisPos = brickBounds.y + brickBounds.h;
+            }
+
+            axisVel = -axisVel;
+        }
     }
 };
 
