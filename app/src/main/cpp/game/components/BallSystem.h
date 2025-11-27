@@ -128,11 +128,14 @@ public:
 
             // ---- PADDLE COLLISION ----
             if (ball.velocity.y < 0) {
-                Rect paddleBounds = paddle->getBounds();
+                auto paddleBounds = paddle->getBounds();
                 if (paddle && ball.bounds.overlaps(paddleBounds)) {
                     float normalized = ((ball.bounds.x + ball.bounds.w * 0.5f) -
                                         (paddleBounds.x + paddleBounds.w * 0.5f))
                                        / (paddleBounds.w * 0.5f);
+
+                    float edgeFactor = 1.5f;
+                    normalized *= edgeFactor;
 
                     float speed = std::sqrt(ball.velocity.x * ball.velocity.x +
                                             ball.velocity.y * ball.velocity.y);
