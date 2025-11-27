@@ -43,11 +43,8 @@ public:
         globalSpeedMultiplier = 1.0f;
         ballsType = BallsType::Normal;
 
-        std::srand(static_cast<unsigned>(std::time(nullptr)));
-        float vx = static_cast<float>((std::rand() % 200) - 100) * 6.0f;
-        float vy = static_cast<float>((std::rand() % 50) + 50) * 6.0f;
+        createBall(WORLD_WIDTH * 0.5f, START_Y , randomBallStartingVelocity(SPEED_START));
 
-        createBall(WORLD_WIDTH * 0.5f, START_Y , Vector2(vx, vy));
         paddle->start();
     }
 
@@ -98,7 +95,7 @@ public:
             }
 
             // ---- OUT OF BOUNDS
-            if (!ball.bounds.overlaps(levelSystem->getLevelBounds())) {
+            if (ball.bounds.y < 0) {
                 removeBall(ball);
                 if (balls.empty()) {
                     onLost.invoke();
@@ -186,6 +183,7 @@ public:
     }
 
 private:
+    static constexpr float SPEED_START = 600.0f;
     static constexpr float SPEED_GROWTH = 0.03f;
     static constexpr float SPEED_HITGROWTH = 1.01f;
     static constexpr float WORLD_WIDTH = 1920.0f;
@@ -197,6 +195,20 @@ private:
 
     float globalSpeedMultiplier;
     BallsType ballsType;
+
+    Vector2 randomBallStartingVelocity(float speed) {
+        std::srand(static_cast<unsigned>(std::time(nullptr)));
+
+        float minAngle = M_PI / 4.0f;       // 45°
+        float maxAngle = 3.0f * M_PI / 4.0f; // 135°
+        float angle = minAngle + (static_cast<float>(std::rand()) / RAND_MAX) * (maxAngle - minAngle);
+
+        // Build vector directly from angle
+        float vx = speed * std::cos(angle);
+        float vy = speed * std::sin(angle);
+
+        return {vx, vy};
+    }
 
     bool handleAxisNormalCollision(Ball &ball, float &axisPos, float &axisVel) {
         if (Brick *hit = levelSystem->checkBrickCollision(ball.bounds)) {
