@@ -76,19 +76,19 @@ public:
                     ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
 
                     if (Brick *hit = levelSystem->checkBrickCollision(ball.bounds)) {
-                        levelSystem->removeBrick(*hit);
+                        levelSystem->removeBrick(*hit); // TODO: hit
                     }
                     break;
 
                 case BallsType::Explode:
                     // --- MOVE X ---
                     ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (handleAxisFireCollision(ball, ball.bounds.x, ball.velocity.x))
+                    if (handleAxisExplodeCollision(ball, ball.bounds.x, ball.velocity.x))
                         continue;
 
                     // --- MOVE Y ---
                     ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (handleAxisFireCollision(ball, ball.bounds.y, ball.velocity.y))
+                    if (handleAxisExplodeCollision(ball, ball.bounds.y, ball.velocity.y))
                         continue;
 
                     break;
@@ -217,14 +217,16 @@ private:
         if (Brick *hit = levelSystem->checkBrickCollision(ball.bounds)) {
             axisPos -= axisVel * GameTime::deltaTime();
             axisVel = -axisVel;
+
             ball.applySpeedMultiplier(SPEED_HITGROWTH);
-            levelSystem->removeBrick(*hit);
+            levelSystem->removeBrick(*hit); // TODO: hit\
+
             return true;
         }
         return false;
     }
 
-    bool handleAxisFireCollision(Ball &ball, float &axisPos, float &axisVel) {
+    bool handleAxisExplodeCollision(Ball &ball, float &axisPos, float &axisVel) {
         if (Brick *hit = levelSystem->checkBrickCollision(ball.bounds)) {
             onExplosion.invoke();
 
@@ -232,25 +234,28 @@ private:
 
             axisPos -= axisVel * GameTime::deltaTime();
             axisVel = -axisVel;
+
+            int x = hit->getGridX();
+            int y = hit->getGridY();
+
+            if (Brick* right = levelSystem->GetBrick(x + 1, y)) {
+                levelSystem->removeBrick(*right); // TODO: hit
+            }
+
+            if (Brick* left = levelSystem->GetBrick(x + 1, y)) {
+                levelSystem->removeBrick(*left); // TODO: hit
+            }
+
+            if (Brick* top = levelSystem->GetBrick(x, y + 1)) {
+                levelSystem->removeBrick(*top); // TODO: hit
+            }
+
+            if (Brick* bottom = levelSystem->GetBrick(x, y - 1)) {
+                levelSystem->removeBrick(*bottom); // TODO: hit
+            }
+
             ball.applySpeedMultiplier(SPEED_HITGROWTH);
-            levelSystem->removeBrick(*hit);
-
-            auto explosionBounds = Rect(brickBounds.x - 50, brickBounds.y - 50,
-                                        brickBounds.w + 100, brickBounds.h + 100);
-
-            auto &bricks = levelSystem->getBricks();
-            std::vector<int> toRemove;
-
-            for (int i = 0; i < static_cast<int>(bricks.size()); ++i) {
-                if (explosionBounds.overlaps(bricks[i].getBounds())) {
-                    toRemove.push_back(i);
-                }
-            }
-
-            for (int i = static_cast<int>(toRemove.size()) - 1; i >= 0; --i) {
-                int idx = toRemove[i];
-                levelSystem->removeBrick(bricks[idx]); // or removeBrickByIndex(idx)
-            }
+            levelSystem->removeBrick(*hit); // hit
 
             return true;
         }
