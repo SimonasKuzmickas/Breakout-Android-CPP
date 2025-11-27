@@ -62,11 +62,11 @@ public:
 
         auto levelSystem = getComponent<LevelSystem>();
         if (levelSystem) {
-            levelSystem->onDestroyBrick.addListener([this](const Brick &brick) {
+            levelSystem->onBrickDestroy.addListener([this](const Brick* brick) {
                 soundBrick->play();
             });
 
-            levelSystem->onDamageBrick.addListener([this]() {
+            levelSystem->onBrickDamage.addListener([this]() {
                 soundBrick->play();
             });
         }

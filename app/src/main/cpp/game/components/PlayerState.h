@@ -14,7 +14,7 @@ public:
         ballSystem = getComponent<BallSystem>();
 
         if (levelSystem) {
-            levelSystem->onDestroyBrick.addListener([this](const Brick& brick) {
+            levelSystem->onBrickDestroy.addListener([this](const Brick* brick) {
                 increaseScore(BRICK_SCORE_VALUE);
             });
         }

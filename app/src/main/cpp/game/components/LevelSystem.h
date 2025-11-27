@@ -4,7 +4,7 @@
 #include "../scene/ISceneComponent.h"
 #include "../thirdparty/json.hpp"
 #include "../helpers/AssetLoader.h"
-#include "Brick.h"
+#include "bricks/Brick.h"
 #include <list>
 
 using json = nlohmann::json;
@@ -13,8 +13,8 @@ namespace Breakout {
 
 class LevelSystem : public ISceneComponent {
 public:
-    Event<Brick> onDestroyBrick;
-    Event<> onDamageBrick;
+    Event<Brick*> onBrickDestroy;
+    Event<> onBrickDamage;
     Event<> onLevelStart;
 
     LevelSystem(AppContext* context)
@@ -66,7 +66,7 @@ public:
             brick.update();
 
             if(brick.getIsDestroyed()) {
-                onDestroyBrick.invoke(brick);
+                onBrickDestroy.invoke(&brick);
                 removeBrick(brick);
             }
         }
@@ -170,8 +170,7 @@ private:
             }
         }
 
-        if(brickRef.getIsDestructible())
-        {
+        if(brickRef.getIsDestructible()) {
             auto dynIt = std::remove_if(destroyableBricks.begin(), destroyableBricks.end(),
                                         [&](Brick* b) { return b == &brickRef; });
             destroyableBricks.erase(dynIt, destroyableBricks.end());
@@ -186,7 +185,7 @@ private:
 
     void createBrick(int gridX, int gridY, Brick::BrickType type) {
         allBricks.emplace_back(gridX, gridY, type);
-
+         TODO:
         auto brick = &allBricks.back();
         if(brick->getIsDestructible()) {
             destroyableBricks.push_back(brick);
@@ -198,8 +197,8 @@ private:
             staticBricks[gridX][gridY] = brick;
         }
 
-        brick->onDamaged.addListener([this]() {
-            onDamageBrick.invoke();
+        brick->onDamage.addListener([this]() {
+            onBrickDamage.invoke();
         });
 
         brick->onExplode.addListener([this](Brick* b) {

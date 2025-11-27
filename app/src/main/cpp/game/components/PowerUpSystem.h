@@ -49,10 +49,10 @@ public:
         playerState = getComponent<PlayerState>();
 
         if (levelSystem) {
-            levelSystem->onDestroyBrick.addListener([this](const Brick &brick) {
+            levelSystem->onBrickDestroy.addListener([this](const Brick* brick) {
                 int rnd = std::rand() % 100;
                 if (rnd < DROP_CHANCE && powerUps.size() < MAX_ACTIVE_POWERUPS) {
-                    createPowerUp(brick.getBounds().x + 10, brick.getBounds().y + 5,
+                    createPowerUp(brick->getBounds().x + 10, brick->getBounds().y + 5,
                                   getRandomPowerUpType());
                 }
             });

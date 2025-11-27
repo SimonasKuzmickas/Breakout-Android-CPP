@@ -203,7 +203,7 @@ private:
     static constexpr float SPEED_GROWTH = 0.03f;
     static constexpr float SPEED_HITGROWTH = 1.01f;
     static constexpr float WORLD_WIDTH = 1920.0f;
-    static constexpr float START_Y = 200.0f;
+    static constexpr float START_Y = 10.0f;
 
     std::vector<Ball> balls;
     std::shared_ptr<Paddle> paddle;
