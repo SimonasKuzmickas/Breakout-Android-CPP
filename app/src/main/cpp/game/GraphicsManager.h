@@ -21,11 +21,6 @@ public:
         laserShooter = getComponent<LaserShooter>();
         playerState = getComponent<PlayerState>();
 
-        for (int i = 1; i <= 3; ++i) {
-            std::string filename = "paddle" + std::to_string(i) + ".png";
-            resourcePaddles[i - 1] = loadImage(filename.c_str());
-        }
-
         resourceBackground = loadImage("bg_space.png");
         resourceBrick1 = loadImage("brick1.png");
         resourcePaddleLeft = loadImage("tex_paddleleft.png");
@@ -36,6 +31,7 @@ public:
         resourceNumbers = loadImage("tex_numbers.png");
         resourceBalls = loadImage("tex_balls.png");
         resourcePowerUps = loadImage("tex_powerups.png");
+        resourcePaddle = loadImage("tex_paddle.png");
     }
 
     void onDestroy() override {
@@ -92,7 +88,6 @@ private:
     std::shared_ptr<PowerUpSystem> powerUpManager;
     std::shared_ptr<LaserShooter> laserShooter;
     std::shared_ptr<PlayerState> playerState;
-    std::array<GLuint, 3> resourcePaddles;
 
     GLuint resourceShooterLeft;
     GLuint resourceShooterRight;
@@ -104,6 +99,7 @@ private:
     GLuint resourceNumbers;
     GLuint resourceBalls;
     GLuint resourcePowerUps;
+    GLuint resourcePaddle;
 
     float paddleAnimation = 0;
 
@@ -181,8 +177,9 @@ protected:
         auto bounds = paddle->getBounds();
         float cornerWidth = 50.0f;
 
-        drawImage(resourcePaddles[(int) paddleAnimation], bounds.x + cornerWidth, bounds.y,
-                  bounds.w - cornerWidth * 2, bounds.h);
+        drawImageAnim(resourcePaddle, bounds.x + cornerWidth, bounds.y,
+                  bounds.w - cornerWidth * 2, bounds.h,
+                      (int) paddleAnimation, 150, 66, 450, 66);
         drawImage(resourcePaddleLeft, bounds.x, bounds.y, cornerWidth, bounds.h);
         drawImage(resourcePaddleRight, bounds.x + bounds.w - cornerWidth, bounds.y, cornerWidth,
                   bounds.h);
