@@ -50,7 +50,7 @@ private:
     int lives = INITIAL_LIVES;
 
     static constexpr int INITIAL_LIVES = 3;
-    static constexpr int BRICK_SCORE_VALUE = 50;
+    static constexpr int BRICK_SCORE_VALUE = 5;
 };
 
 }

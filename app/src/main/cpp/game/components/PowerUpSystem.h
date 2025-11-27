@@ -11,6 +11,9 @@
 namespace Breakout {
 
 struct PowerUp {
+    static constexpr float WIDTH  = 120.0f;
+    static constexpr float HEIGHT = 40.0f;
+
     enum class PowerUpType {
         None,
         MultiBall,
@@ -20,7 +23,7 @@ struct PowerUp {
         ShrinkPaddle,
         Laser,
         StrongBall,
-        FireBall,
+        ExplodeBall,
         ExtraLife,
         Score50,
         Score100,
@@ -29,7 +32,7 @@ struct PowerUp {
     };
 
     PowerUp(float x, float y, PowerUpType type)
-            : bounds{x, y, 120, 40}, powerUpType{type} {}
+            : bounds{x, y,  WIDTH, HEIGHT}, powerUpType{type} {}
 
     Rect bounds;
     PowerUpType powerUpType;
@@ -49,7 +52,7 @@ public:
         if (levelSystem) {
             levelSystem->onDestroyBrick.addListener([this](const Brick &brick) {
                 int rnd = std::rand() % 100;
-                if (rnd < 50 && powerUps.size() < 5) {
+                if (rnd < DROP_CHANCE && powerUps.size() < MAX_ACTIVE_POWERUPS) {
                     createPowerUp(brick.getBounds().x + 10, brick.getBounds().y + 5,
                                   getRandomPowerUpType());
                 }
@@ -67,7 +70,7 @@ public:
 
     void onUpdate() override {
         for (auto &powerup: powerUps) {
-            powerup.bounds.y -= 5;
+            powerup.bounds.y -= POWERUP_SPEED * GameTime::deltaTime();
 
             if (paddle->getBounds().overlaps(powerup.bounds)) {
                 ApplyEffect(powerup.powerUpType);
@@ -100,10 +103,8 @@ public:
                 for (const auto &ball: ballSystem->getBalls()) {
                     auto v = ball.velocity;
 
-                    ballSystem->createBall(ball.bounds.x, ball.bounds.y, ball.bounds.w,
-                                           v.rotate(0.2f));
-                    ballSystem->createBall(ball.bounds.x, ball.bounds.y, ball.bounds.w,
-                                           v.rotate(-0.2f));
+                    ballSystem->createBall(ball.bounds.x, ball.bounds.y, v.rotate(0.2f));
+                    ballSystem->createBall(ball.bounds.x, ball.bounds.y, v.rotate(-0.2f));
                 }
                 break;
 
@@ -111,8 +112,8 @@ public:
                 ballSystem->setBallType(BallSystem::BallsType::Strong);
                 break;
 
-            case PowerUp::PowerUpType::FireBall:
-                ballSystem->setBallType(BallSystem::BallsType::Fire);
+            case PowerUp::PowerUpType::ExplodeBall:
+                ballSystem->setBallType(BallSystem::BallsType::Explode);
                 break;
 
             case PowerUp::PowerUpType::Laser:
@@ -155,19 +156,19 @@ public:
                 playerState->increaseLives(1);
                 break;
 
-
             default:
                 break;
         }
     }
 
-    const std::vector<PowerUp> &getPowerUps() {
-        return powerUps;
-    }
+    const std::vector<PowerUp> &getPowerUps() { return powerUps; }
 
 private:
-    std::vector<PowerUp> powerUps;
+    static constexpr float POWERUP_SPEED = 300.0f;
+    static constexpr int DROP_CHANCE = 50;
+    static constexpr int MAX_ACTIVE_POWERUPS = 5;
 
+    std::vector<PowerUp> powerUps;
     std::shared_ptr<LevelSystem> levelSystem;
     std::shared_ptr<BallSystem> ballSystem;
     std::shared_ptr<Paddle> paddle;
@@ -180,7 +181,7 @@ private:
             std::srand(static_cast<unsigned>(std::time(nullptr)));
             seeded = true;
         }
-        int r = std::rand() % 11; // 0..10
+        int r = std::rand() % 14;
         return static_cast<PowerUp::PowerUpType>(r);
     }
 };

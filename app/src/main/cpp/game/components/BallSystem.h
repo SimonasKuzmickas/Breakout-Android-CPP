@@ -7,20 +7,23 @@
 namespace Breakout {
 
 struct Ball {
+    static constexpr float BALL_SIZE = 30.0f;
+
     Rect bounds;
     Vector2 velocity;
 
-    Ball(float x, float y, float radius, const Vector2 &v)
-            : bounds{x, y, radius, radius}, velocity(v) {}
+    Ball(float x, float y, const Vector2 &v)
+            : bounds{x, y, BALL_SIZE, BALL_SIZE}, velocity(v) {}
+
+    void applySpeedMultiplier(float multiplier) {
+        velocity.x *= multiplier;
+        velocity.y *= multiplier;
+    }
 };
 
 class BallSystem : public ISceneComponent {
 public:
-    enum class BallsType {
-        Normal,
-        Strong,
-        Fire
-    };
+    enum class BallsType { Normal, Strong, Explode };
 
     Event<> onHitWall;
     Event<> onExplosion;
@@ -38,30 +41,21 @@ public:
 
     void start() {
         balls.clear();
-
-        globalSpeedMultiplier = 1;
+        globalSpeedMultiplier = 1.0f;
         ballsType = BallsType::Normal;
 
         std::srand(static_cast<unsigned>(std::time(nullptr)));
+        float vx = static_cast<float>((std::rand() % 200) - 100) * 6.0f;
+        float vy = static_cast<float>((std::rand() % 50) + 50) * 6.0f;
 
-        float vx = static_cast<float>((std::rand() % 200) - 100) / 10.0f; // -10..+10
-        float vy = static_cast<float>((std::rand() % 50) + 50) / 10.0f;  // -5..-10 (always upward)
-
-        createBall(1920 * 0.5f, 200, 30, Vector2(vx, vy));
+        createBall(WORLD_WIDTH * 0.5f, START_Y , Vector2(vx, vy));
         paddle->start();
     }
 
-    void onDestroy() override {
-        balls.clear();
-    }
-
     void onUpdate() override {
-        if (!levelSystem)
-            return;
+        if (!levelSystem) return;
 
-        globalSpeedMultiplier += SPEED_GROWTH;
-
-        auto &bricks = levelSystem->getBricks();
+        globalSpeedMultiplier += SPEED_GROWTH * GameTime::deltaTime();
         auto levelBounds = levelSystem->getLevelBounds();
 
         for (auto &ball: balls) {
@@ -69,12 +63,12 @@ public:
             switch (ballsType) {
                 case BallsType::Normal:
                     // --- MOVE X ---
-                    ball.bounds.x += ball.velocity.x * globalSpeedMultiplier;
+                    ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
                     if (handleAxisNormalCollision(ball, ball.bounds.x, ball.velocity.x))
                         continue;  // brick hit, done with this ball
 
                     // --- MOVE Y ---
-                    ball.bounds.y += ball.velocity.y * globalSpeedMultiplier;
+                    ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
                     if (handleAxisNormalCollision(ball, ball.bounds.y, ball.velocity.y))
                         continue;
 
@@ -82,22 +76,22 @@ public:
 
                 case BallsType::Strong:
                     // --- MOVE XY ---
-                    ball.bounds.x += ball.velocity.x * globalSpeedMultiplier;
-                    ball.bounds.y += ball.velocity.y * globalSpeedMultiplier;
+                    ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
+                    ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
 
                     if (Brick *hit = levelSystem->checkBrickCollision(ball.bounds)) {
                         levelSystem->removeBrick(*hit);
                     }
                     break;
 
-                case BallsType::Fire:
+                case BallsType::Explode:
                     // --- MOVE X ---
-                    ball.bounds.x += ball.velocity.x * globalSpeedMultiplier;
+                    ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
                     if (handleAxisFireCollision(ball, ball.bounds.x, ball.velocity.x))
-                        continue;  // brick hit, done with this ball
+                        continue;
 
                     // --- MOVE Y ---
-                    ball.bounds.y += ball.velocity.y * globalSpeedMultiplier;
+                    ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
                     if (handleAxisFireCollision(ball, ball.bounds.y, ball.velocity.y))
                         continue;
 
@@ -107,10 +101,8 @@ public:
             // ---- OUT OF BOUNDS
             if (!ball.bounds.overlaps(levelSystem->getLevelBounds())) {
                 removeBall(ball);
-
                 if (balls.empty()) {
                     onLost.invoke();
-
                     start();
                 }
             }
@@ -155,6 +147,7 @@ public:
 
                     ball.velocity.x = dirX * speed;
                     ball.velocity.y = dirY * speed;
+                    ball.applySpeedMultiplier(SPEED_HITGROWTH);
 
                     paddle->onHit.invoke();
                 }
@@ -162,8 +155,8 @@ public:
         }
     }
 
-    void createBall(float x, float y, float s, Vector2 v) {
-        balls.emplace_back(x, y, s, v);
+    void createBall(float x, float y, Vector2 v) {
+        balls.emplace_back(x, y, v);
     }
 
     void removeBall(const Ball &ballRef) {
@@ -194,6 +187,11 @@ public:
     }
 
 private:
+    static constexpr float SPEED_GROWTH = 0.03f;
+    static constexpr float SPEED_HITGROWTH = 1.01f;
+    static constexpr float WORLD_WIDTH = 1920.0f;
+    static constexpr float START_Y = 200.0f;
+
     std::vector<Ball> balls;
     std::shared_ptr<Paddle> paddle;
     std::shared_ptr<LevelSystem> levelSystem;
@@ -201,12 +199,11 @@ private:
     float globalSpeedMultiplier;
     BallsType ballsType;
 
-    static constexpr float SPEED_GROWTH = 0.0005f;
-
     bool handleAxisNormalCollision(Ball &ball, float &axisPos, float &axisVel) {
         if (Brick *hit = levelSystem->checkBrickCollision(ball.bounds)) {
-            axisPos -= axisVel;
+            axisPos -= axisVel * GameTime::deltaTime();
             axisVel = -axisVel;
+            ball.applySpeedMultiplier(SPEED_HITGROWTH);
             levelSystem->removeBrick(*hit);
             return true;
         }
@@ -219,8 +216,9 @@ private:
 
             auto brickBounds = hit->getBounds();
 
-            axisPos -= axisVel;
+            axisPos -= axisVel * GameTime::deltaTime();
             axisVel = -axisVel;
+            ball.applySpeedMultiplier(SPEED_HITGROWTH);
             levelSystem->removeBrick(*hit);
 
             auto explosionBounds = Rect(brickBounds.x - 50, brickBounds.y - 50,
