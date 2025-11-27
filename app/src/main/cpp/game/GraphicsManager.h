@@ -141,7 +141,7 @@ protected:
 
         int lives = playerState->getLives();
         for (int i = 0; i < lives; ++i) {
-            drawImage(resourceLife, 50 + i * (50 + 10), 1080 - 50 - 50, 50, 50);
+            drawImage(resourceLife, 50 + i * 90, 1080 - 50 - 90, 90, 90);
         }
     }
 
