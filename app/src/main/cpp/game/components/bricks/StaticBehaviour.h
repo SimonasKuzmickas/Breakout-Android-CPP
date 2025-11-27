@@ -10,6 +10,10 @@ public:
     void start(IBrick& brick) override {
         brick.setDestructible(false);
     }
+
+    void hit(IBrick& brick) override {
+        brick.deflect();
+    }
 };
 
 }

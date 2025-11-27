@@ -15,6 +15,7 @@ class LevelSystem : public ISceneComponent {
 public:
     Event<Brick*> onBrickDestroy;
     Event<> onBrickDamage;
+    Event<> onBrickDeflect;
     Event<> onBrickExplosion;
     Event<> onLevelStart;
 
@@ -206,6 +207,11 @@ private:
             explode(b->getGridX(), b->getGridY());
             onBrickExplosion.invoke();
         });
+
+        brick->onDeflect.addListener([this]() {
+            onBrickDeflect.invoke();
+        });
+
     }
 };
 

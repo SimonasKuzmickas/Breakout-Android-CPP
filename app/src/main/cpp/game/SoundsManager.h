@@ -15,7 +15,8 @@ public:
     Sound *soundPowerUp;
     Sound *soundExplosion;
     Sound *soundLaser;
-    Sound *lifeLost;
+    Sound *soundLifeLost;
+    Sound *soundDeflect;
 
     void onAwake() override {
         soundsAPI.initialize();
@@ -26,7 +27,8 @@ public:
         soundPowerUp = soundsAPI.loadSound("sfx_powerup");
         soundExplosion = soundsAPI.loadSound("sfx_explosion");
         soundLaser = soundsAPI.loadSound("sfx_laser");
-        lifeLost = soundsAPI.loadSound("sfx_lifelost");
+        soundLifeLost = soundsAPI.loadSound("sfx_lifelost");
+        soundDeflect = soundsAPI.loadSound("sfx_deflect");
 
         auto paddle = getComponent<Paddle>();
         if (paddle) {
@@ -48,7 +50,7 @@ public:
         });
 
         ballSystem->onLost.addListener([this]() {
-            lifeLost->play();
+            soundLifeLost->play();
         });
 
         auto powerUpManager = getComponent<PowerUpSystem>();
@@ -68,6 +70,10 @@ public:
 
             levelSystem->onBrickExplosion.addListener([this]() {
                 soundExplosion->play();
+            });
+
+            levelSystem->onBrickDeflect.addListener([this]() {
+                soundDeflect->play();
             });
         }
     }

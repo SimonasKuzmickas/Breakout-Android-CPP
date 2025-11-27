@@ -42,6 +42,9 @@ struct Brick : IBrick {
         isDamaged = true;
         onDamage.invoke();
     }
+    void deflect() override {
+        onDeflect.invoke();
+    }
     void setDestructible(bool state) {
         isDestructible = state;
     }
@@ -65,6 +68,7 @@ struct Brick : IBrick {
 
     Event<> onDamage;
     Event<Brick *> onExplode;
+    Event<> onDeflect;
 
 private:
     std::unique_ptr<IBrickBehavior> behavior;
