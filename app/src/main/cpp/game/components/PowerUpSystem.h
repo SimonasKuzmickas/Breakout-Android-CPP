@@ -57,7 +57,7 @@ public:
                 }
             });
 
-            levelSystem->onlevelStart.addListener([this]() {
+            levelSystem->onLevelStart.addListener([this]() {
                 powerUps.clear();
             });
 

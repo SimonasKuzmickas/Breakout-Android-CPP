@@ -31,7 +31,7 @@ public:
     void onAwake() override {
         paddle = getComponent<Paddle>();
         levelSystem = getComponent<LevelSystem>();
-        levelSystem->onlevelStart.addListener([this]() {
+        levelSystem->onLevelStart.addListener([this]() {
             start();
         });
 

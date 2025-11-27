@@ -24,7 +24,7 @@ public:
             lasers.clear();
         });
 
-        levelSystem->onlevelStart.addListener([this]() {
+        levelSystem->onLevelStart.addListener([this]() {
             setActive(false);
             lasers.clear();
         });

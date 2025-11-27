@@ -107,7 +107,7 @@ protected:
     void drawGame() {
         drawBackground();
 
-        graphicsAPI.setColor(0, 0, 0, 0.5f);
+        graphicsAPI.setColor(0, 0, 0, 0.4f);
         graphicsAPI.setOffset(20, -20);
         // draw shadows
 
