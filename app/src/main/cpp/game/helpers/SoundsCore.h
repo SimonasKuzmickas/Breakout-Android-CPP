@@ -20,9 +20,9 @@ struct Sound {
     }
 };
 
-class SoundsAPI : public oboe::AudioStreamCallback {
+class SoundsCore : public oboe::AudioStreamCallback {
 public:
-    SoundsAPI(AppContext *context) {
+    SoundsCore(AppContext *context) {
         appContext = context;
     }
 

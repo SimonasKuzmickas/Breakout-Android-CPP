@@ -1,6 +1,6 @@
 #pragma once
 
-#include "helpers/GraphicsAPI.h"
+#include "helpers/GraphicsCore.h"
 #include "components/Paddle.h"
 #include "components/BallSystem.h"
 #include "components/PowerUpSystem.h"
@@ -79,7 +79,7 @@ public:
     }
 
 protected:
-    GraphicsAPI graphicsAPI;
+    GraphicsCore graphicsAPI;
 
 private:
     std::shared_ptr<Paddle> paddle;

@@ -20,13 +20,15 @@ namespace Breakout {
         sceneManager.requestChange((int)Scenes::SceneId::Menu);
 
         while (appContext->running) {
-            GameTime::update();
+
 
             auto now = std::chrono::steady_clock::now();
             auto next = lastTick + std::chrono::duration<double>(deltaTimeTarget);
 
             if (now >= next) {
                 lastTick = now;
+
+                GameTime::update();
                 sceneManager.update();
             }
 

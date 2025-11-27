@@ -1,7 +1,7 @@
 #pragma once
 
 #include "scene/ISceneComponent.h"
-#include "helpers/SoundsAPI.h"
+#include "helpers/SoundsCore.h"
 
 namespace Breakout {
 
@@ -73,7 +73,7 @@ public:
     }
 
 private:
-    SoundsAPI soundsAPI;
+    SoundsCore soundsAPI;
 };
 
 }

@@ -35,10 +35,6 @@ public:
         });
     }
 
-    void onUpdate() override {}
-
-    void onDestroy() override {}
-
 private:
     AppContext *appContext;
 };

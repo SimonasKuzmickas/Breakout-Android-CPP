@@ -40,10 +40,6 @@ public:
         addComponent(playerState);
     }
 
-    void onUpdate() override {}
-
-    void onDestroy() override {}
-
 private:
     AppContext *appContext;
 };

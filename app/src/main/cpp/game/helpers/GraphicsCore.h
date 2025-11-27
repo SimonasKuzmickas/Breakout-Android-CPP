@@ -27,12 +27,12 @@ struct GraphicsContext {
     int height;
 };
 
-class GraphicsAPI {
+class GraphicsCore {
 public:
     const float VIRTUAL_WIDTH = 1920.0f;
     const float VIRTUAL_HEIGHT = 1080.0f;
 
-    GraphicsAPI(AppContext *context) {
+    GraphicsCore(AppContext *context) {
         appContext = context;
 
         initGraphics(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
@@ -284,7 +284,7 @@ private:
         eglQuerySurface(dpy, surf, EGL_WIDTH, &graphicsContext->width);
         eglQuerySurface(dpy, surf, EGL_HEIGHT, &graphicsContext->height);
 
-        // --- Letterbox viewport calculation ---
+        // --- Borders & viewport calculation ---
         float targetAspect = static_cast<float>((float) width) / float(height);
         float screenAspect =
                 static_cast<float>(graphicsContext->width) / graphicsContext->height;
@@ -311,9 +311,7 @@ private:
     }
 
     void initSquare() {
-        // Vertex data: position (x,y) + texture coordinates (u,v)
         GLfloat vertices[] = {
-                // x,    y,    u, v
                 -0.5f, -0.5f, 0.0f, 0.0f,  // bottom-left
                 0.5f, -0.5f, 1.0f, 0.0f,  // bottom-right
                 0.5f, 0.5f, 1.0f, 1.0f,  // top-right
