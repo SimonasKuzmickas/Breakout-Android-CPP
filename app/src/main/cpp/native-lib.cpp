@@ -9,15 +9,19 @@
 #include "game/scenes/MenuScene.h"
 #include "game/scenes/SceneId.h"
 
+
 namespace Breakout {
     void gameLoop(AppContext* appContext) {
-        const double deltaTimeTarget = 1.0 / 60.0;
+        int targetFrameRate = 60;
+        const double deltaTimeTarget = 1.0 / targetFrameRate;
         auto lastTick = std::chrono::steady_clock::now();
 
         auto sceneManager = Scenes::SceneManager(appContext);
         sceneManager.requestChange((int)Scenes::SceneId::Menu);
 
         while (appContext->running) {
+            GameTime::update();
+
             auto now = std::chrono::steady_clock::now();
             auto next = lastTick + std::chrono::duration<double>(deltaTimeTarget);
 

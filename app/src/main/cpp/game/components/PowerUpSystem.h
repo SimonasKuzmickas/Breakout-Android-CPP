@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../helpers/Math.h"
 #include "../helpers/Event.h"
 #include "../scene/ISceneComponent.h"
 #include "Paddle.h"

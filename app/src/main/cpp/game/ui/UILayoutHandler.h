@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../helpers/Math.h"
 #include "../helpers/AppContext.h"
 #include "../scene/ISceneComponent.h"
 

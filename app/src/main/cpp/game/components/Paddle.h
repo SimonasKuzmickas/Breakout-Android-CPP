@@ -1,7 +1,7 @@
 #pragma once
 
 #include <algorithm>
-#include "../helpers/Math.h"
+#include "../helpers/Rect.h"
 #include "../helpers/Event.h"
 #include "../scene/ISceneComponent.h"
 
@@ -35,8 +35,8 @@ public:
         bounds.x -= difference * 0.5f;
         bounds.w += difference;
 
-        if (bounds.w < 120) {
-            bounds.w = 120;
+        if (bounds.w < MIN_SIZE) {
+            bounds.w = MIN_SIZE;
         }
     }
 
@@ -57,6 +57,7 @@ public:
 
 private:
     static constexpr float WORLD_WIDTH = 1920.0f;
+    static constexpr float MIN_SIZE = 120.0f;
     static constexpr float RESIZE_SPEED = 18.0f;
     static constexpr float DEFAULT_SPEED = 1200.0f;
     inline static const Rect DEFAULT_BOUNDS{1920.0f / 2 - 250, 20, 300, 60};

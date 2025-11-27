@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../helpers/Math.h"
 #include "../scene/ISceneManager.h"
 #include "MenuScene.h"
 #include "SceneId.h"

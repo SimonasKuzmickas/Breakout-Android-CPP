@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../helpers/Math.h"
-
 namespace Breakout {
 
 // Global pointer to the active PlayerController instance
