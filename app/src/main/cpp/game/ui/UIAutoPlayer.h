@@ -8,12 +8,9 @@ namespace Breakout {
 class UIAutoPlayer : public ISceneComponent {
 public:
 
-    void onAwake() override {
-        paddle = getComponent<Paddle>();
-        ballSystem = getComponent<BallSystem>();
-    }
-
-    void onDestroy() override {}
+    UIAutoPlayer(std::shared_ptr<Paddle> paddle,
+                 std::shared_ptr<BallSystem> ballSystem)
+            : paddle(std::move(paddle)), ballSystem(std::move(ballSystem)) { }
 
     void onUpdate() override {
         auto closestPositionOpt = getClosestBall(*ballSystem, *paddle,

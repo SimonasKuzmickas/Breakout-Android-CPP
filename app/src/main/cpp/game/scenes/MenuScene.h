@@ -25,6 +25,7 @@ public:
         auto playerState  = std::make_shared<PlayerState>(levelSystem, ballSystem);
         auto laserShooter = std::make_shared<LaserShooter>(paddle, levelSystem, ballSystem);
         auto powerUpSystem= std::make_shared<PowerUpSystem>(levelSystem, paddle, laserShooter, ballSystem, playerState);
+        auto aiAutoPlayer=std:: make_shared<UIAutoPlayer>(paddle, ballSystem);
 
         addComponent(paddle);
         addComponent(levelSystem);
@@ -32,12 +33,11 @@ public:
         addComponent(playerState);
         addComponent(laserShooter);
         addComponent(powerUpSystem);
+        addComponent(aiAutoPlayer);
 
         // UI and audio systems
-        addComponent(std::make_shared<UIAutoPlayer>());
         addComponent(std::make_shared<SoundsManager>(appContext));
 
-        // Menu layout
         auto layout = std::make_shared<UILayoutMenu>(appContext);
         addComponent(layout);
 

@@ -30,7 +30,7 @@ public:
         auto playerState   = std::make_shared<PlayerState>(levelSystem, ballSystem);
         auto laserShooter  = std::make_shared<LaserShooter>(paddle, levelSystem, ballSystem);
         auto powerUpSystem = std::make_shared<PowerUpSystem>(levelSystem, paddle, laserShooter, ballSystem, playerState);
-
+        auto playerController = std::make_shared<PlayerController>(appContext, paddle);
 
         addComponent(levelSystem);
         addComponent(paddle);
@@ -38,8 +38,7 @@ public:
         addComponent(playerState);
         addComponent(laserShooter);
         addComponent(powerUpSystem);
-
-        addComponent(std::make_shared<PlayerController>(appContext));
+        addComponent(playerController);
 
         // fx and audio systems
         addComponent(std::make_shared<SoundsManager>(appContext));

@@ -92,6 +92,8 @@ public:
 
         if (Brick* bottom = GetBrick(x, y - 1))
             bottom->hit();
+
+        onBrickExplosion.invoke();
     }
 
     Brick* checkBrickCollision(const Rect& bounds) {

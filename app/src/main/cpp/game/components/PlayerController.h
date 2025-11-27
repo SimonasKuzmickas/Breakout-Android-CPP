@@ -18,7 +18,9 @@ public:
         PointerUp = 6
     };
 
-    PlayerController(AppContext* context) {
+    PlayerController(AppContext* context,
+                     std::shared_ptr<Paddle> paddle)
+            : paddle(std::move(paddle)){
         int width = ANativeWindow_getWidth(context->window);
         int height = ANativeWindow_getHeight(context->window);
         screenBounds = Rect(0, 0, (float)width, (float)height);
@@ -26,7 +28,6 @@ public:
 
     void onAwake() override {
         g_playerController = this;
-        paddle = getComponent<Paddle>();
         position = Vector2(0, 0);
         isMoving = false;
     }
