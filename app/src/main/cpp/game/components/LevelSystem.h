@@ -12,6 +12,16 @@ namespace Breakout {
 
 struct Brick {
 public:
+    enum class BrickType {
+        NormalOrange, // 0
+        HardPurple, // 1
+        HardBrown, // 2
+        DynamicBlue, // 3
+        DynamicGreen, // 4
+        ExplodingYellow, // 5
+        StaticGray // 6
+    };
+
     static constexpr float BRICK_WIDTH = 160.0f;
     static constexpr float BRICK_HEIGHT = 60.0f;
 
@@ -20,20 +30,70 @@ public:
             type(type),
             gridX(gridX),
             gridY(gridY),
-            isDestroyed(false){}
+            isDestroyed(false),
+            damaged(false){}
 
     const Rect &getBounds() const { return bounds; }
     int getType() const { return type; }
-    int getGridX() { return gridX; }
-    int getGridY() { return gridY; }
+    int getGridX() const { return gridX; }
+    int getGridY() const { return gridY; }
     bool getIsDestroyed() { return isDestroyed; }
-
-    void update()
-    {
-
+    bool getIsDynamic() const {
+        return type == (int)(BrickType::DynamicBlue) || type == static_cast<int>(BrickType::DynamicGreen);
+    }
+    bool getIsDamaged() const {
+        return damaged;
     }
 
-    void destroy() {
+    void update() {
+        switch (static_cast<BrickType>(type)) {
+            case BrickType::DynamicBlue: {
+                float amplitude = 80.0f;   // max offset in pixels
+                float speed     = 2.0f;    // oscillations per second
+
+                // Compute offset using sine wave
+                float t = GameTime::realtimeSinceStartup();
+                float offsetX = amplitude * std::sin(speed * t);
+
+                // Update bounds.x relative to grid position
+                bounds.x = gridX * BRICK_WIDTH + offsetX;
+                bounds.y = gridY * BRICK_HEIGHT;
+                break;
+            }
+
+            case BrickType::DynamicGreen: {
+                float amplitude = 40.0f;
+                float speed     = 1.5f;
+
+                float t = GameTime::realtimeSinceStartup();
+                float offsetY = amplitude * std::sin(speed * t);
+
+                bounds.x = gridX * BRICK_WIDTH;
+                bounds.y = gridY * BRICK_HEIGHT + offsetY;
+                break;
+            }
+
+            case BrickType::NormalOrange:
+            case BrickType::HardPurple:
+            case BrickType::HardBrown:
+            case BrickType::ExplodingYellow:
+            case BrickType::StaticGray:
+                // Static bricks don’t update
+                break;
+        }
+    }
+
+    void hit() {
+        switch (static_cast<BrickType>(type)) {
+            case BrickType::HardPurple:
+            case BrickType::HardBrown:
+                if(!damaged) {
+                    damaged = true;
+                    return;
+                }
+                break;
+        }
+
         isDestroyed = true;
     }
 
@@ -42,6 +102,7 @@ private:
     int gridX, gridY;
     int type;
     bool isDestroyed;
+    bool damaged;
 };
 
 class LevelSystem : public ISceneComponent {
@@ -67,7 +128,10 @@ public:
 
         auto json = json::parse(jsonText);
 
-        bricks.clear();
+        dynamicBricks.clear();
+        allBricks.clear();
+        // TODO: clear array?
+        // todo clear dynamic
 
         for (auto& b : json["bricks"]) {
             int x = b["x"].get<int>();
@@ -80,22 +144,23 @@ public:
     }
 
     void onUpdate() override {
-        if (bricks.empty()) {
+        if (allBricks.empty()) {
             currentLevel = (currentLevel + 1) % TOTAL_LEVELS;
             createLevel(currentLevel);
         }
 
-        for (auto &brick: bricks) {
+        for (auto &brick: allBricks) {
             brick.update();
 
             if(brick.getIsDestroyed()) {
+                onDestroyBrick.invoke(brick);
                 removeBrick(brick);
             }
         }
     }
 
     Rect getLevelBounds() { return levelBounds; }
-    std::list<Brick> &getBricks() { return bricks; }
+    std::list<Brick> &getBricks() { return allBricks; }
 
     Brick* checkBrickCollision(const Rect& bounds) {
         int minX = static_cast<int>(bounds.x / Brick::BRICK_WIDTH);
@@ -110,12 +175,21 @@ public:
 
         for (int y = minY; y <= maxY; ++y) {
             for (int x = minX; x <= maxX; ++x) {
-                Brick* brick = bricksMap[x][y];
+                Brick* brick = staticBricks[x][y];
                 if (brick && bounds.overlaps(brick->getBounds())) {
                     return brick;
                 }
             }
         }
+
+        for (Brick* b : dynamicBricks) {
+            if (!b->getIsDestroyed() &&
+                bounds.overlaps(b->getBounds())) {
+                return b;
+            }
+        }
+
+        // check dynamic bricks collisions
         return nullptr;
     }
 
@@ -127,7 +201,9 @@ public:
         if(!isBrickInMap(gridX, gridY))
             return nullptr;
 
-        return bricksMap[gridX][gridY];
+        // get dynamic bricks
+
+        return staticBricks[gridX][gridY];
     }
 
 private:
@@ -137,28 +213,48 @@ private:
     static constexpr int GRID_WIDTH = 12;
     static constexpr int GRID_HEIGHT = 18;
 
-    Rect levelBounds;
-    std::list<Brick> bricks;
-    std::array<std::array<Brick*, GRID_HEIGHT>, GRID_WIDTH> bricksMap{};
+    std::list<Brick> allBricks;
+    std::list<Brick*> dynamicBricks;
+    std::array<std::array<Brick*, GRID_HEIGHT>, GRID_WIDTH> staticBricks{};
     AppContext* appContext;
+    Rect levelBounds;
     int currentLevel = 1;
 
     void removeBrick(const Brick &brickRef) {
-        auto target = std::find_if(bricks.begin(), bricks.end(),
+
+        // Remove from static grid if present
+        if (!brickRef.getIsDynamic()) {
+            int gx = brickRef.getGridX();
+            int gy = brickRef.getGridY();
+            if (gx >= 0 && gx < GRID_WIDTH &&
+                gy >= 0 && gy < GRID_HEIGHT) {
+                staticBricks[gx][gy] = nullptr;
+            }
+        } else {
+            // Remove from dynamic list
+            auto dynIt = std::remove_if(dynamicBricks.begin(), dynamicBricks.end(),
+                                        [&](Brick* b) { return b == &brickRef; });
+            dynamicBricks.erase(dynIt, dynamicBricks.end());
+        }
+
+        // Finally erase from master list
+        auto target = std::find_if(allBricks.begin(), allBricks.end(),
                                    [&](const Brick &b) { return &b == &brickRef; });
-
-        onDestroyBrick.invoke(brickRef);
-
-        if (target != bricks.end()) {
-            bricksMap[target->getGridX()][target->getGridY()] = nullptr;
-            bricks.erase(target);
+        if (target != allBricks.end()) {
+            allBricks.erase(target);
         }
     }
 
     void createBrick(int gridX, int gridY, int type) {
-        bricks.emplace_back(gridX, gridY, type);
+        allBricks.emplace_back(gridX, gridY, type);
 
-        bricksMap[gridX][gridY] = &bricks.back();
+        auto brick = &allBricks.back();
+        if(brick->getIsDynamic())
+        {
+            dynamicBricks.push_back(brick);
+        } else {
+            staticBricks[gridX][gridY] = brick;
+        }
     }
 };
 

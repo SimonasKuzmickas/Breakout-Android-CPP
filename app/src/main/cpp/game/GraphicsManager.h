@@ -32,6 +32,7 @@ public:
         resourcePowerUps = loadImage("tex_powerups.png");
         resourcePaddle = loadImage("tex_paddle.png");
         resourceBricks = loadImage("tex_bricks.png");
+        resourceDamaged = loadImage("tex_damaged.png");
     }
 
     void onDestroy() override {
@@ -180,6 +181,10 @@ protected:
 
             graphicsAPI.drawTextureAnim(resourceBricks, bounds.x, bounds.y, bounds.w, bounds.h,
                                         brick.getType(), 384, 128, 384, 896);
+
+            if(brick.getIsDamaged()) {
+                graphicsAPI.drawTexture(resourceDamaged, bounds.x, bounds.y, bounds.w, bounds.h);
+            }
         }
     }
 
@@ -202,6 +207,7 @@ private:
     GLuint resourcePowerUps;
     GLuint resourcePaddle;
     GLuint resourceBricks;
+    GLuint resourceDamaged;
 
     float paddleAnimation = 0;
 
