@@ -24,35 +24,26 @@ public:
         StaticGray // 6
     };
 
-    Event<> onDamaged;
-    Event<Brick*> onExplode;
-
     static constexpr float BRICK_WIDTH = 160.0f;
     static constexpr float BRICK_HEIGHT = 60.0f;
+
+    Event<> onDamaged;
+    Event<Brick*> onExplode;
 
     Brick(int gridX, int gridY, BrickType type)
             : bounds{gridX * BRICK_WIDTH, gridY * BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT},
               type(type),
               gridX(gridX),
-              gridY(gridY),
-              isDestroyed(false),
-              damaged(false) {}
+              gridY(gridY) {}
 
     const Rect &getBounds() const { return bounds; }
     BrickType getType() const { return type; }
     int getGridX() const { return gridX; }
     int getGridY() const { return gridY; }
-    bool getIsDestroyed() { return isDestroyed; }
-    bool getIsDynamic() const {
-        return type == BrickType::DynamicBlue || type == BrickType::DynamicGreen;
-    }
-    bool getIsDamaged() const {
-        return damaged;
-    }
-
-    bool getIsDestructible() const {
-        return type != BrickType::StaticGray;
-    }
+    bool getIsDestroyed() const { return isDestroyed; }
+    bool getIsDamaged() const { return isDamaged; }
+    bool getIsDynamic() const { return type == BrickType::DynamicBlue || type == BrickType::DynamicGreen; }
+    bool getIsDestructible() const{ return type != BrickType::StaticGray; }
 
     void update() {
         switch (type) {
@@ -70,7 +61,7 @@ public:
 
             case BrickType::DynamicGreen: {
                 float amplitude = 40.0f;
-                float speed     = 1.5f;
+                float speed = 1.5f;
 
                 float t = GameTime::realtimeSinceStartup();
                 float offsetY = amplitude * std::sin(speed * t);
@@ -81,17 +72,14 @@ public:
             }
 
             case BrickType::ExplodingYellow:
-                if(damaged)
-                {
-                    timer += GameTime::deltaTime();
-                    if(timer >= 0.2f) {
+                if(isDamaged) {
+                    explosionTimer += GameTime::deltaTime();
+                    if(explosionTimer >= 0.2f) {
                         onExplode.invoke(this);
                         isDestroyed = true;
                     }
                 }
                 break;
-
-
         }
     }
 
@@ -99,31 +87,38 @@ public:
         switch (type) {
             case BrickType::HardPurple:
             case BrickType::HardBrown:
-            case BrickType::ExplodingYellow:
-                if(!damaged) {
-                    damaged = true;
+                if (!isDamaged) {
+                    isDamaged = true;
                     onDamaged.invoke();
-                    return;
+                    return; // first hit only damages
                 }
-                break;
-            case BrickType::StaticGray:
+                // second hit destroys
+                isDestroyed = true;
                 return;
-                break;
-        }
 
-        if(type == BrickType::ExplodingYellow)
-            return;
+            case BrickType::ExplodingYellow:
+                if (!isDamaged) {
+                    isDamaged = true;
+                    onDamaged.invoke();
+                    return; // explosion handled in update()
+                }
+                return;
+
+            case BrickType::StaticGray:
+                return; // indestructible
+        }
 
         isDestroyed = true;
     }
 
 private:
     Rect bounds;
-    int gridX, gridY;
+    int gridX = 0;
+    int gridY = 0;
     BrickType type;
-    bool isDestroyed;
-    bool damaged;
-    float timer = 0.0f;
+    bool isDestroyed = false;
+    bool isDamaged = false;
+    float explosionTimer = 0.0f;
 };
 
 }
