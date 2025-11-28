@@ -1,37 +1,33 @@
-#pragma once
 
 #include "../brick/IBrick.h"
-#include "../brick/IBrickBehaviour.h"
 
 namespace Breakout {
 
-class MovingXBehaviour : public IBrickBehavior {
+class MovingXBehaviour : public IBrick {
 public:
+    MovingXBehaviour(int gx, int gy)
+            : IBrick(gx, gy, IBrick::BrickType::DynamicBlue) {
+        isDynamic = true;
+    }
+
     static constexpr float BRICK_WIDTH = 160.0f;
     static constexpr float BRICK_HEIGHT = 60.0f;
 
-    void start(IBrick& brick) override {
-        brick.setDynamic(true);
-    }
-
-    virtual void update(IBrick& brick) {
+    virtual void update() {
         float amplitude = 80.0f;
         float speed = 2.0f;
 
         float t = GameTime::realtimeSinceStartup();
         float offsetX = amplitude * std::sin(speed * t);
 
-        Rect bounds;
-        bounds.x = brick.getGridX() * BRICK_WIDTH + offsetX;
-        bounds.y = brick.getGridY() * BRICK_HEIGHT;
+        bounds.x = gridX * BRICK_WIDTH + offsetX;
+        bounds.y = gridY * BRICK_HEIGHT;
         bounds.w = BRICK_WIDTH;
         bounds.h = BRICK_HEIGHT;
-
-        brick.setBounds((bounds));
     }
 
-    void hit(IBrick& brick) override {
-        brick.destroy();
+    void hit() {
+        isDestroyed = true;
     }
 };
 

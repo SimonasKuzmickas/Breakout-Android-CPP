@@ -1,14 +1,16 @@
 #pragma once
 
 #include "../brick/IBrick.h"
-#include "../brick/IBrickBehaviour.h"
 
 namespace Breakout {
 
-class NormalBehavior : public IBrickBehavior {
+class NormalBehavior : public IBrick {
 public:
-    void hit(IBrick& brick) override {
-        brick.destroy();
+    NormalBehavior(int gx, int gy)
+            : IBrick(gx, gy, IBrick::BrickType::NormalOrange) {}
+
+    void hit() override {
+        isDestroyed = true;
     }
 };
 

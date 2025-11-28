@@ -1,28 +1,32 @@
 #pragma once
 
 #include "../brick/IBrick.h"
-#include "../brick/IBrickBehaviour.h"
+#include "../../helpers/GameTime.h"
+#include "../../helpers/Event.h"
 
 namespace Breakout {
 
-class ExplodingBehaviour : public IBrickBehavior {
+class ExplodingBehaviour : public IBrick {
 public:
-    void hit(IBrick& brick) override {
-        if (!brick.getIsDamaged()) {
-            brick.damage();
+    ExplodingBehaviour(int gx, int gy)
+            : IBrick(gx, gy, IBrick::BrickType::ExplodingYellow) {}
+
+    void hit() override {
+        if (!isDamaged) {
+            isDamaged = true;
             return;
         }
     }
 
-    virtual void update(IBrick& brick) {
-        if (brick.getIsDamaged()) {
+    void update() override {
+        if (isDamaged) {
             explosionTimer -= GameTime::deltaTime();
             if(explosionTimer <= 0) {
-                brick.explode();
-                brick.destroy();
+                onExplode.invoke(this);
+                isDestroyed = true;
             }
         }
-    };
+    }
 private:
     float explosionTimer = 0.2f;
 };

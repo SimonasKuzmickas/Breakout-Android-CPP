@@ -26,19 +26,20 @@ public:
         // Core game systems dependencies
         auto levelSystem   = std::make_shared<LevelSystem>(appContext);
         auto paddle        = std::make_shared<Paddle>();
+        auto playerController = std::make_shared<PlayerController>(appContext, paddle);
         auto ballSystem    = std::make_shared<BallSystem>(paddle, levelSystem);
         auto playerState   = std::make_shared<PlayerState>(levelSystem, ballSystem);
         auto laserShooter  = std::make_shared<LaserShooter>(paddle, levelSystem, ballSystem);
         auto powerUpSystem = std::make_shared<PowerUpSystem>(levelSystem, paddle, laserShooter, ballSystem, playerState);
-        auto playerController = std::make_shared<PlayerController>(appContext, paddle);
 
+        addComponent(playerController);
         addComponent(levelSystem);
         addComponent(paddle);
         addComponent(ballSystem);
         addComponent(playerState);
         addComponent(laserShooter);
         addComponent(powerUpSystem);
-        addComponent(playerController);
+
 
         // fx and audio systems
         addComponent(std::make_shared<SoundsManager>(appContext));

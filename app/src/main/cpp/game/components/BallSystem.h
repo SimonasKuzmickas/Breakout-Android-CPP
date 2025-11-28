@@ -108,7 +108,7 @@ private:
             case BallsType::Explode:
                 // --- MOVE X ---
                 ball->bounds.x += ball->velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
-                if (Brick *brick = handleCollision(*ball, ball->bounds.x, ball->velocity.x)) {
+                if (auto brick = handleCollision(*ball, ball->bounds.x, ball->velocity.x)) {
                     if (brick->getIsDestructible()) {
                         levelSystem->explode(brick->getGridX(), brick->getGridY());
                     }
@@ -117,7 +117,7 @@ private:
 
                 // --- MOVE Y ---
                 ball->bounds.y += ball->velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
-                if (Brick *brick = handleCollision(*ball, ball->bounds.y, ball->velocity.y)) {
+                if (auto brick = handleCollision(*ball, ball->bounds.y, ball->velocity.y)) {
                     if (brick->getIsDestructible()) {
                         levelSystem->explode(brick->getGridX(), brick->getGridY());
                     }
@@ -213,8 +213,8 @@ private:
     }
 
     // Collision with a brick
-    Brick* handleCollision(Ball &ball, float &axisPos, float &axisVel) {
-        if (Brick* brick = levelSystem->checkBrickCollision(ball.bounds)) {
+    std::shared_ptr<IBrick> handleCollision(Ball &ball, float &axisPos, float &axisVel) {
+        if (auto brick = levelSystem->checkBrickCollision(ball.bounds)) {
             Rect brickBounds = brick->getBounds();
 
             if (axisVel > 0) {
@@ -240,7 +240,7 @@ private:
     }
 
     // Collision with a brick for normal/explode balls
-    void handlePiercingCollision(Ball& ball, Brick* brick, float& axisPos, float& axisVel, bool isXAxis) {
+    void handlePiercingCollision(Ball& ball, const std::shared_ptr<IBrick>& brick, float& axisPos, float& axisVel, bool isXAxis) {
         if (!brick) return;
 
         brick->hit();

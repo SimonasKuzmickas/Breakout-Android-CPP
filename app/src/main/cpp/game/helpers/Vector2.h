@@ -7,7 +7,6 @@ struct Vector2 {
     float y;
 
     Vector2() : x(0), y(0) {}
-
     Vector2(float xVal, float yVal) : x(xVal), y(yVal) {}
 
     Vector2 &operator+=(const Vector2 &other) {
@@ -35,9 +34,7 @@ struct Vector2 {
                 x * sinA + y * cosA};
     }
 
-    float length() const {
-        return std::sqrt(x * x + y * y);
-    }
+    float length() const { return std::sqrt(x * x + y * y); }
 };
 
 }

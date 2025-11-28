@@ -8,8 +8,7 @@
 #include <vector>
 #include <thread>
 #include "AppContext.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include "../thirdparty/stb_image.h"
+#include "AssetLoader.h"
 
 namespace Breakout {
 
@@ -25,6 +24,9 @@ struct GraphicsContext {
 
     int width;
     int height;
+
+    GraphicsContext(EGLDisplay d, EGLSurface s, EGLContext c)
+            : display{d}, surface{s}, context{c} {}
 };
 
 class GraphicsCore {
@@ -36,7 +38,6 @@ public:
         appContext = context;
 
         initGraphics(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
-        initSquare();
     }
 
     void setColor(float r, float g, float b, float a) {
@@ -51,8 +52,8 @@ public:
         offsetY = y;
     }
 
-    void drawTexture(GLuint texture,
-                     float x, float y, float w, float h) const {
+    // --- Draw simple textured quad ---
+    void drawTexture(GLuint texture, float x, float y, float w, float h) const {
         x += offsetX;
         y += offsetY;
 
@@ -71,32 +72,10 @@ public:
                 x0, y1, 0.0f, 0.0f
         };
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_DYNAMIC_DRAW);
-
-        glUseProgram(program);
-
-        GLint colorLoc = glGetUniformLocation(program, "uColor");
-        glUniform4f(colorLoc, colorR, colorG, colorB, colorA);
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glUniform1i(texUniform, 0);
-
-        glEnableVertexAttribArray(posAttrib);
-        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE,
-                              4 * sizeof(GLfloat), (void *) 0);
-
-        glEnableVertexAttribArray(uvAttrib);
-        glVertexAttribPointer(uvAttrib, 2, GL_FLOAT, GL_FALSE,
-                              4 * sizeof(GLfloat), (void *) (2 * sizeof(GLfloat)));
-
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-
-        glDisableVertexAttribArray(posAttrib);
-        glDisableVertexAttribArray(uvAttrib);
+        drawQuad(texture, verts, 24);
     }
 
+    // --- Draw animated frame from sprite sheet ---
     void drawTextureAnim(GLuint texture,
                          float x, float y, float w, float h,
                          int frameId,
@@ -105,58 +84,31 @@ public:
         x += offsetX;
         y += offsetY;
 
-        // Convert screen coords to NDC
         float x0 = (2.0f * x / VIRTUAL_WIDTH) - 1.0f;
         float y0 = (2.0f * y / VIRTUAL_HEIGHT) - 1.0f;
         float x1 = (2.0f * (x + w) / VIRTUAL_WIDTH) - 1.0f;
         float y1 = (2.0f * (y + h) / VIRTUAL_HEIGHT) - 1.0f;
 
-        // Compute frame position in sheet
         int framesPerRow = sheetWidth / frameWidth;
         int frameX = (frameId % framesPerRow) * frameWidth;
         int frameY = (frameId / framesPerRow) * frameHeight;
 
-        // Normalize to UVs (0–1)
         float u0 = static_cast<float>(frameX) / sheetWidth;
         float v0 = static_cast<float>(frameY) / sheetHeight;
         float u1 = static_cast<float>(frameX + frameWidth) / sheetWidth;
         float v1 = static_cast<float>(frameY + frameHeight) / sheetHeight;
 
-        // Build interleaved vertex + UV array
         GLfloat verts[] = {
-                x0, y0, u0, v1,   // bottom-left
-                x1, y0, u1, v1,   // bottom-right
-                x1, y1, u1, v0,   // top-right
+                x0, y0, u0, v1,
+                x1, y0, u1, v1,
+                x1, y1, u1, v0,
 
-                x0, y0, u0, v1,   // bottom-left
-                x1, y1, u1, v0,   // top-right
-                x0, y1, u0, v0    // top-left
+                x0, y0, u0, v1,
+                x1, y1, u1, v0,
+                x0, y1, u0, v0
         };
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_DYNAMIC_DRAW);
-
-        glUseProgram(program);
-
-        GLint colorLoc = glGetUniformLocation(program, "uColor");
-        glUniform4f(colorLoc, colorR, colorG, colorB, colorA);
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glUniform1i(texUniform, 0);
-
-        glEnableVertexAttribArray(posAttrib);
-        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE,
-                              4 * sizeof(GLfloat), (void*)0);
-
-        glEnableVertexAttribArray(uvAttrib);
-        glVertexAttribPointer(uvAttrib, 2, GL_FLOAT, GL_FALSE,
-                              4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
-
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-
-        glDisableVertexAttribArray(posAttrib);
-        glDisableVertexAttribArray(uvAttrib);
+        drawQuad(texture, verts, 24);
     }
 
     void flip() {
@@ -168,20 +120,10 @@ public:
     }
 
     GLuint loadTextureFromAssets(const char *filename) {
-        AAsset *asset = AAssetManager_open(appContext->assetManager, filename,
-                                           AASSET_MODE_BUFFER);
-        size_t length = AAsset_getLength(asset);
-        const void *buffer = AAsset_getBuffer(asset);
-
-        int width, height, channels;
-        unsigned char *pixels = stbi_load_from_memory(
-                reinterpret_cast<const unsigned char *>(buffer),
-                length,
-                &width, &height, &channels,
-                STBI_rgb_alpha);
+        ImageData img = AssetLoader::loadImage(appContext->assetManager, filename);
+        if (img.pixels.empty()) return 0;
 
         GLuint texId;
-
         glGenTextures(1, &texId);
         glBindTexture(GL_TEXTURE_2D, texId);
 
@@ -189,11 +131,8 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-                     width, height, 0,
-                     GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-
-        stbi_image_free(pixels);
-        AAsset_close(asset);
+                     img.width, img.height, 0,
+                     GL_RGBA, GL_UNSIGNED_BYTE, img.pixels.data());
 
         return texId;
     }
@@ -206,6 +145,7 @@ public:
             glDeleteProgram(program);
             program = 0;
         }
+
         if (vbo) {
             glDeleteBuffers(1, &vbo);
             vbo = 0;
@@ -241,7 +181,6 @@ private:
     GLuint program;
     GLuint vbo;
     GLuint posAttrib;
-    GLuint colUniform;
 
     GLint uvAttrib;
     GLint texUniform;
@@ -249,7 +188,8 @@ private:
     float colorR = 1, colorG = 1, colorB = 1, colorA = 1;
     float offsetX = 0, offsetY = 0;
 
-    bool initGraphics(int width, int height) {
+    void initGraphics(int width, int height) {
+        // --- 1. EGL setup ---
         EGLint attributes[] = {
                 EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
                 EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
@@ -276,21 +216,17 @@ private:
         EGLContext ctx = eglCreateContext(dpy, config, EGL_NO_CONTEXT, ctxAttributes);
         eglMakeCurrent(dpy, surf, surf, ctx);
 
-        graphicsContext = new GraphicsContext();
-        graphicsContext->display = dpy;
-        graphicsContext->surface = surf;
-        graphicsContext->context = ctx;
-
+         // --- 2. Store graphics context info ---
+        graphicsContext = new GraphicsContext{ dpy, surf, ctx };
         eglQuerySurface(dpy, surf, EGL_WIDTH, &graphicsContext->width);
         eglQuerySurface(dpy, surf, EGL_HEIGHT, &graphicsContext->height);
 
-        // --- Borders & viewport calculation ---
-        float targetAspect = static_cast<float>((float) width) / float(height);
+         // --- 3. Viewport calculation (letterboxing) ---
+        float targetAspect = static_cast<float>(width) / static_cast<float>(height);
         float screenAspect =
-                static_cast<float>(graphicsContext->width) / graphicsContext->height;
+                static_cast<float>(graphicsContext->width) / height;
 
         int vpX, vpY, vpW, vpH;
-
         if (screenAspect > targetAspect) {
             // Screen is wider → black bars left/right
             vpH = graphicsContext->height;
@@ -307,25 +243,7 @@ private:
 
         glViewport(vpX, vpY, vpW, vpH);
 
-        return true;
-    }
-
-    void initSquare() {
-        GLfloat vertices[] = {
-                -0.5f, -0.5f, 0.0f, 0.0f,  // bottom-left
-                0.5f, -0.5f, 1.0f, 0.0f,  // bottom-right
-                0.5f, 0.5f, 1.0f, 1.0f,  // top-right
-
-                -0.5f, -0.5f, 0.0f, 0.0f,  // bottom-left
-                0.5f, 0.5f, 1.0f, 1.0f,  // top-right
-                -0.5f, 0.5f, 0.0f, 1.0f   // top-left
-        };
-
-        // Upload vertex data
-        glGenBuffers(1, &vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
+        // --- 4. Shader sources ---
         // Vertex shader
         const char *vsSrc =
                 "attribute vec2 aPos;"
@@ -346,7 +264,7 @@ private:
                 "  gl_FragColor = texture2D(uTex, vUV) * uColor;"
                 "}";
 
-        // Compile vertex shader
+         // --- 5. Compile & link shaders ---
         GLuint vs = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vs, 1, &vsSrc, nullptr);
         glCompileShader(vs);
@@ -362,14 +280,47 @@ private:
         glAttachShader(program, fs);
         glLinkProgram(program);
 
-        // Query attribute/uniform locations
+         // --- 6. Query attribute/uniform locations ---
         posAttrib = glGetAttribLocation(program, "aPos");
         uvAttrib = glGetAttribLocation(program, "aUV");
         texUniform = glGetUniformLocation(program, "uTex");
 
-        // Enable blending for transparency
+         // --- 7. Enable blending ---
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glGenBuffers(1, &vbo);
+        glUseProgram(program);
+     }
+
+    // --- Common draw helper ---
+    void drawQuad(GLuint texture, const GLfloat* verts, size_t vertCount) const {
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertCount * sizeof(GLfloat), verts, GL_DYNAMIC_DRAW);
+
+        // Set color uniform
+        GLint colorLoc = glGetUniformLocation(program, "uColor");
+        glUniform4f(colorLoc, colorR, colorG, colorB, colorA);
+
+        // Bind texture
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glUniform1i(texUniform, 0);
+
+        // Vertex attributes
+        glEnableVertexAttribArray(posAttrib);
+        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE,
+                              4 * sizeof(GLfloat), (void*)0);
+
+        glEnableVertexAttribArray(uvAttrib);
+        glVertexAttribPointer(uvAttrib, 2, GL_FLOAT, GL_FALSE,
+                              4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
+
+        // Draw
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        // Cleanup (optional if you always re‑enable before draw)
+        glDisableVertexAttribArray(posAttrib);
+        glDisableVertexAttribArray(uvAttrib);
     }
 };
 

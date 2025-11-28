@@ -1,18 +1,16 @@
 #pragma once
 
 #include "../brick/IBrick.h"
-#include "../brick/IBrickBehaviour.h"
 
 namespace Breakout {
 
-class StaticBehaviour : public IBrickBehavior {
+class StaticBehaviour : public IBrick {
 public:
-    void start(IBrick& brick) override {
-        brick.setDestructible(false);
-    }
+    StaticBehaviour(int gx, int gy)
+            : IBrick(gx, gy, IBrick::BrickType::StaticGray) {}
 
-    void hit(IBrick& brick) override {
-        brick.deflect();
+    void hit() override {
+        onDeflect.invoke();
     }
 };
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#define DR_WAV_IMPLEMENTATION
-#include "../thirdparty/dr_wav.h"
 #include "../helpers/AssetLoader.h"
 #include <oboe/Oboe.h>
 #include "AppContext.h"
@@ -55,8 +53,7 @@ public:
         uint16_t ch = 0;
 
         std::string fullName = name + ".wav";
-        auto data = loadWavFromAssets(appContext->assetManager, fullName.c_str(), sr, ch);
-
+        auto data = AssetLoader::loadSound(appContext->assetManager, fullName.c_str(), sr, ch);
         if (data.empty()) {
             return nullptr;
         }
@@ -70,7 +67,7 @@ public:
         uint32_t sr;
         uint16_t ch;
 
-        loadWavFromAssets(appContext->assetManager, "sfx_sample.wav", sr, ch);
+        AssetLoader::loadSound(appContext->assetManager, "sfx_sample.wav", sr, ch);
 
         oboe::AudioStreamBuilder builder;
         builder.setDirection(oboe::Direction::Output)
@@ -98,35 +95,6 @@ private:
     std::vector<Sound *> sounds;
     std::shared_ptr<oboe::AudioStream> mStream;
     AppContext *appContext;
-
-    std::vector<float> loadWavFromAssets(AAssetManager *mgr, const char *filename, uint32_t &sampleRate, uint16_t &channels) {
-        std::vector<uint8_t> buffer = AssetLoader::loadAssetToBuffer(mgr, filename);
-        // Load raw asset bytes
-        if (buffer.empty()) {
-            return {};
-        }
-
-        // Initialize dr_wav from memory
-        drwav wav;
-        if (!drwav_init_memory(&wav, buffer.data(), buffer.size(), nullptr)) {
-            return {};
-        }
-
-        // Capture format info
-        sampleRate = wav.sampleRate;
-        channels = wav.channels;
-
-        // Read all samples as float32
-        size_t totalSamples = wav.totalPCMFrameCount * wav.channels;
-        std::vector<float> samples(totalSamples);
-
-        drwav_read_pcm_frames_f32(&wav, wav.totalPCMFrameCount, samples.data());
-
-        // Clean up
-        drwav_uninit(&wav);
-
-        return samples;
-    }
 };
 
 }

@@ -52,14 +52,14 @@ public:
               ballSystem(std::move(ballSystem)),
               playerState(std::move(playerState))
     {
-        // any initialization or event wiring can go here
     }
+
     void onAwake() override {
-        levelSystem->onBrickDestroy.addListener([this](const Brick* brick) {
+        levelSystem->onBrickDestroy.addListener([this](const IBrick* brick) {
             int rnd = std::rand() % 100;
             if (rnd < DROP_CHANCE && powerUps.size() < MAX_ACTIVE_POWERUPS) {
                 createPowerUp(brick->getBounds().x + 10, brick->getBounds().y + 5,
-                              PowerUp::PowerUpType::ShrinkPaddle    );
+                              getRandomPowerUpType());
             }
         });
 
@@ -140,6 +140,10 @@ public:
                 ballSystem->increaseGlobalSpeed(0.75f);
                 break;
 
+            case PowerUp::PowerUpType::ExtraLife:
+                playerState->increaseLives(1);
+                break;
+
             case PowerUp::PowerUpType::Score50:
                 playerState->increaseScore(50);
                 break;
@@ -154,10 +158,6 @@ public:
 
             case PowerUp::PowerUpType::Score500:
                 playerState->increaseScore(500);
-                break;
-
-            case PowerUp::PowerUpType::ExtraLife:
-                playerState->increaseLives(1);
                 break;
 
             default:

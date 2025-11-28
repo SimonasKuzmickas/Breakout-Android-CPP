@@ -36,7 +36,7 @@ public:
         for (auto &laser: lasers) {
             laser.bounds.y += LASER_SPEED * GameTime::deltaTime();
 
-            if (Brick *brick = levelSystem->checkBrickCollision(laser.bounds)) {
+            if (auto brick = levelSystem->checkBrickCollision(laser.bounds)) {
                 brick->hit();
                 removeLaser(laser);
             } else if (!laser.bounds.overlaps(levelSystem->getLevelBounds())) {

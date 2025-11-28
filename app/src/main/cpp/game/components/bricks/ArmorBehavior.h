@@ -1,17 +1,20 @@
 #pragma once
 
 #include "../brick/IBrick.h"
-#include "../brick/IBrickBehaviour.h"
 
 namespace Breakout {
 
-class ArmorBehavior : public IBrickBehavior {
+class ArmorBehavior : public IBrick {
 public:
-    void hit(IBrick& brick) override {
-        if (!brick.getIsDamaged()) {
-            brick.damage();
+    ArmorBehavior(int gx, int gy)
+            : IBrick(gx, gy, IBrick::BrickType::ArmorBrown) {}
+
+    void hit() override {
+        if (!isDamaged) {
+            isDamaged = true;
+            onDamage.invoke();
         } else {
-            brick.destroy();
+            isDestroyed = true;
         }
     }
 };

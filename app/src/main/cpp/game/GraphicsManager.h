@@ -192,12 +192,12 @@ protected:
         if(!levelSystem) return;
 
         for (auto &brick: levelSystem->getBricks()) {
-            auto bounds = brick.getBounds();
+            auto bounds = brick->getBounds();
 
             graphicsAPI.drawTextureAnim(resourceBricks, bounds.x, bounds.y, bounds.w, bounds.h,
-                                        (int)brick.getType(), 384, 128, 384, 896);
+                                        (int)brick->getType(), 384, 128, 384, 896);
 
-            if(brick.getIsDamaged()) {
+            if(brick->getIsDamaged()) {
                 graphicsAPI.drawTexture(resourceDamaged, bounds.x, bounds.y, bounds.w, bounds.h);
             }
         }
