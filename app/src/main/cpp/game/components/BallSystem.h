@@ -213,7 +213,7 @@ private:
     }
 
     // Collision with a brick
-    std::shared_ptr<IBrick> handleCollision(Ball &ball, float &axisPos, float &axisVel) {
+    std::shared_ptr<Brick> handleCollision(Ball &ball, float &axisPos, float &axisVel) {
         if (auto brick = levelSystem->checkBrickCollision(ball.bounds)) {
             Rect brickBounds = brick->getBounds();
 
@@ -240,7 +240,7 @@ private:
     }
 
     // Collision with a brick for normal/explode balls
-    void handlePiercingCollision(Ball& ball, const std::shared_ptr<IBrick>& brick, float& axisPos, float& axisVel, bool isXAxis) {
+    void handlePiercingCollision(Ball& ball, const std::shared_ptr<Brick>& brick, float& axisPos, float& axisVel, bool isXAxis) {
         if (!brick) return;
 
         brick->hit();

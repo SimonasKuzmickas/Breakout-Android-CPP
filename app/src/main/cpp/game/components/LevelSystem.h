@@ -4,7 +4,7 @@
 #include "../scene/ISceneComponent.h"
 #include "../thirdparty/json.hpp"
 #include "../helpers/AssetLoader.h"
-#include "brick/IBrick.h"
+#include "brick/Brick.h"
 #include "brick/BrickFactory.h"
 #include <list>
 #include <android/log.h>
@@ -17,7 +17,7 @@ namespace Breakout {
 class LevelSystem : public ISceneComponent {
 public:
     // --- Events
-    Event<IBrick*> onBrickDestroy;
+    Event<Brick*> onBrickDestroy;
     Event<> onBrickDamage;
     Event<> onBrickDeflect;
     Event<> onBrickExplosion;
@@ -25,7 +25,7 @@ public:
 
     // --- Accessors ---
     Rect getLevelBounds() { return levelBounds; }
-    std::list<std::shared_ptr<IBrick>>& getBricks() {
+    std::list<std::shared_ptr<Brick>>& getBricks() {
         return allBricks;
     }
 
@@ -80,7 +80,7 @@ public:
             int y = b["y"].get<int>();
             int type = b["type"].get<int>();
 
-            createBrick(x, y, static_cast<IBrick::BrickType>(type));
+            createBrick(x, y, static_cast<Brick::BrickType>(type));
         }
 
 
@@ -97,11 +97,11 @@ public:
     }
 
     // Returns the first brick colliding with a rectangle
-    std::shared_ptr<IBrick> checkBrickCollision(const Rect& bounds) {
-        int minX = std::max(0, static_cast<int>(bounds.x / IBrick::BRICK_WIDTH));
-        int maxX = std::min(GRID_WIDTH - 1, static_cast<int>((bounds.x + bounds.w) / IBrick::BRICK_WIDTH));
-        int minY = std::max(0, static_cast<int>(bounds.y / IBrick::BRICK_HEIGHT));
-        int maxY = std::min(GRID_HEIGHT - 1, static_cast<int>((bounds.y + bounds.h) / IBrick::BRICK_HEIGHT));
+    std::shared_ptr<Brick> checkBrickCollision(const Rect& bounds) {
+        int minX = std::max(0, static_cast<int>(bounds.x / Brick::BRICK_WIDTH));
+        int maxX = std::min(GRID_WIDTH - 1, static_cast<int>((bounds.x + bounds.w) / Brick::BRICK_WIDTH));
+        int minY = std::max(0, static_cast<int>(bounds.y / Brick::BRICK_HEIGHT));
+        int maxY = std::min(GRID_HEIGHT - 1, static_cast<int>((bounds.y + bounds.h) / Brick::BRICK_HEIGHT));
 
         // Check static bricks
         for (int y = minY; y <= maxY; ++y) {
@@ -114,7 +114,7 @@ public:
         }
 
         // Check dynamic bricks
-        for (const std::shared_ptr<IBrick>& b : dynamicBricks) {
+        for (const std::shared_ptr<Brick>& b : dynamicBricks) {
             if (!b->getIsDestroyed() && bounds.overlaps(b->getBounds())) {
                 return b;
             }
@@ -124,18 +124,18 @@ public:
     }
 
     // Returns brick at grid position, dynamic bricks included
-    std::shared_ptr<IBrick> GetBrick(int gridX, int gridY) {
+    std::shared_ptr<Brick> GetBrick(int gridX, int gridY) {
         if(!isPositionInBrickMap(gridX, gridY))
             return nullptr;
 
         Rect brickBounds {
-                gridX * IBrick::BRICK_WIDTH,
-                gridY * IBrick::BRICK_HEIGHT,
-                IBrick::BRICK_WIDTH,
-                IBrick::BRICK_HEIGHT
+                gridX * Brick::BRICK_WIDTH,
+                gridY * Brick::BRICK_HEIGHT,
+                Brick::BRICK_WIDTH,
+                Brick::BRICK_HEIGHT
         };
 
-        for (const std::shared_ptr<IBrick>& dyn : dynamicBricks) {
+        for (const std::shared_ptr<Brick>& dyn : dynamicBricks) {
             if (!dyn->getIsDestroyed() && dyn->getBounds().overlaps(brickBounds)) {
                 return dyn;
             }
@@ -151,16 +151,16 @@ private:
     static constexpr int GRID_WIDTH = 12;
     static constexpr int GRID_HEIGHT = 18;
 
-    std::list<std::shared_ptr<IBrick>> allBricks;             // All bricks
-    std::list<std::shared_ptr<IBrick>> dynamicBricks;        // Dynamic bricks
-    std::list<std::shared_ptr<IBrick>> destroyableBricks;    // Destructible bricks
-    std::array<std::array<std::shared_ptr<IBrick>, GRID_HEIGHT>, GRID_WIDTH> staticBricks{}; // Static brick grid
+    std::list<std::shared_ptr<Brick>> allBricks;             // All bricks
+    std::list<std::shared_ptr<Brick>> dynamicBricks;        // Dynamic bricks
+    std::list<std::shared_ptr<Brick>> destroyableBricks;    // Destructible bricks
+    std::array<std::array<std::shared_ptr<Brick>, GRID_HEIGHT>, GRID_WIDTH> staticBricks{}; // Static brick grid
 
     AppContext* appContext;
     Rect levelBounds;
     int currentLevel = 1;
 
-    void createBrick(int gridX, int gridY, IBrick::BrickType type) {
+    void createBrick(int gridX, int gridY, Brick::BrickType type) {
         auto brick = BrickFactory::createBrick(type, gridX, gridY);
 
         allBricks.push_back(brick);
@@ -180,7 +180,7 @@ private:
             onBrickDamage.invoke();
         });
 
-        brick->onExplode.addListener([this](IBrick* b) {
+        brick->onExplode.addListener([this](Brick* b) {
             explode(b->getGridX(), b->getGridY());
             onBrickExplosion.invoke();
         });
@@ -191,10 +191,10 @@ private:
     }
 
     // Removes brick from all lists and grids
-    void removeBrick(const std::shared_ptr<IBrick>& brickRef) {
+    void removeBrick(const std::shared_ptr<Brick>& brickRef) {
         if (brickRef->getIsDynamic()) {
             auto target = std::remove_if(dynamicBricks.begin(), dynamicBricks.end(),
-                                         [&](const std::shared_ptr<IBrick>& b) {
+                                         [&](const std::shared_ptr<Brick>& b) {
                                              return b == brickRef; // compare shared_ptrs
                                          });
             dynamicBricks.erase(target, dynamicBricks.end());
@@ -202,20 +202,20 @@ private:
             int gx = brickRef->getGridX();
             int gy = brickRef->getGridY();
             if (isPositionInBrickMap(gx, gy)) {
-                staticBricks[gx][gy] = nullptr; // grid holds shared_ptr<IBrick>, so assign nullptr
+                staticBricks[gx][gy] = nullptr; // grid holds shared_ptr<Brick>, so assign nullptr
             }
         }
 
         if (brickRef->getIsDestructible()) {
             auto target = std::remove_if(destroyableBricks.begin(), destroyableBricks.end(),
-                                         [&](const std::shared_ptr<IBrick>& b) {
+                                         [&](const std::shared_ptr<Brick>& b) {
                                              return b == brickRef;
                                          });
             destroyableBricks.erase(target, destroyableBricks.end());
         }
 
         auto target = std::find_if(allBricks.begin(), allBricks.end(),
-                                   [&](const std::shared_ptr<IBrick>& b) {
+                                   [&](const std::shared_ptr<Brick>& b) {
                                        return b == brickRef;
                                    });
         if (target != allBricks.end()) {

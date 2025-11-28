@@ -1,12 +1,12 @@
 
-#include "../brick/IBrick.h"
+#include "Brick.h"
 
 namespace Breakout {
 
-class MovingXBehaviour : public IBrick {
+class MovingBrickX : public Brick {
 public:
-    MovingXBehaviour(int gx, int gy, BrickType type)
-            : IBrick(gx, gy, type) {
+    MovingBrickX(int gx, int gy, BrickType type)
+            : Brick(gx, gy, type) {
         isDynamic = true;
     }
 

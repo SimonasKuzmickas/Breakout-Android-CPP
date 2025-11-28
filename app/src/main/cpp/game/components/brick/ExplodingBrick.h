@@ -1,15 +1,15 @@
 #pragma once
 
-#include "../brick/IBrick.h"
+#include "Brick.h"
 #include "../../helpers/GameTime.h"
 #include "../../helpers/Event.h"
 
 namespace Breakout {
 
-class ExplodingBehaviour : public IBrick {
+class ExplodingBrick : public Brick {
 public:
-    ExplodingBehaviour(int gx, int gy, BrickType type)
-            : IBrick(gx, gy, type) {}
+    ExplodingBrick(int gx, int gy, BrickType type)
+            : Brick(gx, gy, type) {}
 
     void hit() override {
         if (!isDamaged) {

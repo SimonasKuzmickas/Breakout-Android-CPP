@@ -60,7 +60,7 @@ public:
 
         auto levelSystem = getComponent<LevelSystem>();
         if (levelSystem) {
-            levelSystem->onBrickDestroy.addListener([this](const IBrick* brick) {
+            levelSystem->onBrickDestroy.addListener([this](const Brick* brick) {
                 soundBrick->play();
             });
 

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../brick/IBrick.h"
+#include "Brick.h"
 
 namespace Breakout {
 
-class ArmorBehavior : public IBrick {
+class ArmorBrick : public Brick {
 public:
-    ArmorBehavior(int gx, int gy, BrickType type)
-            : IBrick(gx, gy, type) {}
+    ArmorBrick(int gx, int gy, BrickType type)
+            : Brick(gx, gy, type) {}
 
     void hit() override {
         if (!isDamaged) {

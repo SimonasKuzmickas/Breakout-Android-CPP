@@ -55,7 +55,7 @@ public:
     }
 
     void onAwake() override {
-        levelSystem->onBrickDestroy.addListener([this](const IBrick* brick) {
+        levelSystem->onBrickDestroy.addListener([this](const Brick* brick) {
             int rnd = std::rand() % 100;
             if (rnd < DROP_CHANCE && powerUps.size() < MAX_ACTIVE_POWERUPS) {
                 createPowerUp(brick->getBounds().x + 10, brick->getBounds().y + 5,

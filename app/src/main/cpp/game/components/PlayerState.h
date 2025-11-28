@@ -15,7 +15,7 @@ public:
 
     // --- Initialize listeners for level and ball events
     void onAwake() override {
-        levelSystem->onBrickDestroy.addListener([this](const IBrick* brick) {
+        levelSystem->onBrickDestroy.addListener([this](const Brick* brick) {
             increaseScore(BRICK_SCORE_VALUE);
         });
 

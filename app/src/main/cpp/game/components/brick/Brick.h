@@ -4,7 +4,7 @@
 
 namespace Breakout {
 
-class IBrick {
+class Brick {
 
 public:
     static constexpr float BRICK_WIDTH = 160.0f;
@@ -20,7 +20,7 @@ public:
         StaticGray
     };
 
-    IBrick(int gx, int gy, BrickType type)
+    Brick(int gx, int gy, BrickType type)
             : bounds{gx * BRICK_WIDTH, gy * BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT},
               gridX(gx), gridY(gy), type(type) {
     }
@@ -47,7 +47,7 @@ public:
 
     // Events
     Event<> onDamage;
-    Event<IBrick *> onExplode;
+    Event<Brick *> onExplode;
     Event<> onDeflect;
 
 private:
