@@ -5,8 +5,8 @@ namespace Breakout {
 
 class MovingXBehaviour : public IBrick {
 public:
-    MovingXBehaviour(int gx, int gy)
-            : IBrick(gx, gy, IBrick::BrickType::DynamicBlue) {
+    MovingXBehaviour(int gx, int gy, BrickType type)
+            : IBrick(gx, gy, type) {
         isDynamic = true;
     }
 

@@ -6,8 +6,8 @@ namespace Breakout {
 
 class StaticBehaviour : public IBrick {
 public:
-    StaticBehaviour(int gx, int gy)
-            : IBrick(gx, gy, IBrick::BrickType::StaticGray) {}
+    StaticBehaviour(int gx, int gy, BrickType type)
+            : IBrick(gx, gy, type) {}
 
     void hit() override {
         onDeflect.invoke();

@@ -10,8 +10,8 @@ public:
     static constexpr float BRICK_WIDTH = 160.0f;
     static constexpr float BRICK_HEIGHT = 60.0f;
 
-    MovingYArmorBehaviour(int gx, int gy)
-            : IBrick(gx, gy, IBrick::BrickType::DynamicGreen) {
+    MovingYArmorBehaviour(int gx, int gy, BrickType type)
+            : IBrick(gx, gy, type) {
         isDynamic = true;
     }
 

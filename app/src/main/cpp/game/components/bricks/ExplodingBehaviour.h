@@ -8,8 +8,8 @@ namespace Breakout {
 
 class ExplodingBehaviour : public IBrick {
 public:
-    ExplodingBehaviour(int gx, int gy)
-            : IBrick(gx, gy, IBrick::BrickType::ExplodingYellow) {}
+    ExplodingBehaviour(int gx, int gy, BrickType type)
+            : IBrick(gx, gy, type) {}
 
     void hit() override {
         if (!isDamaged) {

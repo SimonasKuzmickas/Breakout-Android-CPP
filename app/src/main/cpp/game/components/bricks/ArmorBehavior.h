@@ -6,8 +6,8 @@ namespace Breakout {
 
 class ArmorBehavior : public IBrick {
 public:
-    ArmorBehavior(int gx, int gy)
-            : IBrick(gx, gy, IBrick::BrickType::ArmorBrown) {}
+    ArmorBehavior(int gx, int gy, BrickType type)
+            : IBrick(gx, gy, type) {}
 
     void hit() override {
         if (!isDamaged) {
