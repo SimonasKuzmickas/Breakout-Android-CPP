@@ -59,7 +59,7 @@ public:
             int rnd = std::rand() % 100;
             if (rnd < DROP_CHANCE && powerUps.size() < MAX_ACTIVE_POWERUPS) {
                 createPowerUp(brick->getBounds().x + 10, brick->getBounds().y + 5,
-                              getRandomPowerUpType());
+                              PowerUp::PowerUpType::ShrinkPaddle    );
             }
         });
 

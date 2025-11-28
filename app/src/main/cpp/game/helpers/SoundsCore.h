@@ -2,16 +2,17 @@
 
 #define DR_WAV_IMPLEMENTATION
 #include "../thirdparty/dr_wav.h"
+#include "../helpers/AssetLoader.h"
 #include <oboe/Oboe.h>
 #include "AppContext.h"
 
 namespace Breakout {
 
 struct Sound {
-    std::vector<float> samples;
-    size_t readIndex = 0;
-    bool playing = false;
-    float gain = 1.0f;
+    std::vector<float> samples{};
+    std::size_t readIndex{0};
+    bool playing{false};
+    float gain{1.0f};
 
     void play(float g = 1.0f) {
         readIndex = 0;
@@ -26,9 +27,7 @@ public:
         appContext = context;
     }
 
-    virtual oboe::DataCallbackResult onAudioReady(oboe::AudioStream *stream,
-                                                  void *audioData,
-                                                  int32_t numFrames) override {
+    virtual oboe::DataCallbackResult onAudioReady(oboe::AudioStream *stream, void *audioData, int32_t numFrames) override {
         float *out = static_cast<float *>(audioData);
         int channels = stream->getChannelCount();
         int samplesNeeded = numFrames * channels;
@@ -58,7 +57,11 @@ public:
         std::string fullName = name + ".wav";
         auto data = loadWavFromAssets(appContext->assetManager, fullName.c_str(), sr, ch);
 
-        Sound *s = new Sound{std::move(data)};
+        if (data.empty()) {
+            return nullptr;
+        }
+
+        auto *s = new Sound{std::move(data)};
         sounds.emplace_back(s);
         return sounds.back();
     }
@@ -83,13 +86,12 @@ public:
     }
 
     void destroy() {
+        sounds.clear();
         if (mStream) {
             mStream->stop();
             mStream->close();
             mStream.reset();
         }
-
-        sounds.clear();
     }
 
 private:
@@ -97,29 +99,32 @@ private:
     std::shared_ptr<oboe::AudioStream> mStream;
     AppContext *appContext;
 
-    std::vector<float> loadWavFromAssets(AAssetManager *mgr, const char *filename,
-                                         uint32_t &sampleRate,
-                                         uint16_t &channels) {
-        AAsset *asset = AAssetManager_open(mgr, filename, AASSET_MODE_BUFFER);
-        if (!asset) return {};
+    std::vector<float> loadWavFromAssets(AAssetManager *mgr, const char *filename, uint32_t &sampleRate, uint16_t &channels) {
+        std::vector<uint8_t> buffer = AssetLoader::loadAssetToBuffer(mgr, filename);
+        // Load raw asset bytes
+        if (buffer.empty()) {
+            return {};
+        }
 
-        size_t length = AAsset_getLength(asset);
-        std::vector<uint8_t> buffer(length);
-        AAsset_read(asset, buffer.data(), length);
-        AAsset_close(asset);
-
+        // Initialize dr_wav from memory
         drwav wav;
         if (!drwav_init_memory(&wav, buffer.data(), buffer.size(), nullptr)) {
             return {};
         }
 
+        // Capture format info
         sampleRate = wav.sampleRate;
         channels = wav.channels;
 
+        // Read all samples as float32
         size_t totalSamples = wav.totalPCMFrameCount * wav.channels;
         std::vector<float> samples(totalSamples);
+
         drwav_read_pcm_frames_f32(&wav, wav.totalPCMFrameCount, samples.data());
+
+        // Clean up
         drwav_uninit(&wav);
+
         return samples;
     }
 };

@@ -33,11 +33,6 @@ public:
         difference *= RESIZE_SPEED * GameTime::deltaTime();
         bounds.x -= difference * 0.5f;
         bounds.w += difference;
-
-        // Minimum width
-        if (bounds.w < MIN_SIZE) {
-            bounds.w = MIN_SIZE;
-        }
     }
 
     // Set movement direction
@@ -54,6 +49,10 @@ public:
     // Request a width increase for animation
     void expand(float increase) {
         transitionWidth += increase;
+
+        if (transitionWidth < MIN_SIZE)  {
+            transitionWidth = MIN_SIZE;
+        }
     }
 
     Rect getBounds() { return bounds; }
