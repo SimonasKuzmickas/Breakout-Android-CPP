@@ -171,6 +171,7 @@ private:
     static constexpr float POWERUP_SPEED = 300.0f;
     static constexpr int DROP_CHANCE = 50;
     static constexpr int MAX_ACTIVE_POWERUPS = 5;
+    static constexpr int TOTAL_POWERUPS = 14;
 
     std::vector<PowerUp> powerUps;
     std::shared_ptr<LevelSystem> levelSystem;
@@ -185,7 +186,7 @@ private:
             std::srand(static_cast<unsigned>(std::time(nullptr)));
             seeded = true;
         }
-        int r = std::rand() % 14;
+        int r = std::rand() % TOTAL_POWERUPS;
         return static_cast<PowerUp::PowerUpType>(r);
     }
 };

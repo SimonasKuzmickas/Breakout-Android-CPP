@@ -32,10 +32,8 @@ public:
     {}
 
     void onAwake() override {
-        levelSystem->onLevelStart.addListener([this]() {
-            start();
-        });
-
+        // Start new level
+        levelSystem->onLevelStart.addListener([this]() { start(); });
         start();
     }
 
@@ -44,6 +42,7 @@ public:
         globalSpeedMultiplier = 1.0f;
         ballsType = BallsType::Normal;
 
+        // Spawn initial ball in the middle
         createBall(WORLD_WIDTH * 0.5f, START_Y , randomBallStartingVelocity(SPEED_START));
 
         paddle->start();
@@ -53,118 +52,10 @@ public:
         if (!levelSystem) return;
 
         globalSpeedMultiplier += SPEED_GROWTH * GameTime::deltaTime();
-        auto levelBounds = levelSystem->getLevelBounds();
 
         for (auto &ball: balls) {
-
-            switch (ballsType) {
-                case BallsType::Normal:
-                    // --- MOVE X ---
-                    ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (handleCollision(ball, ball.bounds.x, ball.velocity.x))
-                        continue;
-
-                    // --- MOVE Y ---
-                    ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (handleCollision(ball, ball.bounds.y, ball.velocity.y))
-                        continue;
-
-                    break;
-
-                case BallsType::Explode:
-                    // --- MOVE X ---
-                    ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (Brick* brick = handleCollision(ball, ball.bounds.x, ball.velocity.x)) {
-                        if(brick->getIsDestructible()) {
-                            levelSystem->explode(brick->getGridX(), brick->getGridY());
-                        }
-                        continue;
-                    }
-
-                    // --- MOVE Y ---
-                    ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
-                    if (Brick* brick = handleCollision(ball, ball.bounds.y, ball.velocity.y)) {
-                        if(brick->getIsDestructible()) {
-                            levelSystem->explode(brick->getGridX(), brick->getGridY());
-                        }
-                        continue;
-                    }
-                    break;
-
-                case BallsType::Piercing:
-                    // --- MOVE X ---
-                    ball.bounds.x += ball.velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
-                    handlePiercingCollision(ball,
-                                          levelSystem->checkBrickCollision(ball.bounds),
-                                          ball.bounds.x, ball.velocity.x,
-                                          true);
-
-                    // --- MOVE Y ---
-                    ball.bounds.y += ball.velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
-                    handlePiercingCollision(ball,
-                                          levelSystem->checkBrickCollision(ball.bounds),
-                                          ball.bounds.y, ball.velocity.y,
-                                          false);
-
-            }
-
-            // ---- OUT OF BOUNDS
-            if (ball.bounds.y < 0) {
-                removeBall(ball);
-                if (balls.empty()) {
-                    onLost.invoke();
-                    start();
-                }
-            }
-
-            // ---- WALL COLLISIONS ----
-            // LEFT
-            if (ball.bounds.x < levelBounds.left()) {
-                ball.bounds.x = levelBounds.left();
-                ball.velocity.x = -ball.velocity.x;
-
-                onHitWall.invoke();
-            // RIGHT
-            } else if (ball.bounds.x + ball.bounds.w > levelBounds.right()) {
-                ball.bounds.x = levelBounds.right() - ball.bounds.w;
-                ball.velocity.x = -ball.velocity.x;
-
-                onHitWall.invoke();
-            }
-
-            // TOP
-            if (ball.bounds.y + ball.bounds.h > levelBounds.top()) {
-                ball.bounds.y = levelBounds.top() - ball.bounds.h;
-                ball.velocity.y = -ball.velocity.y;
-
-                onHitWall.invoke();
-            }
-
-            // ---- PADDLE COLLISION ----
-            if (ball.velocity.y < 0) {
-                auto paddleBounds = paddle->getBounds();
-                if (paddle && ball.bounds.overlaps(paddleBounds)) {
-                    float normalized = ((ball.bounds.x + ball.bounds.w * 0.5f) -
-                                        (paddleBounds.x + paddleBounds.w * 0.5f))
-                                       / (paddleBounds.w * 0.5f);
-
-                    float edgeFactor = 1.5f;
-                    normalized *= edgeFactor;
-
-                    float speed = std::sqrt(ball.velocity.x * ball.velocity.x +
-                                            ball.velocity.y * ball.velocity.y);
-
-                    float len = std::sqrt(normalized * normalized + 1.0f);
-                    float dirX = normalized / len;
-                    float dirY = 1.0f / len;
-
-                    ball.velocity.x = dirX * speed;
-                    ball.velocity.y = dirY * speed;
-                    ball.applySpeedMultiplier(SPEED_HITGROWTH);
-
-                    paddle->onHit.invoke();
-                }
-            }
+            updateBallMovement(&ball);
+            updateBallCollisions(&ball);
         }
     }
 
@@ -183,21 +74,10 @@ public:
         }
     }
 
-    void setBallType(BallsType type) {
-        ballsType = type;
-    }
-
-    BallsType getBallsType() const {
-        return ballsType;
-    }
-
-    const std::vector<Ball> &getBalls() const {
-        return balls;
-    }
-
-    void increaseGlobalSpeed(float multiplier) {
-        globalSpeedMultiplier *= multiplier;
-    }
+    void setBallType(BallsType type) { ballsType = type; }
+    BallsType getBallsType() const { return ballsType; }
+    const std::vector<Ball> &getBalls() const { return balls; }
+    void increaseGlobalSpeed(float multiplier) { globalSpeedMultiplier *= multiplier; }
 
 private:
     static constexpr float SPEED_START = 600.0f;
@@ -213,20 +93,126 @@ private:
     float globalSpeedMultiplier;
     BallsType ballsType;
 
+    void updateBallMovement(Ball* ball) {
+        switch (ballsType) {
+            case BallsType::Normal:
+                // --- MOVE X ---
+                ball->bounds.x += ball->velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
+                if (handleCollision(*ball, ball->bounds.x, ball->velocity.x)) return;
+
+                // --- MOVE Y ---
+                ball->bounds.y += ball->velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
+                if (handleCollision(*ball, ball->bounds.y, ball->velocity.y)) return;
+                break;
+
+            case BallsType::Explode:
+                // --- MOVE X ---
+                ball->bounds.x += ball->velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
+                if (Brick *brick = handleCollision(*ball, ball->bounds.x, ball->velocity.x)) {
+                    if (brick->getIsDestructible()) {
+                        levelSystem->explode(brick->getGridX(), brick->getGridY());
+                    }
+                    return;
+                }
+
+                // --- MOVE Y ---
+                ball->bounds.y += ball->velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
+                if (Brick *brick = handleCollision(*ball, ball->bounds.y, ball->velocity.y)) {
+                    if (brick->getIsDestructible()) {
+                        levelSystem->explode(brick->getGridX(), brick->getGridY());
+                    }
+                    return;
+                }
+                break;
+
+            case BallsType::Piercing:
+                // --- MOVE X ---
+                ball->bounds.x += ball->velocity.x * globalSpeedMultiplier * GameTime::deltaTime();
+                handlePiercingCollision(*ball,
+                                        levelSystem->checkBrickCollision(ball->bounds),
+                                        ball->bounds.x, ball->velocity.x,
+                                        true);
+
+                // --- MOVE Y ---
+                ball->bounds.y += ball->velocity.y * globalSpeedMultiplier * GameTime::deltaTime();
+                handlePiercingCollision(*ball,
+                                        levelSystem->checkBrickCollision(ball->bounds),
+                                        ball->bounds.y, ball->velocity.y,
+                                        false);
+
+
+        }
+    }
+
+    void updateBallCollisions(Ball* ball) {
+        auto levelBounds = levelSystem->getLevelBounds();
+
+        // ---- OUT OF BOUNDS
+        if (ball->bounds.y < 0) {
+            removeBall(*ball);
+            if (balls.empty()) {
+                onLost.invoke();
+                start();
+            }
+        }
+
+        // ---- WALL COLLISIONS ----
+        // LEFT
+        if (ball->bounds.x < levelBounds.left()) {
+            ball->bounds.x = levelBounds.left();
+            ball->velocity.x = -ball->velocity.x;
+            onHitWall.invoke();
+            // RIGHT
+        } else if (ball->bounds.x + ball->bounds.w > levelBounds.right()) {
+            ball->bounds.x = levelBounds.right() - ball->bounds.w;
+            ball->velocity.x = -ball->velocity.x;
+            onHitWall.invoke();
+        }
+
+        // TOP
+        if (ball->bounds.y + ball->bounds.h > levelBounds.top()) {
+            ball->bounds.y = levelBounds.top() - ball->bounds.h;
+            ball->velocity.y = -ball->velocity.y;
+            onHitWall.invoke();
+        }
+
+        // ---- PADDLE COLLISION ----
+        if (ball->velocity.y < 0) {
+            auto paddleBounds = paddle->getBounds();
+            if (paddle && ball->bounds.overlaps(paddleBounds)) {
+                float normalized = ((ball->bounds.x + ball->bounds.w * 0.5f) -
+                                    (paddleBounds.x + paddleBounds.w * 0.5f))
+                                   / (paddleBounds.w * 0.5f);
+
+                float edgeFactor = 1.5f;
+                normalized *= edgeFactor;
+
+                float speed = std::sqrt(ball->velocity.x * ball->velocity.x +
+                                        ball->velocity.y * ball->velocity.y);
+
+                float len = std::sqrt(normalized * normalized + 1.0f);
+                float dirX = normalized / len;
+                float dirY = 1.0f / len;
+
+                ball->velocity.x = dirX * speed;
+                ball->velocity.y = dirY * speed;
+                ball->applySpeedMultiplier(SPEED_HITGROWTH);
+
+                paddle->onHit.invoke();
+            }
+        }
+    }
+
+    // Random starting velocity for new ball
     Vector2 randomBallStartingVelocity(float speed) {
         std::srand(static_cast<unsigned>(std::time(nullptr)));
 
-        float minAngle = M_PI / 4.0f;       // 45°
-        float maxAngle = 3.0f * M_PI / 4.0f; // 135°
-        float angle = minAngle + (static_cast<float>(std::rand()) / RAND_MAX) * (maxAngle - minAngle);
-
-        // Build vector directly from angle
-        float vx = speed * std::cos(angle);
-        float vy = speed * std::sin(angle);
-
-        return {vx, vy};
+        // 45° to 135°
+        float angle = M_PI / 4.0f +     (static_cast<float>(std::rand()) / RAND_MAX) * (M_PI / 2.0f);
+        return {speed * std::cos(angle), speed * std::sin(angle)};
     }
 
+    // Collision with a brick
     Brick* handleCollision(Ball &ball, float &axisPos, float &axisVel) {
         if (Brick* brick = levelSystem->checkBrickCollision(ball.bounds)) {
             Rect brickBounds = brick->getBounds();
@@ -253,6 +239,7 @@ private:
         return nullptr;
     }
 
+    // Collision with a brick for normal/explode balls
     void handlePiercingCollision(Ball& ball, Brick* brick, float& axisPos, float& axisVel, bool isXAxis) {
         if (!brick) return;
 

@@ -24,31 +24,34 @@ public:
     void onUpdate() override {
         bounds.x += static_cast<float>(direction) * speed * GameTime::deltaTime();
 
-        // paddle to wall collision
+        // Clamp to screen bounds
         const float maxX = WORLD_WIDTH - bounds.w;
         bounds.x = std::clamp(bounds.x, 0.0f, maxX);
 
-        // paddle resize animation
+        // Smooth resize animation
         float difference = transitionWidth - bounds.w;
         difference *= RESIZE_SPEED * GameTime::deltaTime();
-
         bounds.x -= difference * 0.5f;
         bounds.w += difference;
 
+        // Minimum width
         if (bounds.w < MIN_SIZE) {
             bounds.w = MIN_SIZE;
         }
     }
 
+    // Set movement direction
     void move(Direction dir) {
         direction = dir;
     }
 
+    // Reset paddle to default
     void start() {
         bounds = DEFAULT_BOUNDS;
         transitionWidth = bounds.w;
     }
 
+    // Request a width increase for animation
     void expand(float increase) {
         transitionWidth += increase;
     }

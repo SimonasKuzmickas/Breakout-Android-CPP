@@ -13,20 +13,18 @@ public:
     : levelSystem(levelSystem), ballSystem(ballSystem)
     {}
 
+    // --- Initialize listeners for level and ball events
     void onAwake() override {
-        if (levelSystem) {
-            levelSystem->onBrickDestroy.addListener([this](const Brick* brick) {
-                increaseScore(BRICK_SCORE_VALUE);
-            });
-        }
+        levelSystem->onBrickDestroy.addListener([this](const Brick* brick) {
+            increaseScore(BRICK_SCORE_VALUE);
+        });
 
-        if (ballSystem) {
-            ballSystem->onLost.addListener([this]() {
-                increaseLives(-1);
-            });
-        }
+        ballSystem->onLost.addListener([this]() {
+            increaseLives(-1);
+        });
     }
 
+    // Modify player lives
     void increaseLives(int amount) {
         lives += amount;
         if(lives <= 0) {

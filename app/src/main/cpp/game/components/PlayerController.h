@@ -9,6 +9,7 @@ static PlayerController* g_playerController = nullptr;
 
 class PlayerController : public ISceneComponent {
 public:
+    // --- Touch input actions
     enum class TouchAction {
         Down = 0,
         Up = 1,
@@ -30,12 +31,14 @@ public:
         g_playerController = this;
         position = Vector2(0, 0);
         isMoving = false;
+        activePointer = -1;
     }
 
     void onDestroy() override {
         g_playerController = nullptr;
     }
 
+    // Update paddle movement based on touch input
     void onUpdate() override {
         if (!isMoving) {
             paddle->move(Paddle::Direction::None);
@@ -54,6 +57,7 @@ public:
         }
     }
 
+    // --- Handle touch input
     void onTouch(int pointerId, float x, float y, int action) {
         auto act = static_cast<TouchAction>(action);
 

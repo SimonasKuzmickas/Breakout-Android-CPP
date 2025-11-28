@@ -93,7 +93,8 @@ protected:
             graphicsAPI.setColor(1,1,1,1);
             graphicsAPI.setOffset(0,0);
         }
-        drawLevel();
+
+        drawBricks();
         drawPaddle();
         drawBalls();
         drawPowerUps();
@@ -103,6 +104,8 @@ protected:
     }
 
     void drawHUD() {
+        if(!playerState) return;
+
         int score = playerState->getScore();
         int numDigits = (score == 0) ? 1 : static_cast<int>(std::log10(score)) + 1;
 
@@ -121,6 +124,8 @@ protected:
     }
 
     void drawPowerUps() {
+        if(!powerUpManager) return;
+
         for (auto &powerup: powerUpManager->getPowerUps()) {
             auto bounds = powerup.bounds;
             int index = static_cast<int>(powerup.powerUpType);
@@ -130,6 +135,8 @@ protected:
     }
 
     void drawLaserShooter() {
+        if(!laserShooter) return;
+
         for (auto &laser: laserShooter->getLasers()) {
             auto bounds = laser.bounds;
             drawImageAnim(resourceBalls, bounds.x, bounds.y, bounds.w, bounds.h,
@@ -147,6 +154,8 @@ protected:
     }
 
     void drawPaddle() {
+        if(!paddle) return;
+
         paddleAnimation = std::fmod(paddleAnimation + 0.2f, 3.0f);
 
         auto bounds = paddle->getBounds();
@@ -161,6 +170,8 @@ protected:
     }
 
     void drawBalls() {
+        if(!ballSystem) return;
+
         int index = static_cast<int>(ballSystem->getBallsType());
 
         for (auto &ball: ballSystem->getBalls()) {
@@ -170,12 +181,16 @@ protected:
     }
 
     void drawBackground() {
+        if(!levelSystem) return;
+
         auto levelBounds = levelSystem->getLevelBounds();
         drawImage(resourceBackground, levelBounds.x, levelBounds.y, levelBounds.w,
                   levelBounds.h);
     }
 
-    void drawLevel() {
+    void drawBricks() {
+        if(!levelSystem) return;
+
         for (auto &brick: levelSystem->getBricks()) {
             auto bounds = brick.getBounds();
 

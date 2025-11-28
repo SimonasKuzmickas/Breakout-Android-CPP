@@ -12,13 +12,14 @@ struct Laser {
 
 class LaserShooter : public ISceneComponent {
 public:
-    Event<> onLaserShoot;
+    Event<> onLaserShoot; // Fired when lasers are shot
 
     LaserShooter(std::shared_ptr<Paddle> paddle, std::shared_ptr<LevelSystem>  levelSystem, std::shared_ptr<BallSystem> ballSystem)
                 : paddle(paddle), levelSystem(levelSystem), ballSystem(ballSystem)
         {}
 
     void onAwake() override {
+        // Deactivate lasers when a ball is lost or level starts
         ballSystem->onLost.addListener([this]() {
             setActive(false);
             lasers.clear();
@@ -31,6 +32,7 @@ public:
     }
 
     void onUpdate() override {
+        // Move lasers and handle collisions
         for (auto &laser: lasers) {
             laser.bounds.y += LASER_SPEED * GameTime::deltaTime();
 
@@ -42,6 +44,7 @@ public:
             }
         }
 
+        // Handle shooting logic if active
         if (getIsActive()) {
             shootTime -= GameTime::deltaTime();
             if (shootTime < 0) {

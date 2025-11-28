@@ -36,40 +36,43 @@ struct Brick : IBrick {
     }
 
     void update() override { behavior->update(*this); }
+
+    // Called when ball or effect hits the brick
     void hit() override { behavior->hit(*this); }
+
+    // Immediately destroy brick
     void destroy() override { isDestroyed = true; }
+
+    // Mark brick as damaged and invoke event
     void damage() override {
         isDamaged = true;
         onDamage.invoke();
     }
-    void deflect() override {
-        onDeflect.invoke();
-    }
-    void setDestructible(bool state) {
-        isDestructible = state;
-    }
-    void setDynamic(bool state)
-    {
-        isDynamic = state;
-    }
+
+    // Invoke deflect event
+    void deflect() override { onDeflect.invoke(); }
+
+    void setDestructible(bool state) { isDestructible = state; }
+    void setDynamic(bool state) { isDynamic = state; }
 
     void setBounds(Rect rect) override {bounds = rect; }
 
-    void explode() override {
-        onExplode.invoke(this);
-    }
+    // Trigger explosion behavior
+    void explode() override { onExplode.invoke(this); }
 
+    // Grid position getters
     int getGridX() const override { return gridX; }
     int getGridY() const override { return gridY; }
-    bool getIsDamaged() override { return isDamaged; }
 
+    // State getters
+    BrickType getType() const { return type; }
+    bool getIsDamaged() override { return isDamaged; }
     const Rect &getBounds() const { return bounds; }
     bool getIsDestroyed() const { return isDestroyed; }
     bool getIsDynamic() const { return isDynamic; }
     bool getIsDestructible() const { return isDestructible; }
 
-    BrickType getType() const { return type; }
-
+    // Events
     Event<> onDamage;
     Event<Brick *> onExplode;
     Event<> onDeflect;
@@ -77,37 +80,29 @@ struct Brick : IBrick {
 private:
     std::unique_ptr<IBrickBehavior> behavior;
 
+    // Create behavior based on type
     static std::unique_ptr<IBrickBehavior> createBehavior(BrickType type) {
         switch (type) {
-            case BrickType::NormalOrange:
-                return std::make_unique<NormalBehavior>();
-
+            case BrickType::NormalOrange:       return std::make_unique<NormalBehavior>();
             case BrickType::ArmorPurple:
-            case BrickType::ArmorBrown:
-                return std::make_unique<ArmorBehavior>();
-
-            case BrickType::ExplodingYellow:
-                return std::make_unique<ExplodingBehaviour>();
-
-            case BrickType::DynamicBlue:
-                return std::make_unique<MovingXBehaviour>();
-
-            case BrickType::DynamicGreen:
-                return std::make_unique<MovingYArmorBehaviour>();
-
-            case BrickType::StaticGray:
-                return std::make_unique<StaticBehaviour>();
+            case BrickType::ArmorBrown:         return std::make_unique<ArmorBehavior>();
+            case BrickType::ExplodingYellow:    return std::make_unique<ExplodingBehaviour>();
+            case BrickType::DynamicBlue:        return std::make_unique<MovingXBehaviour>();
+            case BrickType::DynamicGreen:       return std::make_unique<MovingYArmorBehaviour>();
+            case BrickType::StaticGray:         return std::make_unique<StaticBehaviour>();
         }
-
         return nullptr;
     }
 
     BrickType type;
     Rect bounds;
+
+    // Brick state flags
     bool isDestroyed = false;
     bool isDestructible = true;
     bool isDamaged = false;
     bool isDynamic = false;
+
     int gridX = 0;
     int gridY = 0;
 };
