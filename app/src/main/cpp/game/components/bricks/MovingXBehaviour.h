@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IBrick.h"
-#include "IBrickBehaviour.h"
+#include "../brick/IBrick.h"
+#include "../brick/IBrickBehaviour.h"
 
 namespace Breakout {
 
@@ -9,6 +9,10 @@ class MovingXBehaviour : public IBrickBehavior {
 public:
     static constexpr float BRICK_WIDTH = 160.0f;
     static constexpr float BRICK_HEIGHT = 60.0f;
+
+    void start(IBrick& brick) override {
+        brick.setDynamic(true);
+    }
 
     virtual void update(IBrick& brick) {
         float amplitude = 80.0f;

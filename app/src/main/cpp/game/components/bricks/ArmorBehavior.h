@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IBrick.h"
-#include "IBrickBehaviour.h"
+#include "../brick/IBrick.h"
+#include "../brick/IBrickBehaviour.h"
 
 namespace Breakout {
 

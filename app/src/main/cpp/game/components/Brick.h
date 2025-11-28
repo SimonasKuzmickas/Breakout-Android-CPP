@@ -1,14 +1,14 @@
 #pragma once
 
-#include "../../helpers/Event.h"
-#include "IBrickBehaviour.h"
-#include "IBrick.h"
-#include "ArmorBehavior.h"
-#include "NormalBehavior.h"
-#include "ExplodingBehaviour.h"
-#include "MovingXBehaviour.h"
-#include "MovingYArmorBehaviour.h"
-#include "StaticBehaviour.h"
+#include "../helpers/Event.h"
+#include "brick/IBrickBehaviour.h"
+#include "brick/IBrick.h"
+#include "bricks/ArmorBehavior.h"
+#include "bricks/NormalBehavior.h"
+#include "bricks/ExplodingBehaviour.h"
+#include "bricks/MovingXBehaviour.h"
+#include "bricks/MovingYArmorBehaviour.h"
+#include "bricks/StaticBehaviour.h"
 
 namespace Breakout {
 
@@ -47,6 +47,10 @@ struct Brick : IBrick {
     }
     void setDestructible(bool state) {
         isDestructible = state;
+    }
+    void setDynamic(bool state)
+    {
+        isDynamic = state;
     }
 
     void setBounds(Rect rect) override {bounds = rect; }

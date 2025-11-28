@@ -256,9 +256,9 @@ private:
     void handlePiercingCollision(Ball& ball, Brick* brick, float& axisPos, float& axisVel, bool isXAxis) {
         if (!brick) return;
 
-        if (brick->getIsDestructible()) {
-            brick->hit();
-        } else {
+        brick->hit();
+
+        if (!brick->getIsDestructible()) {
             auto brickBounds = brick->getBounds();
 
             if (isXAxis) {

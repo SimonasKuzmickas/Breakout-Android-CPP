@@ -18,6 +18,7 @@ public:
     virtual int getGridY() const = 0;
     virtual void setBounds(Rect) = 0;
     virtual void setDestructible(bool state) = 0;
+    virtual void setDynamic(bool state) = 0;
 };
 
 }

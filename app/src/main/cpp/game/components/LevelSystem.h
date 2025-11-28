@@ -4,7 +4,7 @@
 #include "../scene/ISceneComponent.h"
 #include "../thirdparty/json.hpp"
 #include "../helpers/AssetLoader.h"
-#include "bricks/Brick.h"
+#include "Brick.h"
 #include <list>
 
 using json = nlohmann::json;
@@ -160,7 +160,6 @@ private:
     int currentLevel = 1;
 
     void removeBrick(const Brick &brickRef) {
-        // Remove from static grid if present
         if (brickRef.getIsDynamic()) {
             auto dynIt = std::remove_if(dynamicBricks.begin(), dynamicBricks.end(),
                                         [&](Brick* b) { return b == &brickRef; });
@@ -213,7 +212,6 @@ private:
         brick->onDeflect.addListener([this]() {
             onBrickDeflect.invoke();
         });
-
     }
 };
 
