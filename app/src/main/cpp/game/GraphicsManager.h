@@ -172,10 +172,10 @@ protected:
     void drawBalls() {
         if(!ballSystem) return;
 
-        int index = static_cast<int>(ballSystem->getBallsType());
-
         for (auto &ball: ballSystem->getBalls()) {
-            drawImageAnim(resourceBalls, ball.bounds.x, ball.bounds.y, ball.bounds.w, ball.bounds.h,
+            int index = static_cast<int>(ball->ballType);
+
+            drawImageAnim(resourceBalls, ball->bounds.x, ball->bounds.y, ball->bounds.w, ball->bounds.h,
                           index, 50, 50, 150, 50);
         }
     }
@@ -195,7 +195,7 @@ protected:
             auto bounds = brick->getBounds();
 
             graphicsAPI.drawTextureAnim(resourceBricks, bounds.x, bounds.y, bounds.w, bounds.h,
-                                        (int)brick->getType(), 384, 128, 384, 896);
+                                        brick->getLook(), 384, 128, 384, 896);
 
             if(brick->getIsDamaged()) {
                 graphicsAPI.drawTexture(resourceDamaged, bounds.x, bounds.y, bounds.w, bounds.h);

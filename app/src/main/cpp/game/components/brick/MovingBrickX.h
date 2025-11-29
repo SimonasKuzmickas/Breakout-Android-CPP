@@ -5,8 +5,8 @@ namespace Breakout {
 
 class MovingBrickX : public Brick {
 public:
-    MovingBrickX(int gx, int gy, BrickType type)
-            : Brick(gx, gy, type) {
+    MovingBrickX(int gx, int gy, int look)
+            : Brick(gx, gy, look) {
         isDynamic = true;
     }
 

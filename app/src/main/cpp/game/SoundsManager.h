@@ -49,7 +49,7 @@ public:
             soundWall->play();
         });
 
-        ballSystem->onLost.addListener([this]() {
+        ballSystem->onLostAllBalls.addListener([this]() {
             soundLifeLost->play();
         });
 

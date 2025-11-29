@@ -8,8 +8,8 @@ namespace Breakout {
 
 class ExplodingBrick : public Brick {
 public:
-    ExplodingBrick(int gx, int gy, BrickType type)
-            : Brick(gx, gy, type) {}
+    ExplodingBrick(int gx, int gy, int look)
+            : Brick(gx, gy, look) {}
 
     void hit() override {
         if (!isDamaged) {

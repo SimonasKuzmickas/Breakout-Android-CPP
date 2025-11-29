@@ -20,7 +20,7 @@ public:
 
     void onAwake() override {
         // Deactivate lasers when a ball is lost or level starts
-        ballSystem->onLost.addListener([this]() {
+        ballSystem->onLostAllBalls.addListener([this]() {
             setActive(false);
             lasers.clear();
         });

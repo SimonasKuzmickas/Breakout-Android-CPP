@@ -79,10 +79,10 @@ public:
             int x = b["x"].get<int>();
             int y = b["y"].get<int>();
             int type = b["type"].get<int>();
+            int look = b["look"].get<int>();
 
-            createBrick(x, y, static_cast<Brick::BrickType>(type));
+            createBrick(look, static_cast<BrickFactory::BrickType>(type), x, y);
         }
-
 
         onLevelStart.invoke();
     }
@@ -160,8 +160,8 @@ private:
     Rect levelBounds;
     int currentLevel = 1;
 
-    void createBrick(int gridX, int gridY, Brick::BrickType type) {
-        auto brick = BrickFactory::createBrick(type, gridX, gridY);
+    void createBrick(int look, BrickFactory::BrickType brickType, int gridX, int gridY) {
+        auto brick = BrickFactory::createBrick(look, brickType, gridX, gridY);
 
         allBricks.push_back(brick);
 

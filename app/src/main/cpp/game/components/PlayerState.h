@@ -19,7 +19,7 @@ public:
             increaseScore(BRICK_SCORE_VALUE);
         });
 
-        ballSystem->onLost.addListener([this]() {
+        ballSystem->onLostAllBalls.addListener([this]() {
             increaseLives(-1);
         });
     }

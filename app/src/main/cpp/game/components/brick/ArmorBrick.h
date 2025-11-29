@@ -6,8 +6,8 @@ namespace Breakout {
 
 class ArmorBrick : public Brick {
 public:
-    ArmorBrick(int gx, int gy, BrickType type)
-            : Brick(gx, gy, type) {}
+    ArmorBrick(int gx, int gy, int look)
+            : Brick(gx, gy, look) {}
 
     void hit() override {
         if (!isDamaged) {

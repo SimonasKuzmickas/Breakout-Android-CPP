@@ -10,8 +10,8 @@ public:
     static constexpr float BRICK_WIDTH = 160.0f;
     static constexpr float BRICK_HEIGHT = 60.0f;
 
-    MovingArmorBrickY(int gx, int gy, BrickType type)
-            : Brick(gx, gy, type) {
+    MovingArmorBrickY(int gx, int gy, int look)
+            : Brick(gx, gy, look) {
         isDynamic = true;
     }
 

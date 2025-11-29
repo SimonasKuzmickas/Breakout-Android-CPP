@@ -67,7 +67,7 @@ public:
             powerUps.clear();
         });
 
-        ballSystem->onLost.addListener([this]() {
+        ballSystem->onLostAllBalls.addListener([this]() {
             powerUps.clear();
         });
     }
@@ -103,21 +103,30 @@ public:
 
     void ApplyEffect(PowerUp::PowerUpType powerUpType) {
         switch (powerUpType) {
-            case PowerUp::PowerUpType::MultiBall:
-                for (const auto &ball: ballSystem->getBalls()) {
-                    auto v = ball.velocity;
+            case PowerUp::PowerUpType::MultiBall: {
+                // Snapshot of current balls
+                std::vector<const Ball*> originals;
+                originals.reserve(ballSystem->getBalls().size());
 
-                    ballSystem->createBall(ball.bounds.x, ball.bounds.y, v.rotate(0.2f));
-                    ballSystem->createBall(ball.bounds.x, ball.bounds.y, v.rotate(-0.2f));
+                for (const auto& ballPtr : ballSystem->getBalls()) {
+                    originals.push_back(ballPtr.get());
+                }
+
+                // Now safely create new balls based on the snapshot
+                for (const Ball* ball : originals) {
+                    auto v = ball->velocity;
+                    ballSystem->createBall(ball->bounds.x, ball->bounds.y, v.rotate(0.2f), ball->ballType);
+                    ballSystem->createBall(ball->bounds.x, ball->bounds.y, v.rotate(-0.2f), ball->ballType);
                 }
                 break;
+            }
 
             case PowerUp::PowerUpType::StrongBall:
-                ballSystem->setBallType(BallSystem::BallsType::Piercing);
+                ballSystem->setBallType(BallType::Piercing);
                 break;
 
             case PowerUp::PowerUpType::ExplodeBall:
-                ballSystem->setBallType(BallSystem::BallsType::Explode);
+                ballSystem->setBallType(BallType::Explode);
                 break;
 
             case PowerUp::PowerUpType::Laser:

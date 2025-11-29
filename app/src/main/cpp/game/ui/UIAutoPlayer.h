@@ -48,18 +48,18 @@ private:
         std::optional<Vector2> closestBall;
         float closestDist = std::numeric_limits<float>::max();
 
-        for (const Ball &ball: ballSystem.getBalls()) {
+        for (const auto& ball : ballSystem.getBalls()) {
             // Filter by direction
-            if (downward && ball.velocity.y < 0.0f) continue; // skip upward
-            if (!downward && ball.velocity.y > 0.0f) continue; // skip downward
+            if (downward && ball->velocity.y < 0.0f) continue; // skip upward
+            if (!downward && ball->velocity.y > 0.0f) continue; // skip downward
 
-            float dx = ball.bounds.center().x - paddle.getBounds().center().x;
-            float dy = ball.bounds.center().y - paddle.getBounds().center().y;
+            float dx = ball->bounds.center().x - paddle.getBounds().center().x;
+            float dy = ball->bounds.center().y - paddle.getBounds().center().y;
             float dist = std::sqrt(dx * dx + dy * dy);
 
             if (dist < closestDist) {
                 closestDist = dist;
-                closestBall = ball.bounds.center();
+                closestBall = ball->bounds.center();
             }
         }
 
