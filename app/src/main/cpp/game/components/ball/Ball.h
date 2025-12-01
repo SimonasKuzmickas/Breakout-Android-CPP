@@ -126,17 +126,6 @@ protected:
         return nullptr;
     }
 
-    void handlePiercingCollision(const std::shared_ptr<Brick>& brick, float& axisPos, float& axisVel, bool isXAxis) {
-        if (!brick) return;
-
-        brick->hit();
-
-        if (!brick->getIsDestructible()) {
-            Rect brickBounds = brick->getBounds();
-            resolveAxisCollision(axisPos, axisVel, brickBounds, isXAxis);
-        }
-    }
-
     void resolveAxisCollision(float& axisPos, float& axisVel, const Rect& brickBounds, bool isXAxis) {
         if (isXAxis) {
             if (axisVel > 0)
@@ -151,47 +140,6 @@ protected:
         }
 
         axisVel = -axisVel;
-    }
-};
-
-struct PiercingBall : Ball {
-    PiercingBall(float x,
-                 float y,
-                 const Vector2& v,
-                 BallBlackboard* blackboard)
-            : Ball(x, y, v, blackboard) {
-        ballType = BallType::Piercing;
-    }
-
-    void updateBallMovement() override {
-        speedMultiplier += SPEED_GROWTH * GameTime::deltaTime();
-
-        moveBothAxes([this](float& pos, float& vel, bool isXAxis) {
-            handlePiercingCollision(blackboard->levelSystem->checkBrickCollision(bounds),
-                                    pos, vel, isXAxis);
-        });
-    }
-};
-
-struct ExplodingBall : Ball {
-    ExplodingBall(float x,
-                  float y,
-                  const Vector2& v,
-                  BallBlackboard* blackboard)
-            : Ball(x, y, v, blackboard) {
-        ballType = BallType::Explode;
-    }
-
-    void updateBallMovement() override {
-        speedMultiplier += SPEED_GROWTH * GameTime::deltaTime();
-
-        moveBothAxes([this](float& pos, float& vel, bool) {
-            if (auto brick = handleCollision(pos, vel)) {
-                if (brick->getIsDestructible()) {
-                    blackboard->levelSystem->explode(brick->getGridX(), brick->getGridY());
-                }
-            }
-        });
     }
 };
 

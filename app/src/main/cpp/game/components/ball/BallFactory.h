@@ -1,18 +1,18 @@
 #pragma once
 
+#include "PiercingBall.h"
+#include "ExplodingBall.h"
+
 namespace Breakout {
 
-struct BallFactory
-{
+struct BallFactory {
     static std::unique_ptr<Ball> createBall(
             float x,
             float y,
             const Vector2& velocity,
             BallType type,
-            BallBlackboard* blackboard)
-    {
-        switch (type)
-        {
+            BallBlackboard* blackboard) {
+        switch (type) {
             case BallType::Normal:
                 return std::make_unique<Ball>(x, y, velocity, blackboard);
 
