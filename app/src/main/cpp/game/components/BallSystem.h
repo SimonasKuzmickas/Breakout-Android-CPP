@@ -2,9 +2,6 @@
 
 #include "Paddle.h"
 #include "LevelSystem.h"
-#include "Ball/BallBlackboard.h"
-#include "Ball/BallType.h"
-#include "Ball/Ball.h"
 #include "Ball/BallFactory.h"
 
 namespace Breakout {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../helpers/Event.h"
 #include "Brick.h"
 #include "ArmorBrick.h"
 #include "StandardBrick.h"

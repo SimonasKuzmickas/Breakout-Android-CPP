@@ -1,4 +1,5 @@
 #pragma once
+
 #include "IScene.h"
 
 namespace Breakout {

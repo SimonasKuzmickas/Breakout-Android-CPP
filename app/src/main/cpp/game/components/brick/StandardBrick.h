@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Brick.h"
-
 namespace Breakout {
 
 class StandardBrick : public Brick {

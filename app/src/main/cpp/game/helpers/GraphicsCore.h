@@ -1,4 +1,5 @@
 #pragma once
+
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #include <EGL/egl.h>
@@ -52,7 +53,7 @@ public:
         offsetY = y;
     }
 
-    // --- Draw simple textured quad ---
+    // Draw simple textured quad
     void drawTexture(GLuint texture, float x, float y, float w, float h) const {
         x += offsetX;
         y += offsetY;
@@ -75,7 +76,7 @@ public:
         drawQuad(texture, verts, 24);
     }
 
-    // --- Draw animated frame from sprite sheet ---
+    // Draw animated frame from sprite sheet
     void drawTextureAnim(GLuint texture,
                          float x, float y, float w, float h,
                          int frameId,

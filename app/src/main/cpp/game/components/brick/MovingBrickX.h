@@ -1,5 +1,4 @@
-
-#include "Brick.h"
+#pragma once
 
 namespace Breakout {
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../../helpers/Event.h"
-
 namespace Breakout {
 
 class Brick {

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
@@ -23,7 +24,7 @@ public:
     static std::vector<uint8_t> loadBuffer(AAssetManager* mgr, const char* filename) {
         AAsset* asset = AAssetManager_open(mgr, filename, AASSET_MODE_BUFFER);
         if (!asset) {
-            return {}; // return empty vector if asset not found
+            return {};
         }
 
         const size_t length = AAsset_getLength(asset);

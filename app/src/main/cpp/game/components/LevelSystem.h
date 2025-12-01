@@ -4,11 +4,9 @@
 #include "../scene/ISceneComponent.h"
 #include "../thirdparty/json.hpp"
 #include "../helpers/AssetLoader.h"
-#include "brick/Brick.h"
 #include "brick/BrickFactory.h"
 #include <list>
 #include <android/log.h>
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "Breakout", __VA_ARGS__)
 
 using json = nlohmann::json;
 

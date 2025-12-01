@@ -9,7 +9,6 @@
 #include "game/scenes/MenuScene.h"
 #include "game/scenes/SceneId.h"
 
-
 namespace Breakout {
     void gameLoop(AppContext* appContext) {
         int targetFrameRate = 60;

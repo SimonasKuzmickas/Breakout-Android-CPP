@@ -1,5 +1,8 @@
 #pragma once
 
+#include "BallBlackboard.h"
+#include "BallType.h"
+#include "Ball.h"
 #include "PiercingBall.h"
 #include "ExplodingBall.h"
 

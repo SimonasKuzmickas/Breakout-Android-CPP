@@ -1,9 +1,5 @@
 #pragma once
 
-#include "Brick.h"
-#include "../../helpers/GameTime.h"
-#include "../../helpers/Event.h"
-
 namespace Breakout {
 
 class ExplodingBrick : public Brick {

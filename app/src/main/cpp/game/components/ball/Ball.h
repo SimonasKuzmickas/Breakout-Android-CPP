@@ -2,8 +2,6 @@
 
 namespace Breakout {
 
-
-
 struct Ball {
     static constexpr float SPEED_GROWTH = 0.03f;
     static constexpr float SPEED_HITGROWTH = 1.01f;
